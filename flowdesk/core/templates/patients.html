@@ -26,7 +26,7 @@ type="text"
 name="q"
 value="{{ query }}"
 placeholder="Search by name or phone"
-class="border border-gray-300 rounded-lg px-4 py-2 w-72 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
+class="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-72 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
 
 <button 
 type="submit"
@@ -91,12 +91,9 @@ Search
 
 <td class="px-6 py-3">
 
-<div class="flex items-center justify-between">
+<!-- FIXED ACTION BUTTONS -->
 
-<!-- LEFT SIDE ACTIONS -->
-
-<div class="flex flex-wrap gap-3 items-center">
-
+<div class="flex flex-wrap gap-2">
 
 <a href="/book-appointment/{{ patient.id }}/"
 class="px-3 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition">
@@ -108,13 +105,6 @@ class="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 t
 View History
 </a>
 
-</div>
-
-
-<!-- RIGHT SIDE ACTIONS -->
-
-<div class="flex gap-2">
-
 <a href="{% url 'edit_patient' patient.id %}"
 class="px-3 py-1 text-xs bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition">
 Edit
@@ -125,8 +115,6 @@ class="px-3 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 t
 onclick="return confirm('Are you sure you want to delete this patient?');">
 Delete
 </a>
-
-</div>
 
 </div>
 
@@ -164,3 +152,6 @@ Add New Patient
 </div>
 
 {% endblock %}
+
+
+
