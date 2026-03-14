@@ -4,10 +4,14 @@
 
 <div class="max-w-6xl mx-auto px-4">
 
-<div class="mb-6">
-<h2 class="text-2xl font-semibold">Book Appointment</h2>
+<!-- Page Title -->
 
-<p class="text-gray-500 text-sm">
+<div class="mb-6">
+<h2 class="text-2xl font-semibold text-gray-800">
+Book Appointment
+</h2>
+
+<p class="text-gray-500 text-sm mt-1">
 Patient: <span class="font-medium text-gray-700">{{ patient.name }}</span>
 </p>
 </div>
@@ -18,6 +22,7 @@ Patient: <span class="font-medium text-gray-700">{{ patient.name }}</span>
 <!-- Patient Info -->
 
 <div class="md:col-span-4">
+
 <div class="bg-white rounded-xl shadow p-5">
 
 <h3 class="font-semibold mb-4 text-gray-700">
@@ -25,15 +30,38 @@ Patient Information
 </h3>
 
 <div class="space-y-2 text-sm">
-<p><span class="text-gray-500">Name:</span> <span class="font-medium">{{ patient.name }}</span></p>
-<p><span class="text-gray-500">Phone:</span> {{ patient.phone }}</p>
-<p><span class="text-gray-500">Age:</span> {{ patient.age }}</p>
-<p><span class="text-gray-500">Address:</span> {{ patient.address }}</p>
-<p><span class="text-gray-500">Gender:</span> {{ patient.gender }}</p>
+
+<p>
+<span class="text-gray-500">Name:</span>
+<span class="font-medium">{{ patient.name }}</span>
+</p>
+
+<p>
+<span class="text-gray-500">Phone:</span>
+{{ patient.phone }}
+</p>
+
+<p>
+<span class="text-gray-500">Age:</span>
+{{ patient.age }}
+</p>
+
+<p>
+<span class="text-gray-500">Address:</span>
+{{ patient.address }}
+</p>
+
+<p>
+<span class="text-gray-500">Gender:</span>
+{{ patient.gender }}
+</p>
+
 </div>
 
 </div>
+
 </div>
+
 
 
 <!-- Appointment Form -->
@@ -46,11 +74,14 @@ Patient Information
 
 {% csrf_token %}
 
+<!-- Date + Time -->
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
 <!-- Date -->
 
 <div class="space-y-1">
+
 <label class="block text-sm font-medium text-gray-700">
 Date
 </label>
@@ -58,7 +89,7 @@ Date
 <input 
 type="date"
 name="date"
-class="w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
 
 <p class="text-xs text-gray-400">
 Leave empty for today
@@ -78,7 +109,7 @@ Time
 <input 
 type="time"
 name="time"
-class="w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
 
 <p class="text-xs text-gray-400">
 Leave empty for walk-in (auto time)
@@ -101,7 +132,7 @@ Problem
 name="problem"
 rows="3"
 placeholder="Describe the patient's issue"
-class="w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
 </textarea>
 
 </div>
@@ -109,7 +140,7 @@ class="w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-
 
 <!-- Buttons -->
 
-<div class="flex gap-3">
+<div class="flex flex-wrap gap-3">
 
 <button 
 type="submit"
