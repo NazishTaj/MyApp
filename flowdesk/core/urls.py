@@ -21,6 +21,9 @@ path("profile/", views.profile, name="profile"),
 path("edit-profile/", views.edit_profile, name="edit_profile"),
 path("edit-schedule/<int:id>/", views.edit_schedule, name="edit_schedule"),
 path("delete-schedule/<int:id>/", views.delete_schedule, name="delete_schedule"),
+path("export-month/", views.export_month_appointments, name="export_month"),
+path("export-all/", views.export_all_appointments, name="export_all"),
+path("mark-pending/<int:appointment_id>/", views.mark_pending, name="mark_pending"),
 
 
 
