@@ -2,29 +2,29 @@
 
 {% block content %}
 
-<!-- Page Title -->
+<div class="space-y-10">
 
-<div class="mb-8">
+<!-- Header -->
 
-<h2 class="text-2xl font-semibold text-gray-800">
+<div>
+<h2 class="text-2xl font-semibold text-blue-600">
 Dashboard
 </h2>
 
-<p class="text-gray-500 text-sm">
+<p class="text-gray-500 text-sm mt-1">
 Today's clinic overview
 </p>
-
 </div>
 
 
 
 <!-- Stats Cards -->
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-<!-- Today -->
+<!-- Today's Appointments -->
 
-<div class="bg-white rounded-xl shadow-sm border p-6">
+<div class="bg-white border rounded-xl p-6 shadow-sm">
 
 <p class="text-sm text-gray-500">
 Today's Appointments
@@ -37,12 +37,13 @@ Today's Appointments
 </div>
 
 
-<!-- Pending -->
 
-<div class="bg-white rounded-xl shadow-sm border p-6">
+<!-- Waiting Patients -->
+
+<div class="bg-white border rounded-xl p-6 shadow-sm">
 
 <p class="text-sm text-gray-500">
-Pending
+Waiting Patients
 </p>
 
 <h2 class="text-3xl font-bold text-yellow-500 mt-2">
@@ -52,9 +53,10 @@ Pending
 </div>
 
 
+
 <!-- Completed -->
 
-<div class="bg-white rounded-xl shadow-sm border p-6">
+<div class="bg-white border rounded-xl p-6 shadow-sm">
 
 <p class="text-sm text-gray-500">
 Completed
@@ -70,9 +72,9 @@ Completed
 
 
 
-<!-- Queue Section -->
+<!-- Queue Table -->
 
-<div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+<div class="bg-white border rounded-xl shadow-sm overflow-hidden">
 
 <div class="px-6 py-4 border-b">
 
@@ -83,11 +85,12 @@ Today's Queue
 </div>
 
 
+
 <div class="overflow-x-auto">
 
 <table class="w-full text-sm">
 
-<thead class="bg-gray-50 text-gray-600">
+<thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs">
 
 <tr>
 
@@ -102,6 +105,7 @@ Today's Queue
 </thead>
 
 
+
 <tbody class="divide-y">
 
 {% for a in appointments %}
@@ -112,11 +116,12 @@ Today's Queue
 
 <td class="px-6 py-4">
 
-<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">
-{{ forloop.counter }}
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
+{{ a.token_number }}
 </span>
 
 </td>
+
 
 
 <!-- Patient -->
@@ -126,11 +131,13 @@ Today's Queue
 </td>
 
 
+
 <!-- Problem -->
 
-<td class="px-6 py-4 text-gray-600">
+<td class="px-6 py-4 text-gray-500">
 {{ a.problem }}
 </td>
+
 
 
 <!-- Status -->
@@ -139,19 +146,19 @@ Today's Queue
 
 {% if a.status == "Pending" %}
 
-<span class="bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full">
+<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
 Pending
 </span>
 
 {% elif a.status == "Completed" %}
 
-<span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">
 Completed
 </span>
 
 {% elif a.status == "Cancelled" %}
 
-<span class="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
+<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">
 Cancelled
 </span>
 
@@ -160,43 +167,51 @@ Cancelled
 </td>
 
 
-<!-- Actions -->
 
+<!-- Actions -->
 <td class="px-6 py-4">
 
 <div class="flex items-center">
 
 <!-- Left Buttons -->
 
-<div class="flex gap-3">
+<div class="flex gap-2 flex-wrap">
 
 <a href="/add-prescription/{{ a.patient.id }}/"
-class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+class="px-3 py-1.5 text-xs rounded-md bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition">
 Prescription
 </a>
 
 <a href="/patient-history/{{ a.patient.id }}/"
-class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+class="px-3 py-1.5 text-xs rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
 History
 </a>
 
-</div>
-
-
 {% if a.status == "Pending" %}
 
-<!-- Right Buttons -->
-
-<div class="ml-auto flex gap-3">
-
 <a href="/complete-appointment/{{ a.id }}/"
-class="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+class="px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200 transition">
 Complete
 </a>
 
 <a href="/cancel-appointment/{{ a.id }}/"
-class="px-3 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+class="px-3 py-1.5 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition">
 Cancel
+</a>
+
+{% endif %}
+
+</div>
+
+<!-- Right Button -->
+
+{% if a.status != "Pending" %}
+
+<div class="ml-auto">
+
+<a href="/mark-pending/{{ a.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
+Undo
 </a>
 
 </div>
@@ -207,14 +222,16 @@ Cancel
 
 </td>
 
+
 </tr>
+
 
 
 {% empty %}
 
 <tr>
 
-<td colspan="5" class="text-center py-6 text-gray-500">
+<td colspan="5" class="text-center py-10 text-gray-500">
 No appointments today
 </td>
 
@@ -225,6 +242,8 @@ No appointments today
 </tbody>
 
 </table>
+
+</div>
 
 </div>
 
