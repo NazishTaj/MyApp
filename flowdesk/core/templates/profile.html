@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto">
+
+<div class="mb-8">
+
+<h1 class="text-2xl font-semibold text-gray-800">
+My Profile
+</h1>
+
+<p class="text-gray-500 text-sm">
+Doctor and clinic information
+</p>
+
+</div>
+
+
+<div class="grid md:grid-cols-2 gap-6">
+
+
+<!-- Doctor Info -->
+
+<div class="bg-white rounded-xl shadow p-6">
+
+<h3 class="text-lg font-semibold mb-5">
+Doctor Information
+</h3>
+
+<div class="flex items-center gap-4 mb-6">
+
+{% if profile.photo %}
+<img src="{{ profile.photo.url }}"
+class="w-16 h-16 rounded-full object-cover border">
+{% else %}
+<div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+Photo
+</div>
+{% endif %}
+
+<div>
+
+<p class="font-semibold text-lg">
+{{ profile.doctor_name }}
+</p>
+
+<p class="text-gray-500 text-sm">
+{{ profile.phone }}
+</p>
+
+</div>
+
+</div>
+
+
+<div class="text-sm text-gray-600">
+
+<p class="flex justify-between border-b py-2">
+<span>Email</span>
+<span>{{ request.user.email|default:"Not added" }}</span>
+</p>
+
+</div>
+
+</div>
+
+
+<!-- Clinic Info -->
+
+<div class="bg-white rounded-xl shadow p-6">
+
+<h3 class="text-lg font-semibold mb-5">
+Clinic Information
+</h3>
+
+<div class="flex items-center gap-4 mb-6">
+
+{% if clinic.logo %}
+<img src="{{ clinic.logo.url }}"
+class="w-16 h-16 rounded-lg border">
+{% endif %}
+
+<div>
+
+<p class="font-semibold text-lg">
+{{ clinic.name }}
+</p>
+
+<p class="text-gray-500 text-sm">
+{{ clinic.phone }}
+</p>
+
+</div>
+
+</div>
+
+
+<p class="text-sm text-gray-600 border-t pt-3">
+{{ clinic.address }}
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="mt-6">
+
+<a href="/edit-profile/"
+class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+
+Edit Profile
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

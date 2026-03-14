@@ -1,0 +1,21 @@
+{%extends "base.html"%}
+{%block content %}
+<h2>Edit Patient</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="name" value="{{ patient.name }}" required>
+
+    <input type="text" name="phone" value="{{ patient.phone }}" required>
+
+    <input type="number" name="age" value="{{ patient.age }}">
+
+    <input type="text" name="gender" value="{{ patient.gender }}">
+
+    <input type="text" name="address" value="{{ patient.address }}">
+
+    <button type="submit">Update Patient</button>
+</form>
+
+{%endblock%}

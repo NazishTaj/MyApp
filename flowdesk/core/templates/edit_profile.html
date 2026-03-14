@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="page-title">Edit Profile</h2>
+<p class="page-subtitle">Update your doctor and clinic information</p>
+
+<form method="POST" enctype="multipart/form-data" class="card max-w-3xl">
+
+{% csrf_token %}
+
+<div class="grid md:grid-cols-2 gap-6">
+
+<!-- Doctor Section -->
+
+<div>
+
+<h3 class="font-semibold mb-3">Doctor Information</h3>
+
+<label class="text-sm text-gray-600">Doctor Name</label>
+<input type="text" name="doctor_name"
+value="{{ profile.doctor_name }}"
+class="w-full border rounded-lg px-3 py-2 mt-1">
+
+<label class="text-sm text-gray-600 mt-4 block">Phone</label>
+<input type="text" name="phone"
+value="{{ profile.phone }}"
+class="w-full border rounded-lg px-3 py-2 mt-1">
+
+<label class="text-sm text-gray-600 mt-4 block">Doctor Photo</label>
+
+{% if profile.photo %}
+<img src="{{ profile.photo.url }}"
+class="w-20 h-20 rounded-full mt-2 mb-2 object-cover">
+{% endif %}
+
+<input type="file" name="photo"
+class="w-full border rounded-lg px-3 py-2">
+
+</div>
+
+
+<!-- Clinic Section -->
+
+<div>
+
+<h3 class="font-semibold mb-3">Clinic Information</h3>
+
+<label class="text-sm text-gray-600">Clinic Name</label>
+<input type="text" name="clinic_name"
+value="{{ clinic.name }}"
+class="w-full border rounded-lg px-3 py-2 mt-1">
+
+<label class="text-sm text-gray-600 mt-4 block">Clinic Phone</label>
+<input type="text" name="clinic_phone"
+value="{{ clinic.phone }}"
+class="w-full border rounded-lg px-3 py-2 mt-1">
+
+<label class="text-sm text-gray-600 mt-4 block">Address</label>
+<textarea name="clinic_address"
+class="w-full border rounded-lg px-3 py-2 mt-1">{{ clinic.address }}</textarea>
+
+<label class="text-sm text-gray-600 mt-4 block">Clinic Logo</label>
+
+{% if clinic.logo %}
+<img src="{{ clinic.logo.url }}"
+class="w-20 mt-2 mb-2">
+{% endif %}
+
+<input type="file" name="logo"
+class="w-full border rounded-lg px-3 py-2">
+
+</div>
+
+</div>
+
+
+<!-- Clinic Timing -->
+
+<div class="mt-8">
+
+<div class="flex justify-between items-center mb-3">
+
+<h3 class="font-semibold">Clinic Timing</h3>
+
+<a href="/add-schedule/"
+class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+Add Timing
+</a>
+
+</div>
+
+{% for s in schedules %}
+
+<div class="flex justify-between items-center border-b py-2 text-sm">
+
+<div>
+<strong>{{ s.day }}</strong>
+</div>
+
+<div>
+{{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}
+</div>
+
+<div class="flex gap-2">
+
+<a href="/edit-schedule/{{ s.id }}/"
+class="text-blue-600 text-xs">
+Edit
+</a>
+
+<a href="/delete-schedule/{{ s.id }}/"
+class="text-red-600 text-xs">
+Delete
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p class="text-gray-500 text-sm">
+No clinic timing added yet
+</p>
+
+{% endfor %}
+
+</div>
+
+
+<!-- Buttons -->
+
+<div class="mt-6 flex gap-4">
+
+<button type="submit" class="btn btn-primary">
+Save Changes
+</button>
+
+<a href="/profile/" class="btn btn-danger">
+Cancel
+</a>
+
+</div>
+
+</form>
+
+{% endblock %}

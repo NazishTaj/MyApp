@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header -->
+
+<div class="mb-6">
+
+<h2 class="text-2xl font-semibold">Patient History</h2>
+
+<p class="text-gray-500 text-sm">
+Medical records and prescriptions
+</p>
+
+</div>
+
+
+<div class="grid grid-cols-12 gap-6">
+
+
+<!-- Patient Info -->
+
+<div class="col-span-4">
+
+<div class="bg-white rounded-xl shadow p-5">
+
+<h3 class="font-semibold mb-4 text-gray-700">
+Patient Information
+</h3>
+
+<div class="space-y-2 text-sm">
+
+<p><span class="text-gray-500">Name:</span> <span class="font-medium">{{ patient.name }}</span></p>
+
+<p><span class="text-gray-500">Phone:</span> {{ patient.phone }}</p>
+
+<p><span class="text-gray-500">Age:</span> {{ patient.age }}</p>
+
+<p><span class="text-gray-500">Gender:</span> {{ patient.gender }}</p>
+
+<p><span class="text-gray-500">Address:</span> {{ patient.address }}</p>
+
+</div>
+
+<a href="/add-prescription/{{ patient.id }}/"
+class="mt-5 inline-block w-full text-center px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-sm">
+
+Add Prescription
+
+</a>
+
+</div>
+
+</div>
+
+
+
+<!-- Prescriptions -->
+
+<div class="col-span-8">
+
+<div class="bg-white rounded-xl shadow p-5">
+
+<h3 class="font-semibold mb-4 text-gray-700">
+Prescriptions
+</h3>
+
+{% for p in prescriptions %}
+
+<div class="border border-gray-200 rounded-lg p-4 mb-4">
+
+<!-- Header -->
+
+<div class="flex items-center justify-between mb-3">
+
+<span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+{{ p.created_at }}
+</span>
+
+<a href="/prescription/{{ p.id }}/"
+class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
+
+View Prescription
+
+</a>
+
+</div>
+
+
+<!-- Diagnosis -->
+
+<div class="mb-2">
+
+<p class="text-sm font-medium text-gray-700">
+Diagnosis
+</p>
+
+<p class="text-sm text-gray-600">
+{{ p.diagnosis }}
+</p>
+
+</div>
+
+
+<!-- Medicines -->
+
+<div>
+
+<p class="text-sm font-medium text-gray-700">
+Medicines
+</p>
+
+<p class="text-sm text-gray-600 whitespace-pre-line">
+{{ p.medicines }}
+</p>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p class="text-gray-500 text-sm">
+No prescriptions available for this patient.
+</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

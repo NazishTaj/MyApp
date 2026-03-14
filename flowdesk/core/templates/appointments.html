@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header -->
+
+<div class="mb-6">
+
+<h2 class="text-2xl font-semibold">Appointments</h2>
+
+<p class="text-gray-500 text-sm">
+Manage all clinic appointments
+</p>
+
+</div>
+
+
+<!-- Appointments Table -->
+
+<div class="bg-white rounded-xl shadow overflow-hidden">
+
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm">
+
+<thead class="bg-gray-50 text-gray-600">
+
+<tr>
+<th class="px-6 py-3 text-left">Date</th>
+<th class="px-6 py-3 text-left">Patient</th>
+<th class="px-6 py-3 text-left">Time</th>
+<th class="px-6 py-3 text-left">Problem</th>
+<th class="px-6 py-3 text-left">Status</th>
+<th class="px-6 py-3 text-left">Actions</th>
+</tr>
+
+</thead>
+
+
+<tbody class="divide-y">
+
+{% for a in appointments %}
+
+<tr class="hover:bg-gray-50">
+
+<td class="px-6 py-3">
+{{ a.appointment_date }}
+</td>
+
+<td class="px-6 py-3 font-medium">
+{{ a.patient.name }}
+</td>
+
+<td class="px-6 py-3">
+{{ a.appointment_time }}
+</td>
+
+<td class="px-6 py-3">
+{{ a.problem }}
+</td>
+
+
+<!-- Status -->
+
+<td class="px-6 py-3">
+
+{% if a.status == "Pending" %}
+
+<span class="px-2 py-1 text-xs bg-yellow-50 text-yellow-600 rounded-lg">
+Pending
+</span>
+
+{% elif a.status == "Completed" %}
+
+<span class="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg">
+Completed
+</span>
+
+{% elif a.status == "Cancelled" %}
+
+<span class="px-2 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg">
+Cancelled
+</span>
+
+{% endif %}
+
+</td>
+
+
+<!-- Actions -->
+
+<td class="px-6 py-3">
+
+{% if a.status == "Pending" %}
+
+<div class="flex gap-2">
+
+<a href="/complete-appointment/{{ a.id }}/"
+class="px-3 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition">
+
+Complete
+
+</a>
+
+<a href="/cancel-appointment/{{ a.id }}/"
+class="px-3 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition">
+
+Cancel
+
+</a>
+
+</div>
+
+{% else %}
+
+<span class="text-gray-400 text-xs">
+No actions
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+
+{% empty %}
+
+<tr>
+
+<td colspan="6" class="text-center py-6 text-gray-500 text-sm">
+No appointments found
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}
