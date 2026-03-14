@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import date , datetime
 from .forms import ClinicScheduleForm
-
+import openpyxl
+from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
 
 
@@ -165,7 +166,6 @@ def delete_patient(request, patient_id):
 
 
 # ---------------- APPOINTMENTS ---------------- #
-
 @login_required(login_url="login")
 def book_appointment(request, patient_id):
 
@@ -184,23 +184,31 @@ def book_appointment(request, patient_id):
             date_val = date.today()
 
         if not time:
-             time = datetime.now().time()
-        
-        
+            time = datetime.now().time()
+
+        # 🔹 Get last token for same clinic + same date
+        last_token = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=date_val
+        ).order_by('-token_number').first()
+
+        if last_token and last_token.token_number:
+            token = last_token.token_number + 1
+        else:
+            token = 1
 
         Appointment.objects.create(
             clinic=clinic,
             patient=patient,
             appointment_date=date_val,
             appointment_time=time,
-            problem=problem
+            problem=problem,
+            token_number=token
         )
 
         return redirect("appointments")
 
     return render(request, "book_appointment.html", {"patient": patient})
-
-
 @login_required(login_url="login")
 def appointments(request):
 
@@ -463,6 +471,140 @@ def edit_schedule(request, id):
         "schedule": schedule
     })
 
+#Excel Export
+
+@login_required
+def export_month_appointments(request):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+
+    if not month or not year:
+        today = date.today()
+        month = today.month
+        year = today.year
+
+    appointments = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date__month=int(month),
+        appointment_date__year=int(year)
+    ).select_related("patient")
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Appointments"
+
+    headers = [
+        "Patient Name",
+        "Phone",
+        "Age",
+        "Gender",
+        "Address",
+        "Date",
+        "Time",
+        "Problem",
+        "Status"
+    ]
+
+    sheet.append(headers)
+
+    for appt in appointments:
+
+        patient = appt.patient
+
+        sheet.append([
+            patient.name,
+            patient.phone,
+            patient.age,
+            patient.gender,
+            patient.address,
+            appt.appointment_date.strftime("%d-%m-%Y"),
+            appt.appointment_time.strftime("%H:%M"),
+            appt.problem,
+            appt.status
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    filename = f"appointments_{month}_{year}.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    workbook.save(response)
+
+    return response
+
+
+
+@login_required
+def export_all_appointments(request):
+
+    appointments = Appointment.objects.all()
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Appointments"
+
+    headers = [
+        "Patient Name",
+        "Phone",
+        "Age",
+        "Gender",
+        "Address",
+        "Date",
+        "Time",
+        "Problem",
+        "Status"
+    ]
+
+    sheet.append(headers)
+
+    for appt in appointments:
+
+        patient = appt.patient   # <-- important line
+
+        sheet.append([
+            patient.name,
+            patient.phone,
+            patient.age,
+            patient.gender,
+            patient.address,
+            appt.appointment_date.strftime("%d-%m-%Y"),
+            appt.appointment_time.strftime("%H:%M"),
+            appt.problem,
+            appt.status
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    response['Content-Disposition'] = 'attachment; filename="all_appointments.xlsx"'
+
+    workbook.save(response)
+
+    return response
+
+
+#------------------------------------------------------------
+
+
+@login_required
+def mark_pending(request, appointment_id):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    appointment.status = "Pending"
+    appointment.save()
+
+    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
     
