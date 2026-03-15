@@ -9,6 +9,12 @@ class Clinic(models.Model):
     phone = models.CharField(max_length=20)
     address = models.TextField()
     logo = models.ImageField(upload_to="clinic_logos/", blank=True, null=True)
+    billing_enabled = models.BooleanField(default=False)
+    consultation_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
 
     def __str__(self):
         return self.name
@@ -27,11 +33,25 @@ class UserProfile(models.Model):
 
 
 # Patient Model
+
+from django.core.validators import RegexValidator
+
+phone_validator = RegexValidator(
+    regex=r'^\d{10}$',
+    message="Phone number must be exactly 10 digits"
+)
+
 class Patient(models.Model):
+
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
+
+    phone = models.CharField(
+        max_length=10,
+        validators=[phone_validator]
+    )
+
     address = models.TextField(blank=True, null=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
@@ -116,3 +136,67 @@ class ClinicSchedule(models.Model):
     start_time = models.TimeField()
 
     end_time = models.TimeField()
+
+
+
+    #Billing Model
+class Bill(models.Model):
+
+    PAYMENT_CHOICES = [
+        ('Cash', 'Cash'),
+        ('UPI', 'UPI'),
+        ('Card', 'Card'),
+    ]
+
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
+
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+
+    appointment = models.ForeignKey(
+        Appointment,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    doctor = models.ForeignKey(
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    bill_number = models.CharField(max_length=20)
+
+
+    test_charges = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    payment_mode = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.bill_number} - {self.patient.name}"
+    
+
+class BillItem(models.Model):
+
+    bill = models.ForeignKey(
+        Bill,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
+    item_name = models.CharField(max_length=200)
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.item_name} - {self.amount}"
