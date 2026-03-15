@@ -2,115 +2,221 @@
 
 {% block content %}
 
-<h2 class="page-title">Edit Profile</h2>
-<p class="page-subtitle">Update your doctor and clinic information</p>
+<div class="space-y-6 max-w-5xl mx-auto px-2 md:px-0">
 
-<form method="POST" enctype="multipart/form-data" class="card max-w-3xl">
+<!-- Header -->
+
+<div>
+<h2 class="text-xl md:text-2xl font-semibold text-gray-800">
+Edit Profile
+</h2>
+
+<p class="text-gray-500 text-sm">
+Update your doctor and clinic information
+</p>
+</div>
+
+
+
+<form method="POST" enctype="multipart/form-data" class="space-y-6">
 
 {% csrf_token %}
 
-<div class="grid md:grid-cols-2 gap-6">
 
-<!-- Doctor Section -->
+
+<!-- Doctor Info -->
+
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 md:p-6">
+
+<h3 class="font-semibold text-gray-700 mb-4">
+Doctor Information
+</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
 <div>
+<label class="text-sm text-gray-600">
+Doctor Name
+</label>
 
-<h3 class="font-semibold mb-3">Doctor Information</h3>
-
-<label class="text-sm text-gray-600">Doctor Name</label>
-<input type="text" name="doctor_name"
+<input type="text"
+name="doctor_name"
 value="{{ profile.doctor_name }}"
-class="w-full border rounded-lg px-3 py-2 mt-1">
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">
+</div>
 
-<label class="text-sm text-gray-600 mt-4 block">Phone</label>
-<input type="text" name="phone"
+
+<div>
+<label class="text-sm text-gray-600">
+Phone
+</label>
+
+<input type="text"
+name="phone"
 value="{{ profile.phone }}"
-class="w-full border rounded-lg px-3 py-2 mt-1">
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">
+</div>
 
-<label class="text-sm text-gray-600 mt-4 block">Doctor Photo</label>
+</div>
+
+
+<!-- Photo -->
+
+<div class="mt-4">
+
+<label class="text-sm text-gray-600">
+Doctor Photo
+</label>
+
+<div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-2">
 
 {% if profile.photo %}
 <img src="{{ profile.photo.url }}"
-class="w-20 h-20 rounded-full mt-2 mb-2 object-cover">
+class="w-16 h-16 rounded-full object-cover border">
 {% endif %}
 
-<input type="file" name="photo"
-class="w-full border rounded-lg px-3 py-2">
+<input type="file"
+name="photo"
+class="text-sm">
+
+</div>
+
+</div>
 
 </div>
 
 
-<!-- Clinic Section -->
+
+<!-- Clinic Info -->
+
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 md:p-6">
+
+<h3 class="font-semibold text-gray-700 mb-4">
+Clinic Information
+</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+
+<div>
+<label class="text-sm text-gray-600">
+Clinic Name
+</label>
+
+<input type="text"
+name="clinic_name"
+value="{{ clinic.name }}"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">
+</div>
+
+<div>
+<label class="text-sm text-gray-600">
+Clinic Phone
+</label>
+
+<input type="text"
+name="clinic_phone"
+value="{{ clinic.phone }}"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">
+</div>
+
+</div>
+
+
+<div class="mt-4">
+
+<label class="text-sm text-gray-600">
+Address
+</label>
+
+<textarea
+name="clinic_address"
+rows="3"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">{{ clinic.address }}</textarea>
+
+</div>
+
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4">
+
+<div>
+<label class="text-sm text-gray-600">
+Consultation Fee
+</label>
+
+<input type="number"
+name="consultation_fee"
+value="{{ clinic.consultation_fee }}"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1">
+</div>
+
 
 <div>
 
-<h3 class="font-semibold mb-3">Clinic Information</h3>
+<label class="text-sm text-gray-600">
+Clinic Logo
+</label>
 
-<label class="text-sm text-gray-600">Clinic Name</label>
-<input type="text" name="clinic_name"
-value="{{ clinic.name }}"
-class="w-full border rounded-lg px-3 py-2 mt-1">
-
-<label class="text-sm text-gray-600 mt-4 block">Clinic Phone</label>
-<input type="text" name="clinic_phone"
-value="{{ clinic.phone }}"
-class="w-full border rounded-lg px-3 py-2 mt-1">
-
-<label class="text-sm text-gray-600 mt-4 block">Address</label>
-<textarea name="clinic_address"
-class="w-full border rounded-lg px-3 py-2 mt-1">{{ clinic.address }}</textarea>
-
-<label class="text-sm text-gray-600 mt-4 block">Clinic Logo</label>
+<div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-2">
 
 {% if clinic.logo %}
 <img src="{{ clinic.logo.url }}"
-class="w-20 mt-2 mb-2">
+class="w-14 h-14 rounded border">
 {% endif %}
 
-<input type="file" name="logo"
-class="w-full border rounded-lg px-3 py-2">
+<input type="file" name="logo" class="text-sm">
 
 </div>
 
 </div>
+
+</div>
+
+</div>
+
 
 
 <!-- Clinic Timing -->
 
-<div class="mt-8">
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 md:p-6">
 
-<div class="flex justify-between items-center mb-3">
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
 
-<h3 class="font-semibold">Clinic Timing</h3>
+<h3 class="font-semibold text-gray-700">
+Clinic Timing
+</h3>
 
 <a href="/add-schedule/"
-class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+class="bg-green-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-700">
 Add Timing
 </a>
 
 </div>
 
+
+<div class="space-y-2 text-sm">
+
 {% for s in schedules %}
 
-<div class="flex justify-between items-center border-b py-2 text-sm">
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border rounded-lg px-3 py-2 gap-2">
 
-<div>
-<strong>{{ s.day }}</strong>
+<div class="font-medium">
+{{ s.day }}
 </div>
 
-<div>
+<div class="text-gray-600">
 {{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}
 </div>
 
-<div class="flex gap-2">
+<div class="flex gap-3 text-xs">
 
 <a href="/edit-schedule/{{ s.id }}/"
-class="text-blue-600 text-xs">
+class="text-blue-600 hover:underline">
 Edit
 </a>
 
 <a href="/delete-schedule/{{ s.id }}/"
-class="text-red-600 text-xs">
+class="text-red-600 hover:underline">
 Delete
 </a>
 
@@ -128,21 +234,54 @@ No clinic timing added yet
 
 </div>
 
+</div>
+
+
+
+<!-- Billing Toggle -->
+
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 md:p-6">
+
+<label class="flex items-center gap-3">
+
+<input
+type="checkbox"
+name="billing_enabled"
+class="w-4 h-4"
+{% if clinic.billing_enabled %}checked{% endif %}>
+
+<span class="text-sm text-gray-700">
+Enable Billing Module
+</span>
+
+</label>
+
+<p class="text-xs text-gray-400 mt-1">
+Turn on to use billing and receipts
+</p>
+
+</div>
+
+
 
 <!-- Buttons -->
 
-<div class="mt-6 flex gap-4">
+<div class="flex gap-3 pt-2">
 
-<button type="submit" class="btn btn-primary">
+<button type="submit"
+class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-700">
 Save Changes
 </button>
 
-<a href="/profile/" class="btn btn-danger">
+<a href="/profile/"
+class="border border-gray-300 px-5 py-2 rounded-lg text-sm hover:bg-gray-100">
 Cancel
 </a>
 
 </div>
 
 </form>
+
+</div>
 
 {% endblock %}
