@@ -2,10 +2,13 @@
 
 {% block content %}
 
-<div class="max-w-5xl mx-auto">
+<div class="space-y-6">
 
-<div class="mb-8">
+<!-- Header -->
 
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+<div>
 <h1 class="text-2xl font-semibold text-gray-800">
 My Profile
 </h1>
@@ -13,107 +16,118 @@ My Profile
 <p class="text-gray-500 text-sm">
 Doctor and clinic information
 </p>
+</div>
+
+<a href="/edit-profile/"
+class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 w-fit">
+Edit Profile
+</a>
 
 </div>
 
 
-<div class="grid md:grid-cols-2 gap-6">
 
+<!-- Profile Card -->
 
-<!-- Doctor Info -->
+<div class="bg-white border rounded-xl shadow-sm p-6">
 
-<div class="bg-white rounded-xl shadow p-6">
-
-<h3 class="text-lg font-semibold mb-5">
-Doctor Information
-</h3>
-
-<div class="flex items-center gap-4 mb-6">
+<div class="flex items-center gap-4">
 
 {% if profile.photo %}
 <img src="{{ profile.photo.url }}"
 class="w-16 h-16 rounded-full object-cover border">
 {% else %}
-<div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-Photo
+<div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-lg">
+{{ profile.doctor_name|slice:":1" }}
 </div>
 {% endif %}
 
 <div>
-
-<p class="font-semibold text-lg">
+<h2 class="text-lg font-semibold text-gray-800">
 {{ profile.doctor_name }}
-</p>
+</h2>
 
-<p class="text-gray-500 text-sm">
+<p class="text-sm text-gray-500">
 {{ profile.phone }}
 </p>
 
-</div>
-
-</div>
-
-
-<div class="text-sm text-gray-600">
-
-<p class="flex justify-between border-b py-2">
-<span>Email</span>
-<span>{{ request.user.email|default:"Not added" }}</span>
+<p class="text-sm text-gray-400">
+{{ request.user.email|default:"Email not added" }}
 </p>
-
 </div>
 
 </div>
+
+</div>
+
+
+
+<!-- Info Grid -->
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<!-- Doctor Info -->
+
+<div class="bg-white border rounded-xl shadow-sm p-6">
+
+<h3 class="text-sm font-semibold text-gray-600 mb-4">
+Doctor Information
+</h3>
+
+<div class="space-y-3 text-sm">
+
+<div class="flex justify-between">
+<span class="text-gray-500">Doctor Name</span>
+<span class="font-medium">{{ profile.doctor_name }}</span>
+</div>
+
+<div class="flex justify-between">
+<span class="text-gray-500">Phone</span>
+<span>{{ profile.phone }}</span>
+</div>
+
+<div class="flex justify-between">
+<span class="text-gray-500">Email</span>
+<span>{{ request.user.email|default:"Not added" }}</span>
+</div>
+
+</div>
+
+</div>
+
 
 
 <!-- Clinic Info -->
 
-<div class="bg-white rounded-xl shadow p-6">
+<div class="bg-white border rounded-xl shadow-sm p-6">
 
-<h3 class="text-lg font-semibold mb-5">
+<h3 class="text-sm font-semibold text-gray-600 mb-4">
 Clinic Information
 </h3>
 
-<div class="flex items-center gap-4 mb-6">
+<div class="flex items-center gap-3 mb-4">
 
 {% if clinic.logo %}
 <img src="{{ clinic.logo.url }}"
-class="w-16 h-16 rounded-lg border">
+class="w-12 h-12 rounded-lg border">
+{% else %}
+<div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+Logo
+</div>
 {% endif %}
 
 <div>
-
-<p class="font-semibold text-lg">
-{{ clinic.name }}
-</p>
-
-<p class="text-gray-500 text-sm">
-{{ clinic.phone }}
-</p>
-
+<p class="font-medium">{{ clinic.name }}</p>
+<p class="text-xs text-gray-500">{{ clinic.phone }}</p>
 </div>
 
 </div>
 
-
-<p class="text-sm text-gray-600 border-t pt-3">
+<p class="text-sm text-gray-600">
 {{ clinic.address }}
 </p>
 
 </div>
-
-
-</div>
-
-
-<div class="mt-6">
-
-<a href="/edit-profile/"
-class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-
-Edit Profile
-
-</a>
 
 </div>
 
