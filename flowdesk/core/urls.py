@@ -24,6 +24,16 @@ path("delete-schedule/<int:id>/", views.delete_schedule, name="delete_schedule")
 path("export-month/", views.export_month_appointments, name="export_month"),
 path("export-all/", views.export_all_appointments, name="export_all"),
 path("mark-pending/<int:appointment_id>/", views.mark_pending, name="mark_pending"),
+path("billing/create/", views.create_bill, name="create_bill"),
+path("billing/history/", views.bill_history, name="bill_history"),
+path("billing/<int:bill_id>/", views.view_bill, name="view_bill"),
+path(
+    "billing/create/<int:patient_id>/",
+    views.create_bill_for_patient,
+    name="create_bill_for_patient"
+),
+
+
 
 
 
