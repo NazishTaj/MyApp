@@ -6,6 +6,20 @@ from .forms import ClinicScheduleForm
 import openpyxl
 from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
+from django.core.exceptions import ValidationError
+from .models import Bill, BillItem
+
+
+
+def billing_enabled(request):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    if not clinic.billing_enabled:
+        return False
+
+    return True
 
 
 # ---------------- LOGIN ---------------- #
@@ -98,6 +112,8 @@ def patient_list(request):
     return render(request, "patients.html", context)
 
 
+from django.core.exceptions import ValidationError
+
 @login_required(login_url="login")
 def add_patient(request):
 
@@ -114,7 +130,30 @@ def add_patient(request):
         gender = request.POST["gender"]
         address = request.POST.get("address")
 
-        Patient.objects.create(
+        force_create = request.POST.get("force_create")
+
+        existing_patient = Patient.objects.filter(
+            clinic=clinic,
+            phone=phone
+        ).first()
+
+        # 🔴 Duplicate detected but user didn't confirm
+        if existing_patient and not force_create:
+            return render(
+                request,
+                "add_patient.html",
+                {
+                    "error_duplicate": "Patient with this phone number already exists.",
+                    "prefill_phone": phone,
+                    "name": name,
+                    "age": age,
+                    "gender": gender,
+                    "address": address,
+                    "show_continue": True
+                }
+            )
+
+        patient = Patient(
             clinic=clinic,
             name=name,
             phone=phone,
@@ -123,12 +162,27 @@ def add_patient(request):
             address=address
         )
 
-        return redirect("patient_list")
+        try:
+            patient.full_clean()
+            patient.save()
+            return redirect("patient_list")
 
-    return render(request, "add_patient.html",
-            {"prefill_phone": prefill_phone})
+        except ValidationError as e:
 
+            return render(
+                request,
+                "add_patient.html",
+                {
+                    "error": e.message_dict,
+                    "prefill_phone": phone
+                }
+            )
 
+    return render(
+        request,
+        "add_patient.html",
+        {"prefill_phone": prefill_phone}
+    )
 @login_required(login_url="login")
 def edit_patient(request, patient_id):
 
@@ -295,6 +349,10 @@ def patient_history(request, patient_id):
     clinic = profile.clinic
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    bills = Bill.objects.filter(
+    clinic=clinic,
+    patient=patient
+).order_by("-created_at")
 
     prescriptions = Prescription.objects.filter(
         clinic=clinic,
@@ -303,9 +361,21 @@ def patient_history(request, patient_id):
 
     return render(request, "patient_history.html", {
         "patient": patient,
-        "prescriptions": prescriptions
+        "prescriptions": prescriptions,
+        "bills":bills
     })
+@login_required
+def create_bill_for_patient(request, patient_id):
 
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    patient = get_object_or_404(Patient,id=patient_id,clinic=clinic)
+
+    return render(request,"billing/create_bill.html",{
+        "patient":patient,
+        "clinic":clinic
+    })
 
 @login_required(login_url="login")
 def view_prescription(request, id):
@@ -391,6 +461,8 @@ def edit_profile(request):
         clinic.name = request.POST.get("clinic_name")
         clinic.phone = request.POST.get("clinic_phone")
         clinic.address = request.POST.get("clinic_address")
+        clinic.consultation_fee = request.POST.get("consultation_fee")
+        clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
 
         if request.FILES.get("photo"):
             profile.photo = request.FILES["photo"]
@@ -605,6 +677,123 @@ def mark_pending(request, appointment_id):
     appointment.save()
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+
+
+
+#Bill 
+
+@login_required
+def create_bill(request):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    if not clinic.billing_enabled:
+        return redirect("dashboard")
+
+    patients = Patient.objects.filter(clinic=clinic)
+
+    if request.method == "POST":
+
+        patient_id = request.POST.get("patient")
+        payment_mode = request.POST.get("payment_mode")
+        discount_percent = float(request.POST.get("discount", 0))
+
+        patient = Patient.objects.get(id=patient_id)
+
+        # Generate bill number
+        last_bill = Bill.objects.order_by("-id").first()
+
+        if last_bill:
+            last_number = int(last_bill.bill_number.split("-")[1])
+            new_number = last_number + 1
+        else:
+            new_number = 1001
+
+        bill_number = f"FD-{new_number}"
+
+        # Create empty bill
+        bill = Bill.objects.create(
+            clinic=clinic,
+            patient=patient,
+            doctor=profile,
+            bill_number=bill_number,
+            payment_mode=payment_mode,
+        )
+
+        item_names = request.POST.getlist("item_name[]")
+        item_amounts = request.POST.getlist("item_amount[]")
+
+        subtotal = 0
+
+        for name, amount in zip(item_names, item_amounts):
+
+            if name and amount:
+
+                amount = float(amount)
+
+                BillItem.objects.create(
+                    bill=bill,
+                    item_name=name,
+                    amount=amount
+                )
+
+                subtotal += amount
+
+        # Discount calculation
+        discount_amount = (subtotal * discount_percent) / 100
+
+        total = subtotal - discount_amount
+
+        bill.subtotal = subtotal
+        bill.discount = discount_percent
+        bill.discount_amount = discount_amount
+        bill.total_amount = total
+
+        bill.save()
+
+        return redirect("view_bill", bill_id=bill.id)
+
+    return render(request, "billing/create_bill.html", {
+        "patients": patients,
+        "clinic": clinic
+    })
+
+
+
+#Bill History
+
+@login_required
+def bill_history(request):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    if not clinic.billing_enabled:
+        return redirect("dashboard")
+
+    bills = Bill.objects.filter(clinic=clinic).order_by("-created_at")
+
+    return render(request, "billing/bill_history.html", {
+        "bills": bills
+    })
+
+#Bill Detail
+@login_required
+def view_bill(request, bill_id):
+
+    profile = UserProfile.objects.get(user=request.user)
+    clinic = profile.clinic
+
+    bill = get_object_or_404(Bill, id=bill_id, clinic=clinic)
+
+    items = bill.items.all()
+
+    return render(request, "billing/view_bill.html", {
+        "bill": bill,
+        "items": items,
+        "clinic": clinic
+    })
 
 
     
