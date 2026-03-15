@@ -137,7 +137,33 @@ html, body{
 max-width:100%;
 overflow-x:hidden;
 }
+/* PRINT SETTINGS */
 
+@media print {
+
+.navbar{
+display:none !important;
+}
+
+button{
+display:none !important;
+}
+
+body{
+background:white !important;
+}
+
+.container{
+max-width:100% !important;
+padding:0 !important;
+}
+
+.card{
+box-shadow:none !important;
+border:none !important;
+}
+
+}
 </style>
 
 </head>
@@ -174,13 +200,40 @@ FlowDesk
 <a class="hover:text-white" href="/add-patient/">Add Patient</a>
 </li>
 
+{% if request.user.userprofile.clinic.billing_enabled %}
+
+<li class="relative">
+
+<button onclick="toggleBilling()" class="hover:text-white">
+Billing
+</button>
+
+<div id="billingMenu"
+class="hidden absolute top-full right-0 mt-4 w-44 bg-white text-black rounded-lg shadow-lg z-50 overflow-hidden">
+
+<a class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+href="{% url 'create_bill' %}">
+Create Bill
+</a>
+
+<a class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+href="{% url 'bill_history' %}">
+History
+</a>
+
+</div>
+
+</li>
+
+{% endif %}
+
 <li class="relative">
 
 <button onclick="toggleSettings()" class="text-xl text-white">
 ⚙
 </button>
 
-<div id="settingsMenu" class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg overflow-hidden z-50">
+<div id="settingsMenu" class="hidden absolute right-0 mt-3 w-40 bg-white shadow-lg rounded-lg overflow-hidden z-50">
 
 <a class="block px-4 py-2 text-gray-700 hover:bg-gray-100" href="/profile/">
 My Profile
@@ -220,6 +273,29 @@ Logout
 
 <a class="block px-6 py-3 border-t border-gray-800" href="/add-patient/">Add Patient</a>
 
+{% if request.user.userprofile.clinic.billing_enabled %}
+
+<button onclick="toggleMobileBilling()" 
+class="w-full text-left px-6 py-3 border-t border-gray-800">
+Billing
+</button>
+
+<div id="mobileBillingMenu" class="hidden bg-gray-800">
+
+<a class="block px-8 py-3 border-t border-gray-700"
+href="{% url 'create_bill' %}">
+Create Bill
+</a>
+
+<a class="block px-8 py-3 border-t border-gray-700"
+href="{% url 'bill_history' %}">
+Bill History
+</a>
+
+</div>
+
+{% endif %}
+
 <a class="block px-6 py-3 border-t border-gray-800" href="/profile/">My Profile</a>
 
 <a class="block px-6 py-3 border-t border-gray-800" href="/logout/">Logout</a>
@@ -239,6 +315,10 @@ Logout
 </div>
 
 <script>
+function toggleMobileBilling(){
+const menu = document.getElementById("mobileBillingMenu");
+menu.classList.toggle("hidden");
+}
 
 function toggleMobileMenu(){
 const menu = document.getElementById("mobileMenu");
@@ -262,6 +342,10 @@ menu.classList.add("hidden");
 
 }
 
+}
+function toggleBilling(){
+const menu = document.getElementById("billingMenu");
+menu.classList.toggle("hidden");
 }
 
 </script>
