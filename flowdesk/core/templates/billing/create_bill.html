@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+<div class="card">
+
+<h2 class="text-xl font-semibold mb-6">
+Create Bill
+</h2>
+
+<form method="POST" onsubmit="return validatePatient()">
+{% csrf_token %}
+
+<!-- Patient -->
+<!-- Patient -->
+
+<div class="mb-4">
+
+<label class="text-sm text-gray-600">
+Patient
+</label>
+
+<input
+type="text"
+id="patientSearch"
+placeholder="Search by name or phone..."
+class="w-full border rounded-lg p-2 mt-1"
+onkeyup="filterPatients()">
+
+<input type="hidden" name="patient" id="selectedPatient">
+
+<div
+id="patientList"
+class="border rounded-lg mt-2 max-h-48 overflow-y-auto hidden">
+
+{% for patient in patients %}
+
+<div
+class="p-2 hover:bg-gray-100 cursor-pointer patient-item"
+data-id="{{ patient.id }}"
+data-text="{{ patient.name }} {{ patient.phone }}"
+onclick="selectPatient(this)">
+
+{{ patient.name }} ({{ patient.phone }})
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<!-- Bill Items -->
+
+<div class="mb-4">
+
+<label class="text-sm text-gray-600">Bill Items</label>
+
+<table class="table mt-2 w-full">
+
+<thead>
+<tr>
+<th>Item Name</th>
+<th style="text-align:right;">Amount</th>
+</tr>
+</thead>
+
+<tbody id="items-table">
+
+<tr>
+
+<td>
+<input
+type="text"
+name="item_name[]"
+value="Consultation"
+class="w-full border rounded-lg p-2">
+</td>
+
+<td>
+<input
+type="number"
+name="item_amount[]"
+value="{{ clinic.consultation_fee }}"
+class="w-full border rounded-lg p-2 amount-field"
+oninput="calculateTotal()">
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<button
+type="button"
+onclick="addItem()"
+class="mt-3 text-blue-600 text-sm">
+
++ Add Item
+
+</button>
+
+</div>
+
+<!-- Discount -->
+
+<div class="mb-4">
+
+<label class="text-sm text-gray-600">
+Discount (%)
+</label>
+
+<div class="flex items-center gap-2">
+
+<input
+type="number"
+name="discount"
+id="discount"
+value="0"
+min="0"
+max="100"
+class="w-full border rounded-lg p-2 mt-1"
+oninput="calculateTotal()">
+
+<span class="text-gray-500">%</span>
+
+</div>
+
+</div>
+
+<!-- Bill Summary -->
+
+<div class="mb-4 text-right text-sm">
+
+<p>
+Subtotal : ₹<span id="subtotal">0</span>
+</p>
+
+<p>
+Discount : ₹<span id="discountAmount">0</span>
+</p>
+
+<p class="text-lg font-semibold">
+Total : ₹<span id="total">0</span>
+</p>
+
+</div>
+
+<!-- Payment Mode -->
+
+<div class="mb-4">
+
+<label class="text-sm text-gray-600">
+Payment Mode
+</label>
+
+<select name="payment_mode" class="w-full border rounded-lg p-2 mt-1">
+
+<option value="Cash">Cash</option>
+<option value="UPI">UPI</option>
+<option value="Card">Card</option>
+
+</select>
+
+</div>
+
+<!-- Submit -->
+
+<div class="mt-6">
+
+<button class="btn btn-success w-full">
+Generate Bill
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Scripts -->
+
+<script>
+
+function addItem(){
+
+const table = document.getElementById("items-table")
+
+const row = `
+<tr>
+
+<td>
+<input
+type="text"
+name="item_name[]"
+class="w-full border rounded-lg p-2">
+</td>
+
+<td>
+<input
+type="number"
+name="item_amount[]"
+value="0"
+class="w-full border rounded-lg p-2 amount-field"
+oninput="calculateTotal()">
+</td>
+
+</tr>
+`
+
+table.insertAdjacentHTML("beforeend",row)
+
+}
+
+function calculateTotal(){
+
+let subtotal = 0
+
+document.querySelectorAll(".amount-field").forEach(input => {
+
+subtotal += Number(input.value)
+
+})
+
+let discountPercent = Number(document.getElementById("discount").value)
+
+let discountAmount = (subtotal * discountPercent) / 100
+
+let total = subtotal - discountAmount
+
+document.getElementById("subtotal").innerText = subtotal.toFixed(2)
+document.getElementById("discountAmount").innerText = discountAmount.toFixed(2)
+document.getElementById("total").innerText = total.toFixed(2)
+
+}
+
+calculateTotal()
+const searchInput = document.getElementById("patientSearch")
+const patientList = document.getElementById("patientList")
+
+searchInput.addEventListener("focus", () => {
+patientList.classList.remove("hidden")
+})
+
+function filterPatients(){
+
+let value = searchInput.value.toLowerCase()
+
+document.querySelectorAll(".patient-item").forEach(item => {
+
+let text = item.dataset.text.toLowerCase()
+
+if(text.includes(value)){
+item.style.display = "block"
+}else{
+item.style.display = "none"
+}
+
+})
+
+}
+
+function selectPatient(el){
+
+document.getElementById("selectedPatient").value = el.dataset.id
+
+searchInput.value = el.innerText
+
+patientList.classList.add("hidden")
+
+}
+
+function validatePatient(){
+
+let patientId = document.getElementById("selectedPatient").value
+
+if(!patientId){
+
+alert("Please select patient from list")
+
+return false
+
+}
+
+return true
+
+}
+
+
+</script>
+
+{% endblock %}
