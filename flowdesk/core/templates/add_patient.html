@@ -16,7 +16,6 @@ Enter patient details
 
 </div>
 
-
 <!-- Form Card -->
 
 <div class="bg-white rounded-xl shadow p-4 md:p-6">
@@ -25,6 +24,22 @@ Enter patient details
 
 {% csrf_token %}
 
+<!-- Phone validation error -->
+
+{% if error %}
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+⚠ {{ error.phone.0 }}
+</div>
+{% endif %}
+
+<!-- Duplicate patient warning -->
+
+{% if error_duplicate %}
+<div class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-3 rounded mb-4 text-sm">
+⚠ A patient with this phone number is already in the system.<br>
+You can continue if this is a different family member.
+</div>
+{% endif %}
 
 <!-- Name -->
 
@@ -37,12 +52,12 @@ Name
 <input 
 type="text" 
 name="name"
+value="{{ name }}"
 placeholder="Enter patient name"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
 required>
 
 </div>
-
 
 <!-- Phone -->
 
@@ -53,15 +68,16 @@ Phone
 </label>
 
 <input 
-type="text" 
+type="tel" 
 name="phone"
 value="{{ prefill_phone }}"
+maxlength="10"
+pattern="[0-9]{10}"
 placeholder="Enter phone number"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
 required>
 
 </div>
-
 
 <!-- Address -->
 
@@ -75,11 +91,9 @@ Address
 name="address"
 rows="2"
 placeholder="Enter address"
-class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
-</textarea>
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ address }}</textarea>
 
 </div>
-
 
 <!-- Age -->
 
@@ -92,11 +106,11 @@ Age
 <input 
 type="number"
 name="age"
+value="{{ age }}"
 placeholder="Enter age"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
 
 </div>
-
 
 <!-- Gender -->
 
@@ -111,36 +125,42 @@ name="gender"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
 
 <option value="">Select Gender</option>
-<option>Male</option>
-<option>Female</option>
+<option value="Male" {% if gender == "Male" %}selected{% endif %}>Male</option>
+<option value="Female" {% if gender == "Female" %}selected{% endif %}>Female</option>
 
 </select>
 
 </div>
 
-
 <!-- Buttons -->
 
 <div class="flex flex-col sm:flex-row gap-3">
 
+{% if not show_continue %}
 <button 
 type="submit"
 class="w-full sm:w-auto px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-sm">
-
 Save Patient
-
 </button>
+{% endif %}
+
+{% if show_continue %}
+<button 
+type="submit"
+name="force_create"
+value="1"
+class="w-full sm:w-auto px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+Continue Anyway
+</button>
+{% endif %}
 
 <a 
 href="/"
 class="w-full sm:w-auto px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-center">
-
 Cancel
-
 </a>
 
 </div>
-
 
 </form>
 
