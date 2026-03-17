@@ -357,7 +357,7 @@ def patient_history(request, patient_id):
     prescriptions = Prescription.objects.filter(
         clinic=clinic,
         patient=patient
-    )
+    ).order_by("-created_at") 
 
     return render(request, "patient_history.html", {
         "patient": patient,
