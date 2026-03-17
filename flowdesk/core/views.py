@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
 from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
+from django.db.models import Sum
 
 
 
@@ -49,7 +50,7 @@ def logout_view(request):
 
 # ---------------- DASHBOARD ---------------- #
 
-from datetime import date
+from django.utils.timezone import now
 
 @login_required(login_url="login")
 def dashboard(request):
@@ -57,12 +58,16 @@ def dashboard(request):
     profile = UserProfile.objects.get(user=request.user)
     clinic = profile.clinic
 
-    today = date.today()
+    today = now().date()
 
     appointments_today = Appointment.objects.filter(
         clinic=clinic,
         appointment_date=today
     )
+    today_revenue = Bill.objects.filter(
+        clinic=clinic,
+        created_at__date=today
+    ).aggregate(total=Sum("total_amount"))["total"] or 0
 
     today_appointments = appointments_today.count()
     pending_appointments = appointments_today.filter(status="Pending").count()
@@ -78,6 +83,7 @@ def dashboard(request):
         "pending_appointments": pending_appointments,
         "completed_appointments": completed_appointments,
         "today_appointments": today_appointments,
+        "today_revenue": today_revenue,
     }
 
     return render(request, "dashboard.html", context)
