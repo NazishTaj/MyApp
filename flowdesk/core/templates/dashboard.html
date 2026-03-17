@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="space-y-10">
+
+<!-- Header -->
+
+<div>
+<h2 class="text-2xl font-semibold text-blue-600">
+Dashboard
+</h2>
+
+<p class="text-gray-500 text-sm mt-1">
+Today's clinic overview
+</p>
+</div>
+
+
+
+<!-- Stats Cards -->
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+<!-- Today's Appointments -->
+
+<div class="bg-white border rounded-xl p-6 shadow-sm">
+
+<p class="text-sm text-gray-500">
+Today's Appointments
+</p>
+
+<h2 class="text-3xl font-bold text-blue-600 mt-2">
+{{ today_appointments }}
+</h2>
+
+</div>
+
+
+
+<!-- Waiting Patients -->
+
+<div class="bg-white border rounded-xl p-6 shadow-sm">
+
+<p class="text-sm text-gray-500">
+Waiting Patients
+</p>
+
+<h2 class="text-3xl font-bold text-yellow-500 mt-2">
+{{ pending_appointments }}
+</h2>
+
+</div>
+
+
+
+<!-- Completed -->
+
+<div class="bg-white border rounded-xl p-6 shadow-sm">
+
+<p class="text-sm text-gray-500">
+Completed
+</p>
+
+<h2 class="text-3xl font-bold text-green-600 mt-2">
+{{ completed_appointments }}
+</h2>
+
+</div>
+
+</div>
+
+
+
+<!-- Queue Table -->
+
+<div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+
+<div class="px-6 py-4 border-b">
+
+<h3 class="font-semibold text-gray-700">
+Today's Queue
+</h3>
+
+</div>
+
+
+
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm">
+
+<thead class="bg-gray-50 text-gray-500 uppercase tracking-wider text-xs">
+
+<tr>
+
+<th class="px-6 py-3 text-left">Token</th>
+<th class="px-6 py-3 text-left">Patient</th>
+<th class="px-6 py-3 text-left">Problem</th>
+<th class="px-6 py-3 text-left">Status</th>
+<th class="px-6 py-3 text-left">Actions</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody class="divide-y">
+
+{% for a in appointments %}
+
+<tr class="hover:bg-gray-50 transition">
+
+<!-- Token -->
+
+<td class="px-6 py-4">
+
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
+{{ a.token_number }}
+</span>
+
+</td>
+
+
+
+<!-- Patient -->
+
+<td class="px-6 py-4 font-medium text-gray-800">
+{{ a.patient.name }}
+</td>
+
+
+
+<!-- Problem -->
+
+<td class="px-6 py-4 text-gray-500">
+{{ a.problem }}
+</td>
+
+
+
+<!-- Status -->
+
+<td class="px-6 py-4">
+
+{% if a.status == "Pending" %}
+
+<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
+Pending
+</span>
+
+{% elif a.status == "Completed" %}
+
+<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+Completed
+</span>
+
+{% elif a.status == "Cancelled" %}
+
+<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">
+Cancelled
+</span>
+
+{% endif %}
+
+</td>
+
+
+
+<!-- Actions -->
+<td class="px-6 py-4">
+
+<div class="flex items-center">
+
+<!-- Left Buttons -->
+
+<div class="flex gap-2 flex-wrap">
+
+<a href="/add-prescription/{{ a.patient.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition">
+Prescription
+</a>
+
+<a href="/patient-history/{{ a.patient.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+History
+</a>
+
+{% if a.status == "Pending" %}
+
+<a href="/complete-appointment/{{ a.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200 transition">
+Complete
+</a>
+
+<a href="/cancel-appointment/{{ a.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition">
+Cancel
+</a>
+
+{% endif %}
+
+</div>
+
+<!-- Right Button -->
+
+{% if a.status != "Pending" %}
+
+<div class="ml-auto">
+
+<a href="/mark-pending/{{ a.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
+Undo
+</a>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</td>
+
+
+</tr>
+
+
+
+{% empty %}
+
+<tr>
+
+<td colspan="5" class="text-center py-10 text-gray-500">
+No appointments today
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

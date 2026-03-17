@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block page_title %}Receipt{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+<div class="bg-white rounded-xl shadow p-6">
+
+<!-- Clinic Header -->
+<div class="text-center mb-6">
+
+{% if clinic.logo %}
+<img src="{{ clinic.logo.url }}" class="h-14 mx-auto mb-2">
+{% endif %}
+
+<h2 class="text-xl font-semibold">
+{{ clinic.name }}
+</h2>
+
+<p class="text-sm text-gray-500">
+{{ clinic.address }}
+</p>
+
+<p class="text-sm text-gray-500">
+Phone: {{ clinic.phone }}
+</p>
+
+</div>
+
+<hr class="mb-6">
+
+<!-- Title + Print -->
+<div class="flex justify-between items-center mb-6">
+
+<h2 class="text-lg font-semibold">
+Receipt
+</h2>
+
+<button onclick="window.print()"
+class="px-4 py-1.5 text-sm bg-[#0f172a] text-white rounded-lg hover:bg-[#020617] transition print:hidden">
+Print
+</button>
+
+</div>
+
+<!-- Bill Details -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
+
+<div>
+<p><span class="font-medium">Bill No:</span> {{ bill.bill_number }}</p>
+<p><span class="font-medium">Patient:</span> {{ bill.patient.name }}</p>
+<p><span class="font-medium">Mobile:</span> 
+<span class="text-gray-500">{{ bill.patient.phone }}</span></p>
+</div>
+
+<div class="sm:text-right">
+<p><span class="font-medium">Date:</span> {{ bill.created_at|date:"d M Y" }}</p>
+<p><span class="font-medium">Time:</span> {{ bill.created_at|time:"h:i A" }}</p>
+<p><span class="font-medium">Doctor:</span> {{ bill.doctor.doctor_name }}</p>
+</div>
+
+</div>
+
+<!-- Items Table -->
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm">
+
+<thead class="bg-gray-50 text-gray-600">
+<tr>
+<th class="px-4 py-2 text-left">Item</th>
+<th class="px-4 py-2 text-right">Amount</th>
+</tr>
+</thead>
+
+<tbody class="divide-y">
+
+{% for item in items %}
+<tr>
+<td class="px-4 py-2">{{ item.item_name }}</td>
+<td class="px-4 py-2 text-right font-medium">₹{{ item.amount }}</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- Total -->
+<div class="mt-6 text-right">
+
+<p class="text-lg font-semibold">
+Total : ₹{{ bill.total_amount }}
+</p>
+
+<p class="text-sm text-gray-500">
+Payment Mode : {{ bill.payment_mode }}
+</p>
+
+</div>
+
+<!-- Footer -->
+<div class="text-center mt-8 text-xs text-gray-400">
+
+<p>Thank you for visiting</p>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

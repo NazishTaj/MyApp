@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block page_title %}Billing{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
+
+  <div>
+    <h2 class="text-xl font-semibold">All generated invoices</h2>
+ 
+  </div>
+
+  <a href="{% url 'create_bill' %}"
+  class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition text-center">
+    Create Bill
+  </a>
+
+</div>
+
+<!-- Table Card -->
+<div class="bg-white rounded-xl shadow overflow-hidden">
+
+  <div class="overflow-x-auto">
+
+    <table class="w-full text-sm min-w-[700px]">
+
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="px-6 py-3 text-left">Bill No</th>
+          <th class="px-6 py-3 text-left">Patient</th>
+          <th class="px-6 py-3 text-left">Date</th>
+          <th class="px-6 py-3 text-left">Amount</th>
+          <th class="px-6 py-3 text-left">Payment</th>
+          <th class="px-6 py-3 text-left"></th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+
+        {% for bill in bills %}
+        <tr class="hover:bg-gray-50">
+
+          <td class="px-6 py-3 font-medium">
+            {{ bill.bill_number }}
+          </td>
+
+          <td class="px-6 py-3">
+            {{ bill.patient.name }}
+          </td>
+
+          <td class="px-6 py-3">
+            {{ bill.created_at|date:"d M Y" }}
+          </td>
+
+          <td class="px-6 py-3 font-semibold">
+            ₹{{ bill.total_amount }}
+          </td>
+
+          <td class="px-6 py-3">
+            {{ bill.payment_mode }}
+          </td>
+
+          <td class="px-6 py-3">
+            <a href="{% url 'view_bill' bill.id %}"
+            class="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
+              View
+            </a>
+          </td>
+
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-gray-400 py-8">
+            No bills yet
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+{% endblock %}

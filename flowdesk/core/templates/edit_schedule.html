@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block page_title %}Edit Schedule{% endblock %}
+
+{% block content %}
+
+<h2 class="page-title">Edit Clinic Timing</h2>
+
+<form method="POST" class="card max-w-md">
+
+{% csrf_token %}
+
+<label>Day</label>
+<select name="day" class="border rounded p-2 w-full">
+
+<option value="Monday" {% if schedule.day == "Monday" %}selected{% endif %}>Monday</option>
+<option value="Tuesday" {% if schedule.day == "Tuesday" %}selected{% endif %}>Tuesday</option>
+<option value="Wednesday" {% if schedule.day == "Wednesday" %}selected{% endif %}>Wednesday</option>
+<option value="Thursday" {% if schedule.day == "Thursday" %}selected{% endif %}>Thursday</option>
+<option value="Friday" {% if schedule.day == "Friday" %}selected{% endif %}>Friday</option>
+<option value="Saturday" {% if schedule.day == "Saturday" %}selected{% endif %}>Saturday</option>
+<option value="Sunday" {% if schedule.day == "Sunday" %}selected{% endif %}>Sunday</option>
+
+</select>
+
+
+<label class="mt-3 block">Start Time</label>
+<input type="time" name="start_time"
+value="{{ schedule.start_time|time:'H:i' }}"
+class="border rounded p-2 w-full">
+
+<label class="mt-3 block">End Time</label>
+<input type="time" name="end_time"
+value="{{ schedule.end_time|time:'H:i' }}"
+class="border rounded p-2 w-full">
+
+<br><br>
+
+<button class="btn btn-primary">
+Update Timing
+</button>
+
+</form>
+
+{% endblock %}
