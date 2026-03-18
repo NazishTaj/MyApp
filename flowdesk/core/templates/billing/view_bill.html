@@ -2,26 +2,54 @@
 {% block page_title %}Receipt{% endblock %}
 
 {% block content %}
+
 <style>
 @media print {
 
+    /* ✅ Page size fix */
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    /* ❌ Navbar / sidebar hide */
     nav, aside, header {
         display: none !important;
     }
 
+    /* ❌ Button hide */
+    button {
+        display: none !important;
+    }
+
+    /* ✅ Body reset */
     body {
         margin: 0 !important;
         padding: 0 !important;
     }
 
-    button {
-        display: none !important;
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
     }
 
+    /* ❌ Shadow remove (IMPORTANT for blank page fix) */
+    .shadow {
+        box-shadow: none !important;
+    }
+
+    /* ✅ Width fix */
     .max-w-2xl {
         max-width: 100% !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
     }
+
+    /* ❌ Page break avoid (MAIN FIX) */
+    .bg-white {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
 }
 </style>
 
