@@ -1,9 +1,7 @@
-
 {% load static %}
 
 
 <link rel="icon" href="{% static '/images/favicon.png' %}" type="image/x-icon">
-<link rel="shortcut icon" href="{% static 'images/favicon.png' %}?v=2">
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,7 +60,16 @@ overflow-x:hidden;
   {% endif %}">
     📊 Dashboard
   </a>
-
+ <!-- Appointments -->
+  <a href="/appointments/"
+  class="block px-3 py-2 rounded-lg 
+  {% if request.path == '/appointments/' %}
+    bg-white/10 text-white font-medium
+  {% else %}
+    hover:bg-gray-800 text-gray-300
+  {% endif %}">
+    📅 Appointments
+  </a>
   <!-- Patients -->
   <a href="/patients/"
   class="block px-3 py-2 rounded-lg 
@@ -74,16 +81,6 @@ overflow-x:hidden;
     👥 Patients
   </a>
 
-  <!-- Appointments -->
-  <a href="/appointments/"
-  class="block px-3 py-2 rounded-lg 
-  {% if request.path == '/appointments/' %}
-    bg-white/10 text-white font-medium
-  {% else %}
-    hover:bg-gray-800 text-gray-300
-  {% endif %}">
-    📅 Appointments
-  </a>
 
   <!-- Add Patient -->
   <a href="/add-patient/"
