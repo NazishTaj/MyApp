@@ -868,6 +868,15 @@ def print_bill(request, bill_id):
     "items": items,
     "clinic": clinic
 })
+@login_required(login_url="login")
+def print_prescription(request, id):
+    prescription = get_object_or_404(Prescription, id=id)
+    clinic = request.user.userprofile.clinic
+
+    return render(request, "billing/print_prescription.html", {
+        "prescription": prescription,
+        "clinic": clinic
+    })
 
 
     
