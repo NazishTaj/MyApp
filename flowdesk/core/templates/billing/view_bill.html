@@ -2,6 +2,28 @@
 {% block page_title %}Receipt{% endblock %}
 
 {% block content %}
+<style>
+@media print {
+
+    nav, aside, header {
+        display: none !important;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    button {
+        display: none !important;
+    }
+
+    .max-w-2xl {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+}
+</style>
 
 <div class="max-w-2xl mx-auto">
 
