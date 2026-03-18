@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Receipt</title>
+
+    <!-- Tailwind CDN (important for styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+    @media print {
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        table {
+        page-break-inside: avoid;
+         }
+        img {
+             max-width: 100%;
+            height: auto;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 12px;
+            line-height: 1.4;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .shadow {
+            box-shadow: none !important;
+        }
+
+        .bg-white {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        #print-area {
+            max-width: 750px !important;
+            margin: 0 auto !important;
+        }
+    }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="print-area" class="max-w-2xl mx-auto">
+
+<div class="bg-white rounded-xl shadow p-6">
+
+<!-- SAME CONTENT (no change) -->
+
+<div class="text-center mb-6">
+
+{% if clinic.logo %}
+<img src="{{ clinic.logo.url }}" class="h-14 mx-auto mb-2">
+{% endif %}
+
+<h2 class="text-xl font-semibold">{{ clinic.name }}</h2>
+
+<p class="text-sm text-gray-500">{{ clinic.address }}</p>
+<p class="text-sm text-gray-500">Phone: {{ clinic.phone }}</p>
+
+</div>
+
+<hr class="mb-6">
+
+<h2 class="text-lg font-semibold mb-4">Receipt</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
+
+<div>
+<p><span class="font-medium">Bill No:</span> {{ bill.bill_number }}</p>
+<p><span class="font-medium">Patient:</span> {{ bill.patient.name }}</p>
+<p><span class="font-medium">Mobile:</span> {{ bill.patient.phone }}</p>
+</div>
+
+<div class="sm:text-right">
+<p><span class="font-medium">Date:</span> {{ bill.created_at|date:"d M Y" }}</p>
+<p><span class="font-medium">Time:</span> {{ bill.created_at|time:"h:i A" }}</p>
+<p><span class="font-medium">Doctor:</span> {{ bill.doctor.doctor_name }}</p>
+</div>
+
+</div>
+
+<table class="w-full text-sm mb-6">
+
+<thead class="bg-gray-50">
+<tr>
+<th class="px-4 py-2 text-left">Item</th>
+<th class="px-4 py-2 text-right">Amount</th>
+</tr>
+</thead>
+
+<tbody>
+{% for item in items %}
+<tr>
+<td class="px-4 py-2">{{ item.item_name }}</td>
+<td class="px-4 py-2 text-right">₹{{ item.amount }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+<div class="text-right">
+<p class="text-lg font-semibold">Total : ₹{{ bill.total_amount }}</p>
+<p class="text-sm text-gray-500">Payment Mode : {{ bill.payment_mode }}</p>
+</div>
+
+<div class="text-center mt-8 text-xs text-gray-400">
+<p>Thank you for visiting</p>
+</div>
+
+</div>
+</div>
+
+</body>
+</html>
