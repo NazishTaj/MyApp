@@ -3,92 +3,6 @@
 
 {% block content %}
 
-<style>
-@media print {
-
-    @page {
-        size: A4;
-        margin: 12mm;
-    }
-
-    html, body {
-        height: auto !important;
-        overflow: visible !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    /* ❌ Hide UI */
-    nav, header, aside, footer, button {
-        display: none !important;
-    }
-
-    /* ❌ hide everything */
-    body * {
-        visibility: hidden;
-    }
-
-    /* ✅ show only prescription */
-    #print-area, #print-area * {
-        visibility: visible;
-    }
-
-    /* ✅ IMPORTANT: remove absolute */
-    #print-area {
-        position: static !important;
-        width: 100%;
-        max-width: 100% !important;
-        margin: 0 auto !important;
-    }
-
-    /* ❌ remove shadow */
-    .bg-white {
-        box-shadow: none !important;
-        border: none !important;
-        padding: 10px !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    /* 🔥 MAIN FIX: avoid random blank pages */
-    .mb-6, .signature-section, .bg-gray-50 {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    /* optional: clean spacing */
-    h4 {
-        page-break-after: avoid;
-    }
-
-    p, li {
-        page-break-inside: avoid;
-    }
-
-    /* color fix */
-    body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* 🔥 prevent full card break */
-
-
-/* 🔥 prevent section splitting */
-.mb-6 {
-    page-break-inside: avoid !important;
-}
-
-/* 🔥 signature alag page pe na chala jaye */
-.signature-section {
-    page-break-inside: avoid !important;
-    page-break-before: avoid !important;
-}
-
-}
-</style>
-
-
 <div id="print-area" class="max-w-3xl mx-auto">
 
 <div class="bg-white rounded-xl shadow p-8">
@@ -330,15 +244,22 @@ Signature
 <div class="mt-6">
 
 <button
-onclick="window.print()"
+onclick="printPrescription({{ prescription.id }})"
 class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white
 bg-gradient-to-r from-emerald-500 to-teal-500
 rounded-lg shadow hover:from-emerald-600 hover:to-teal-600
-transition-all duration-200">
+transition-all duration-200 cursor-pointer">
 
 🖨 Print Prescription
 
 </button>
+
+<script>
+function printPrescription(id){
+    window.open(`/prescription/${id}/print/`, '_blank');
+}
+</script>
+
 
 </div>
 
