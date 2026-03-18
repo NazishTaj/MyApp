@@ -856,6 +856,18 @@ def view_bill(request, bill_id):
         "items": items,
         "clinic": clinic
     })
+  #Bill Print
+@login_required
+def print_bill(request, bill_id):
+    bill = Bill.objects.get(id=bill_id)
+    items = bill.items.all()
+    clinic = request.user.userprofile.clinic
+
+    return render(request, "billing/print_bill.html", {
+    "bill": bill,
+    "items": items,
+    "clinic": clinic
+})
 
 
     
