@@ -376,11 +376,67 @@ def create_bill_for_patient(request, patient_id):
     profile = UserProfile.objects.get(user=request.user)
     clinic = profile.clinic
 
-    patient = get_object_or_404(Patient,id=patient_id,clinic=clinic)
+    if not clinic.billing_enabled:
+        return redirect("dashboard")
 
-    return render(request,"billing/create_bill.html",{
-        "patient":patient,
-        "clinic":clinic
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+
+    if request.method == "POST":
+
+        payment_mode = request.POST.get("payment_mode")
+        discount_percent = float(request.POST.get("discount")or 0)
+
+        # Generate bill number
+        last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
+
+        if last_bill:
+            last_number = int(last_bill.bill_number.split("-")[1])
+            new_number = last_number + 1
+        else:
+            new_number = 1001
+
+        bill_number = f"FD-{new_number}"
+
+        # Create bill
+        bill = Bill.objects.create(
+            clinic=clinic,
+            patient=patient,   # 🔥 FIXED PATIENT
+            doctor=profile,
+            bill_number=bill_number,
+            payment_mode=payment_mode,
+        )
+
+        item_names = request.POST.getlist("item_name[]")
+        item_amounts = request.POST.getlist("item_amount[]")
+
+        subtotal = 0
+
+        for name, amount in zip(item_names, item_amounts):
+            if name and amount:
+                amount = float(amount)
+
+                BillItem.objects.create(
+                    bill=bill,
+                    item_name=name,
+                    amount=amount
+                )
+
+                subtotal += amount
+
+        discount_amount = (subtotal * discount_percent) / 100
+        total = subtotal - discount_amount
+
+        bill.subtotal = subtotal
+        bill.discount = discount_percent
+        bill.discount_amount = discount_amount
+        bill.total_amount = total
+        bill.save()
+
+        return redirect("view_bill", bill_id=bill.id)
+
+    return render(request, "billing/create_bill.html", {
+        "patient": patient,
+        "clinic": clinic
     })
 
 @login_required(login_url="login")
@@ -703,12 +759,12 @@ def create_bill(request):
 
         patient_id = request.POST.get("patient")
         payment_mode = request.POST.get("payment_mode")
-        discount_percent = float(request.POST.get("discount", 0))
+        discount_percent = float(request.POST.get("discount")or 0)
 
-        patient = Patient.objects.get(id=patient_id)
+        patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
         # Generate bill number
-        last_bill = Bill.objects.order_by("-id").first()
+        last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
 
         if last_bill:
             last_number = int(last_bill.bill_number.split("-")[1])
