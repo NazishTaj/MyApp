@@ -6,49 +6,45 @@
 <style>
 @media print {
 
-    /* ✅ Page size fix */
     @page {
         size: A4;
         margin: 10mm;
     }
 
-    /* ❌ Navbar / sidebar hide */
-    nav, aside, header {
+    nav, aside, header, button {
         display: none !important;
     }
 
-    /* ❌ Button hide */
-    button {
-        display: none !important;
-    }
-
-    /* ✅ Body reset */
     body {
         margin: 0 !important;
         padding: 0 !important;
     }
 
     html, body {
-        height: auto !important;
+        height: 100% !important;
         overflow: visible !important;
     }
 
-    /* ❌ Shadow remove (IMPORTANT for blank page fix) */
+    /* ❌ remove shadow */
     .shadow {
         box-shadow: none !important;
     }
 
+    /* ❌ IMPORTANT: remove this (causing blank page bug) */
+    /* .bg-white { page-break-inside: avoid } */
 
-    /* ❌ Page break avoid (MAIN FIX) */
-    .bg-white {
+    /* ✅ Smart fix */
+    table, tr {
         page-break-inside: avoid !important;
-        break-inside: avoid !important;
     }
+
+    /* 🔥 MAIN FIX */
     #print-area {
-    position: static !important;
-    max-width: 750px !important;
-    margin: 0 auto !important;
-}
+        position: static !important;
+        max-width: 750px !important;
+        margin: 0 auto !important;
+        min-height: 100vh;   /* 🔥 prevents extra blank page */
+    }
 
 }
 </style>
