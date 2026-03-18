@@ -3,51 +3,6 @@
 
 {% block content %}
 
-<style>
-@media print {
-
-    @page {
-        size: A4;
-        margin: 10mm;
-    }
-
-    nav, aside, header, button {
-        display: none !important;
-    }
-
-    body {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    html, body {
-        height: 100% !important;
-        overflow: visible !important;
-    }
-
-    /* ❌ remove shadow */
-    .shadow {
-        box-shadow: none !important;
-    }
-
-    /* ❌ IMPORTANT: remove this (causing blank page bug) */
-    /* .bg-white { page-break-inside: avoid } */
-
-    /* ✅ Smart fix */
-    table, tr {
-        page-break-inside: avoid !important;
-    }
-
-    /* 🔥 MAIN FIX */
-    #print-area {
-        position: static !important;
-        max-width: 750px !important;
-        margin: 0 auto !important;
-        min-height: 100vh;   /* 🔥 prevents extra blank page */
-    }
-
-}
-</style>
 
 <div id="print-area" class="max-w-2xl mx-auto">
 
@@ -83,10 +38,20 @@ Phone: {{ clinic.phone }}
 Receipt
 </h2>
 
-<button onclick="window.print()"
-class="px-4 py-1.5 text-sm bg-[#0f172a] text-white rounded-lg hover:bg-[#020617] transition print:hidden">
-Print
+<button onclick="printBill({{ bill.id }})"
+class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
+bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 
+active:scale-95 transition-all duration-150">
+
+    🖨 <span>Print Receipt</span>
+
 </button>
+
+<script>
+function printBill(id){
+    window.open(`/bill/${id}/print/`, '_blank');
+}
+</script>
 
 </div>
 
