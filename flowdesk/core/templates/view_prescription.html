@@ -4,55 +4,85 @@
 {% block content %}
 
 <style>
+@media print {
 
-@media print{
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
 
-/* ✅ sab extra UI hata do */
-nav, header, aside, footer{
-display:none !important;
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* ❌ Hide UI */
+    nav, header, aside, footer, button {
+        display: none !important;
+    }
+
+    /* ❌ hide everything */
+    body * {
+        visibility: hidden;
+    }
+
+    /* ✅ show only prescription */
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+
+    /* ✅ IMPORTANT: remove absolute */
+    #print-area {
+        position: static !important;
+        width: 100%;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    /* ❌ remove shadow */
+    .bg-white {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 10px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 🔥 MAIN FIX: avoid random blank pages */
+    .mb-6, .signature-section, .bg-gray-50 {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* optional: clean spacing */
+    h4 {
+        page-break-after: avoid;
+    }
+
+    p, li {
+        page-break-inside: avoid;
+    }
+
+    /* color fix */
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* 🔥 prevent full card break */
+
+
+/* 🔥 prevent section splitting */
+.mb-6 {
+    page-break-inside: avoid !important;
 }
 
-/* ✅ print button hide */
-button{
-display:none !important;
-}
-
-/* ✅ scroll hatana */
-html, body{
-overflow:visible !important;
-height:auto !important;
-}
-
-/* ✅ sirf print area dikhna chahiye */
-body *{
-visibility:hidden;
-}
-
-#print-area, #print-area *{
-visibility:visible;
-}
-
-/* ✅ full width */
-#print-area{
-position:absolute;
-left:0;
-top:0;
-width:100%;
-max-width:100% !important;
-margin:0 !important;
-}
-
-/* ✅ card clean */
-.bg-white{
-box-shadow:none !important;
-border:none !important;
-padding:12px !important;
-}
-
-/* ✅ color fix */
-body{
--webkit-print-color-adjust: exact;
-print-color-adjust: exact;
+/* 🔥 signature alag page pe na chala jaye */
+.signature-section {
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
 }
 
 }
