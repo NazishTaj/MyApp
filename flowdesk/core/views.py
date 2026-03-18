@@ -14,13 +14,13 @@ from django.db.models import Sum
 
 def billing_enabled(request):
 
-    profile = UserProfile.objects.get(user=request.user)
-    clinic = profile.clinic
-
-    if not clinic.billing_enabled:
+    # ✅ check login
+    if not request.user.is_authenticated:
         return False
 
-    return True
+    profile = get_object_or_404(UserProfile, user=request.user)
+
+    return profile.clinic.billing_enabled
 
 
 # ---------------- LOGIN ---------------- #
@@ -50,15 +50,15 @@ def logout_view(request):
 
 # ---------------- DASHBOARD ---------------- #
 
-from django.utils.timezone import now
+from django.utils import timezone
 
 @login_required(login_url="login")
 def dashboard(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
-    today = now().date()
+    today = timezone.localtime().date()
 
     appointments_today = Appointment.objects.filter(
         clinic=clinic,
@@ -75,6 +75,7 @@ def dashboard(request):
 
     total_patients = Patient.objects.filter(clinic=clinic).count()
     total_appointments = Appointment.objects.filter(clinic=clinic).count()
+    
 
     context = {
         "appointments": appointments_today,
@@ -87,6 +88,7 @@ def dashboard(request):
     }
 
     return render(request, "dashboard.html", context)
+    
 
 
 # ---------------- PATIENTS ---------------- #
@@ -97,7 +99,7 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url="login")
 def patient_list(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     query = request.GET.get("q", "").strip()
@@ -123,7 +125,7 @@ from django.core.exceptions import ValidationError
 @login_required(login_url="login")
 def add_patient(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     prefill_phone = request.GET.get("phone","")
@@ -192,7 +194,7 @@ def add_patient(request):
 @login_required(login_url="login")
 def edit_patient(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
@@ -215,7 +217,7 @@ def edit_patient(request, patient_id):
 @login_required(login_url="login")
 def delete_patient(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
@@ -226,27 +228,34 @@ def delete_patient(request, patient_id):
 
 
 # ---------------- APPOINTMENTS ---------------- #
+from django.utils import timezone
 @login_required(login_url="login")
 def book_appointment(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
     if request.method == "POST":
 
-        date_val = request.POST["date"]
-        time = request.POST["time"]
-        problem = request.POST["problem"]
+        date_val = request.POST.get("date")
+        time = request.POST.get("time")
+        problem = request.POST.get("problem")
 
-        if not date_val:
-            date_val = date.today()
+        # ✅ DATE FIX (MAIN FIX)
+        if date_val:
+            date_val = datetime.strptime(date_val, "%Y-%m-%d").date()
+        else:
+            date_val = timezone.localtime().date()
 
-        if not time:
+        # ✅ TIME FIX
+        if time:
+            time = datetime.strptime(time, "%H:%M").time()
+        else:
             time = datetime.now().time()
 
-        # 🔹 Get last token for same clinic + same date
+        # 🔹 Token logic
         last_token = Appointment.objects.filter(
             clinic=clinic,
             appointment_date=date_val
@@ -266,13 +275,13 @@ def book_appointment(request, patient_id):
             token_number=token
         )
 
-        return redirect("appointments")
+        return redirect("dashboard")   # 🔥 IMPORTANT
 
     return render(request, "book_appointment.html", {"patient": patient})
 @login_required(login_url="login")
 def appointments(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     appointments = Appointment.objects.filter(clinic=clinic).order_by(
@@ -286,7 +295,7 @@ def appointments(request):
 @login_required(login_url="login")
 def complete_appointment(request, appointment_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
@@ -300,7 +309,7 @@ def complete_appointment(request, appointment_id):
 @login_required(login_url="login")
 def cancel_appointment(request, appointment_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
@@ -316,7 +325,7 @@ def cancel_appointment(request, appointment_id):
 @login_required(login_url="login")
 def add_prescription(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
@@ -351,7 +360,7 @@ def add_prescription(request, patient_id):
 @login_required(login_url="login")
 def patient_history(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
@@ -373,7 +382,7 @@ def patient_history(request, patient_id):
 @login_required
 def create_bill_for_patient(request, patient_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     if not clinic.billing_enabled:
@@ -442,7 +451,7 @@ def create_bill_for_patient(request, patient_id):
 @login_required(login_url="login")
 def view_prescription(request, id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     prescription = get_object_or_404(Prescription, id=id, clinic=clinic)
@@ -466,24 +475,67 @@ def online_booking(request):
         time = request.POST["time"]
         problem = request.POST["problem"]
 
-        patient = Patient.objects.create(
-            name=name,
+        clinic = Clinic.objects.first()
+
+        if not clinic:
+            return HttpResponse("No clinic configured", status=400)
+
+        # ✅ DATE FIX
+        if date_val:
+            date_val = datetime.strptime(date_val, "%Y-%m-%d").date()
+        else:
+            date_val = timezone.localtime().date()
+
+        # ✅ TIME FIX
+        if time:
+            time = datetime.strptime(time, "%H:%M").time()
+        else:
+            time = datetime.now().time()
+
+        # ✅ PATIENT (avoid duplicate)
+        patient, created = Patient.objects.get_or_create(
+            clinic=clinic,
             phone=phone,
-            age=age,
-            gender="Unknown"
+            defaults={
+                "name": name,
+                "age": age,
+                "gender": "Unknown"
+            }
         )
 
+        # ✅ PREVENT DUPLICATE BOOKING SAME DAY
+        if Appointment.objects.filter(
+            clinic=clinic,
+            patient=patient,
+            appointment_date=date_val
+        ).exists():
+            return render(request, "booking_success.html", {
+                "message": "You already booked for this date"
+            })
+
+        # ✅ TOKEN LOGIC (per day reset)
+        last_token = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=date_val
+        ).order_by('-token_number').first()
+
+        token = last_token.token_number + 1 if last_token else 1
+
+        # ✅ CREATE APPOINTMENT
         Appointment.objects.create(
+            clinic=clinic,
             patient=patient,
             appointment_date=date_val,
             appointment_time=time,
-            problem=problem
+            problem=problem,
+            token_number=token
         )
 
-        return render(request, "booking_success.html")
+        return render(request, "booking_success.html", {
+            "message": "Booking successful"
+        })
 
     return render(request, "online_booking.html")
-
 
 
 
@@ -491,7 +543,7 @@ def online_booking(request):
 @login_required(login_url="login")
 def profile(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     context = {
@@ -509,7 +561,7 @@ def profile(request):
 @login_required
 def edit_profile(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     # fetch clinic schedule
@@ -547,7 +599,7 @@ def edit_profile(request):
 @login_required
 def add_schedule(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     if request.method == "POST":
@@ -575,7 +627,7 @@ def add_schedule(request):
 @login_required
 def delete_schedule(request, id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     schedule = ClinicSchedule.objects.get(id=id, clinic=clinic)
@@ -586,7 +638,7 @@ def delete_schedule(request, id):
 @login_required
 def edit_schedule(request, id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     schedule = ClinicSchedule.objects.get(id=id, clinic=clinic)
@@ -610,7 +662,7 @@ def edit_schedule(request, id):
 @login_required
 def export_month_appointments(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     month = request.GET.get("month")
@@ -677,7 +729,10 @@ def export_month_appointments(request):
 @login_required
 def export_all_appointments(request):
 
-    appointments = Appointment.objects.all()
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    appointments = Appointment.objects.filter(clinic=clinic)
 
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -730,7 +785,7 @@ def export_all_appointments(request):
 @login_required
 def mark_pending(request, appointment_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
@@ -747,7 +802,7 @@ def mark_pending(request, appointment_id):
 @login_required
 def create_bill(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     if not clinic.billing_enabled:
@@ -828,7 +883,7 @@ def create_bill(request):
 @login_required
 def bill_history(request):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     if not clinic.billing_enabled:
@@ -844,7 +899,7 @@ def bill_history(request):
 @login_required
 def view_bill(request, bill_id):
 
-    profile = UserProfile.objects.get(user=request.user)
+    profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
     bill = get_object_or_404(Bill, id=bill_id, clinic=clinic)
@@ -861,21 +916,37 @@ def view_bill(request, bill_id):
   #Bill Print
 @login_required
 def print_bill(request, bill_id):
-    bill = Bill.objects.get(id=bill_id)
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    bill = get_object_or_404(
+        Bill,
+        id=bill_id,
+        clinic=clinic
+    )
+
     items = bill.items.all()
-    clinic = request.user.userprofile.clinic
 
     return render(request, "billing/print_bill.html", {
-    "bill": bill,
-    "items": items,
-    "clinic": clinic
-})
+        "bill": bill,
+        "items": items,
+        "clinic": clinic
+    })
 
-#Print Prescription
+
+# Print Prescription
 @login_required(login_url="login")
 def print_prescription(request, id):
-    prescription = get_object_or_404(Prescription, id=id)
-    clinic = request.user.userprofile.clinic
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    prescription = get_object_or_404(
+        Prescription,
+        id=id,
+        clinic=clinic
+    )
 
     return render(request, "print_prescription.html", {
         "prescription": prescription,
