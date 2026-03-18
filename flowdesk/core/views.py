@@ -856,6 +856,8 @@ def view_bill(request, bill_id):
         "items": items,
         "clinic": clinic
     })
+
+
   #Bill Print
 @login_required
 def print_bill(request, bill_id):
@@ -868,6 +870,8 @@ def print_bill(request, bill_id):
     "items": items,
     "clinic": clinic
 })
+
+#Print Prescription
 @login_required(login_url="login")
 def print_prescription(request, id):
     prescription = get_object_or_404(Prescription, id=id)
@@ -877,6 +881,3 @@ def print_prescription(request, id):
         "prescription": prescription,
         "clinic": clinic
     })
-
-
-    
