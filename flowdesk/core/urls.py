@@ -32,6 +32,7 @@ path(
     views.create_bill_for_patient,
     name="create_bill_for_patient"
 ),
+path("bill/<int:bill_id>/print/", views.print_bill, name="print_bill"),
 
 
 
