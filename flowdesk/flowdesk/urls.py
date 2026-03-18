@@ -9,7 +9,7 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-    path('', views.patient_list, name='patient_list'),
+    path('', views.dashboard, name='home'),
     path('add-patient/', views.add_patient, name='add_patient'),
     path('book-appointment/<int:patient_id>/', views.book_appointment, name='book_appointment'),
     path('patient-history/<int:patient_id>/', views.patient_history, name='patient_history'),
