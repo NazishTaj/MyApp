@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block page_title %}Prescription{% endblock %}
+
+{% block content %}
+
+<div id="print-area" class="max-w-3xl mx-auto px-3 sm:px-0">
+
+<div class="bg-white rounded-xl shadow p-5 sm:p-8">
+
+<!-- Clinic Header -->
+
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b mb-6 gap-3">
+
+<div class="flex items-center gap-3">
+
+{% if clinic.logo %}
+<img src="{{ clinic.logo.url }}" class="h-12 w-12 object-contain">
+{% endif %}
+
+<div>
+<h2 class="text-lg sm:text-xl font-bold text-gray-800">
+{{ clinic.name }}
+</h2>
+
+<p class="text-xs sm:text-sm text-gray-600">
+Dr. {{ request.user.userprofile.doctor_name }}
+</p>
+</div>
+
+</div>
+
+<div class="text-left sm:text-right text-xs sm:text-sm text-gray-600">
+
+<p>Phone: {{ clinic.phone }}</p>
+
+{% if clinic.address %}
+<p class="break-words">{{ clinic.address }}</p>
+{% endif %}
+
+</div>
+
+</div>
+
+
+<!-- Patient Info -->
+
+<div class="text-sm mb-5">
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-4">
+
+<!-- ROW 1 -->
+<p><span class="text-gray-500">Patient:</span>
+<span class="font-medium break-words">{{ prescription.patient.name }}</span></p>
+
+<p><span class="text-gray-500">Age:</span>
+<span class="font-medium">{{ prescription.patient.age }}</span></p>
+
+<p><span class="text-gray-500">Gender:</span>
+<span class="font-medium">{{ prescription.patient.gender }}</span></p>
+
+<!-- ROW 2 -->
+<p><span class="text-gray-500">Date:</span>
+<span class="font-medium">{{ prescription.created_at|date:"d M Y" }}</span></p>
+
+<p><span class="text-gray-500">Phone:</span>
+<span class="font-medium">{{ prescription.patient.phone }}</span></p>
+
+<p><span class="text-gray-500">Blood:</span>
+<span class="font-medium">{{ prescription.blood_group|default:"-" }}</span></p>
+
+<!-- ROW 3 -->
+<p><span class="text-gray-500">Weight:</span>
+<span class="font-medium">
+{{ prescription.weight|default:"-" }}{% if prescription.weight %} kg{% endif %}
+</span></p>
+
+<p class="md:col-span-2 break-words">
+<span class="text-gray-500">Address:</span>
+<span class="font-medium">{{ prescription.patient.address|default:"-" }}</span>
+</p>
+
+</div>
+
+</div>
+
+<hr class="mb-6">
+
+
+<!-- Diagnosis -->
+
+{% if prescription.diagnosis %}
+<div class="mb-6">
+
+<h4 class="text-base font-semibold text-gray-800 mb-2">
+Diagnosis
+</h4>
+
+<p class="text-sm text-gray-700 leading-relaxed">
+{{ prescription.diagnosis|linebreaksbr }}
+</p>
+
+</div>
+{% endif %}
+
+
+<!-- Symptoms -->
+
+{% if prescription.symptoms %}
+<div class="mb-6">
+
+<h4 class="text-base font-semibold text-gray-800 mb-2">
+Symptoms
+</h4>
+
+<p class="text-sm text-gray-700 leading-relaxed">
+{{ prescription.symptoms|linebreaksbr }}
+</p>
+
+</div>
+{% endif %}
+
+
+<!-- Medicines -->
+
+{% if prescription.medicines %}
+<div class="mb-6">
+
+<h4 class="text-base font-semibold text-gray-800 mb-3">
+Medicines
+</h4>
+
+<div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800">
+
+<ol class="list-decimal ml-5 space-y-1">
+{% for med in prescription.medicines.splitlines %}
+<li>{{ med }}</li>
+{% endfor %}
+</ol>
+
+</div>
+
+<p class="text-xs text-gray-500 mt-3 leading-relaxed">
+
+<b>Dosage format:</b> Morning – Afternoon – Night  
+Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
+<br>
+
+<b>Abbreviations:</b>  
+<b>OD</b> – Once Daily • <b>TDS</b> – Three Times Daily • <b>BD</b> – Twice Daily  
+<b>AF</b> – After Food • <b>BBF</b> – Before Breakfast • <b>HS</b> – At Bedtime • <b>SOS</b> – When Required
+
+</p>
+
+</div>
+{% endif %}
+
+
+<!-- Tests -->
+
+{% if prescription.tests %}
+<div class="mb-6">
+
+<h4 class="text-base font-semibold text-gray-800 mb-2">
+Recommended Tests
+</h4>
+
+<p class="text-sm text-gray-700 leading-relaxed">
+{{ prescription.tests|linebreaksbr }}
+</p>
+
+</div>
+{% endif %}
+
+
+<!-- Advice -->
+
+{% if prescription.notes %}
+<div class="mb-6">
+
+<h4 class="text-base font-semibold text-gray-800 mb-2">
+Advice
+</h4>
+
+<p class="text-sm text-gray-700 leading-relaxed">
+{{ prescription.notes|linebreaksbr }}
+</p>
+
+</div>
+{% endif %}
+
+
+<hr class="my-8">
+
+
+<!-- Signature -->
+
+<div class="flex justify-end">
+
+<div class="text-center">
+
+<div class="border-t w-40 sm:w-52 ml-auto mb-2"></div>
+
+<p class="text-sm font-semibold">
+Dr. {{ request.user.userprofile.doctor_name }}
+</p>
+
+<p class="text-xs text-gray-500">
+Signature
+</p>
+
+</div>
+
+</div>
+
+
+<!-- Print Button -->
+
+<div class="mt-6">
+
+<button
+onclick="printPrescription({{ prescription.id }})"
+class="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-6 py-2.5 text-sm font-medium text-white
+bg-gradient-to-r from-emerald-500 to-teal-500
+rounded-lg shadow hover:from-emerald-600 hover:to-teal-600
+transition-all duration-200 cursor-pointer">
+
+🖨 Print Prescription
+
+</button>
+
+<script>
+function printPrescription(id){
+    window.open(`/prescription/${id}/print/`, '_blank');
+}
+</script>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

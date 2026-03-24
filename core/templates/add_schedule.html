@@ -1,0 +1,51 @@
+<h2>Add Clinic Timing</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- Form Errors -->
+{{ form.errors }}
+
+<p>
+Day<br>
+{{ form.day }}
+</p>
+
+<p>
+Start Time<br>
+{{ form.start_time }}
+</p>
+
+<p>
+End Time<br>
+{{ form.end_time }}
+</p>
+
+<br>
+
+<button type="submit">Save Timing</button>
+
+</form>
+
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+flatpickr("#id_start_time", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "h:i K",
+    time_24hr: false
+});
+
+flatpickr("#id_end_time", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "h:i K",
+    time_24hr: false
+});
+</script>

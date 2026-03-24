@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block page_title %}Create Bill{% endblock %}
+
+{% block content %}
+
+<div class="bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-4 md:py-6">
+<div class="max-w-6xl mx-auto">
+
+<div class="mb-3">
+  <h2 class="text-sm text-gray-500">Generate bill for patient</h2>
+</div>
+
+<div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-100 p-5 md:p-6">
+
+<form method="POST" onsubmit="return validatePatient()" autocomplete="off"
+class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+{% csrf_token %}
+
+<!-- LEFT -->
+<div class="lg:col-span-2 space-y-6">
+
+<!-- 🔥 PATIENT BLOCK -->
+<div>
+<label class="text-sm font-medium text-gray-700">Patient</label>
+
+{% if patient %}
+
+<!-- ✅ AUTO FILLED -->
+
+<input type="text"
+value="{{ patient.name }} ({{ patient.phone }})"
+class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-300 bg-gray-100"
+readonly>
+
+<input type="hidden" name="patient" value="{{ patient.id }}">
+
+{% else %}
+
+<!-- ✅ SEARCH MODE -->
+
+<input type="text" style="display:none">
+
+<input 
+type="text"
+id="patientSearch"
+placeholder="Search by name or phone..."
+autocomplete="off"
+class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
+onkeyup="filterPatients()">
+
+<input type="hidden" name="patient" id="selectedPatient">
+
+<div id="patientList"
+class="border border-gray-200 rounded-xl mt-2 max-h-48 overflow-y-auto hidden bg-white shadow z-50">
+
+{% for patient in patients %}
+<div class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+data-id="{{ patient.id }}"
+data-text="{{ patient.name }} {{ patient.phone }}"
+onclick="selectPatient(this)">
+{{ patient.name }} ({{ patient.phone }})
+</div>
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- ITEMS -->
+<div>
+<label class="text-sm font-medium text-gray-700 mb-2 block">Bill Items</label>
+
+<div class="grid grid-cols-2 gap-2 px-1 mb-1">
+<p class="text-xs text-gray-500 font-medium">Item Name</p>
+<p class="text-xs text-gray-500 font-medium text-right">Amount</p>
+</div>
+
+<div id="items-table" class="space-y-3">
+
+<div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded-xl">
+<input type="text" name="item_name[]" value="Consultation"
+class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm">
+
+<input type="number" name="item_amount[]"
+value="{{ clinic.consultation_fee }}"
+class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm amount-field text-right"
+oninput="calculateTotal()">
+</div>
+
+</div>
+
+<button type="button" onclick="addItem()"
+class="mt-3 text-sm font-medium text-[#0f172a] hover:underline">
++ Add Item
+</button>
+
+</div>
+
+<!-- DISCOUNT -->
+<div class="flex flex-col sm:flex-row gap-4">
+
+<div class="w-full sm:w-40">
+<label class="text-sm font-medium text-gray-700">Discount (%)</label>
+<input type="number" name="discount" id="discount"
+value="0" min="0" max="100"
+class="w-full mt-1 border border-gray-300 rounded-xl px-3 py-2 text-sm"
+oninput="calculateTotal()">
+</div>
+
+<div class="w-full sm:w-52">
+<label class="text-sm font-medium text-gray-700">Payment Mode</label>
+<select name="payment_mode"
+class="w-full mt-1 border border-gray-300 rounded-xl px-3 py-2 text-sm">
+<option value="Cash">Cash</option>
+<option value="UPI">UPI</option>
+<option value="Card">Card</option>
+</select>
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="lg:col-span-1 space-y-4 lg:sticky lg:top-6 h-fit">
+
+<div class="bg-gray-50 rounded-xl p-4 space-y-2 shadow-sm">
+<p class="text-sm text-gray-500">Subtotal : ₹<span id="subtotal">0</span></p>
+<p class="text-sm text-gray-500">Discount : ₹<span id="discountAmount">0</span></p>
+<p class="text-lg font-semibold text-gray-800">Total : ₹<span id="total">0</span></p>
+</div>
+
+<button class="w-full bg-[#0f172a] text-white py-3 rounded-xl font-medium shadow hover:bg-[#020617]">
+Generate Bill
+</button>
+
+</div>
+
+</form>
+</div>
+</div>
+</div>
+
+<script>
+
+// Add item
+function addItem(){
+const table = document.getElementById("items-table")
+
+const row = `
+<div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded-xl">
+<input type="text" name="item_name[]" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm">
+<input type="number" name="item_amount[]" value="0"
+class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm amount-field text-right"
+oninput="calculateTotal()">
+</div>
+`
+
+table.insertAdjacentHTML("beforeend", row)
+}
+
+// Calculate
+function calculateTotal(){
+let subtotal = 0
+
+document.querySelectorAll(".amount-field").forEach(input => {
+subtotal += Number(input.value) || 0
+})
+
+let discount = Number(document.getElementById("discount").value) || 0
+let discountAmount = (subtotal * discount) / 100
+let total = subtotal - discountAmount
+
+document.getElementById("subtotal").innerText = subtotal.toFixed(2)
+document.getElementById("discountAmount").innerText = discountAmount.toFixed(2)
+document.getElementById("total").innerText = total.toFixed(2)
+}
+
+calculateTotal()
+
+// Search
+const searchInput = document.getElementById("patientSearch")
+const patientList = document.getElementById("patientList")
+
+if(searchInput){
+searchInput.addEventListener("focus", () => {
+patientList.classList.remove("hidden")
+})
+}
+
+function filterPatients(){
+let value = searchInput.value.toLowerCase()
+patientList.classList.remove("hidden")
+
+document.querySelectorAll("#patientList div").forEach(item => {
+let text = item.dataset.text.toLowerCase()
+item.style.display = text.includes(value) ? "block" : "none"
+})
+}
+
+function selectPatient(el){
+document.getElementById("selectedPatient").value = el.dataset.id
+searchInput.value = el.innerText
+patientList.classList.add("hidden")
+}
+
+// Validation
+function validatePatient(){
+
+let patientInput = document.querySelector("input[name='patient']")
+let patientId = patientInput ? patientInput.value : ""
+
+if(!patientId){
+alert("Please select patient from list")
+return false
+}
+
+return true
+}
+
+</script>
+
+{% endblock %}

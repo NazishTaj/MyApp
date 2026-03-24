@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block page_title %}Appointments{% endblock %}
+
+{% block content %}
+
+<div class="mb-6 flex justify-between items-center">
+
+<div>
+<h2 class="text-2xl font-semibold">Appointments</h2>
+<p class="text-gray-500 text-sm">
+Manage all clinic appointments
+</p>
+</div>
+
+<!-- Export Button -->
+
+<div class="relative">
+
+<button onclick="toggleExport()" 
+class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
+Export
+</button>
+
+<!-- Dropdown -->
+
+<div id="exportMenu" class="hidden absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 border">
+
+<form method="get" action="{% url 'export_month' %}" class="space-y-3">
+
+<div>
+
+<label class="text-xs text-gray-500">Month</label>
+
+<select name="month" class="w-full border rounded px-3 py-2 text-sm">
+
+<option value="1">Jan</option>
+<option value="2">Feb</option>
+<option value="3">Mar</option>
+<option value="4">Apr</option>
+<option value="5">May</option>
+<option value="6">Jun</option>
+<option value="7">Jul</option>
+<option value="8">Aug</option>
+<option value="9">Sep</option>
+<option value="10">Oct</option>
+<option value="11">Nov</option>
+<option value="12">Dec</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label class="text-xs text-gray-500">Year</label>
+
+<select name="year" class="w-full border rounded px-3 py-2 text-sm">
+
+
+<option value="2026" selected>2026</option>
+<option value="2027">2027</option>
+<option value="2028">2028</option>
+
+</select>
+
+</div>
+
+<button type="submit"
+class="w-full bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
+
+Download Monthly
+
+</button>
+
+</form>
+
+<hr class="my-3">
+
+<a href="{% url 'export_all' %}"
+class="block text-center bg-gray-700 text-white px-4 py-2 rounded text-sm hover:bg-gray-800">
+
+Download All Data
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="bg-white rounded-xl shadow overflow-hidden">
+
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm">
+
+<thead class="bg-gray-50 text-gray-600">
+
+<tr>
+<th class="px-6 py-3 text-left">Date</th>
+<th class="px-6 py-3 text-left">Patient</th>
+<th class="px-6 py-3 text-left">Time</th>
+<th class="px-6 py-3 text-left">Problem</th>
+<th class="px-6 py-3 text-left">Status</th>
+<th class="px-6 py-3 text-left">Actions</th>
+</tr>
+
+</thead>
+
+<tbody class="divide-y">
+
+{% for a in appointments %}
+
+<tr class="hover:bg-gray-50">
+
+<td class="px-6 py-3">{{ a.appointment_date }}</td>
+
+<td class="px-6 py-3"><a href="/patient-history/{{ a.patient.id }}/" class="text-blue-600 hover:underline">
+{{ a.patient.name }}
+</a></td>
+
+<td class="px-6 py-3">{{ a.appointment_time }}</td>
+
+<td class="px-6 py-3">{{ a.problem }}</td>
+
+<td class="px-6 py-3">
+
+{% if a.status == "Pending" %}
+<span class="px-2 py-1 text-xs bg-yellow-50 text-yellow-600 rounded-lg">Pending</span>
+
+{% elif a.status == "Completed" %}
+<span class="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg">Completed</span>
+
+{% elif a.status == "Cancelled" %}
+<span class="px-2 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg">Cancelled</span>
+{% endif %}
+
+</td>
+
+<td class="px-6 py-3">
+
+{% if a.status == "Pending" %}
+
+<div class="flex gap-2">
+
+<a href="/complete-appointment/{{ a.id }}/"
+class="px-3 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100">
+Complete
+</a>
+
+<a href="/cancel-appointment/{{ a.id }}/"
+class="px-3 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100">
+Cancel
+</a>
+
+</div>
+
+{% else %}
+
+<span class="text-gray-400 text-xs">
+No actions
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6" class="text-center py-6 text-gray-500 text-sm">
+No appointments found
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+function toggleExport(){
+document.getElementById("exportMenu").classList.toggle("hidden");
+}
+
+</script>
+
+{% endblock %}
