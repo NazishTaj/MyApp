@@ -35,6 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost','myapp-production-532a.up.railway.app','76.13.244.125','flowdeskapp.tech','www.flowdeskapp.tech' ]
 
 CSRF_TRUSTED_ORIGINS = [
+     "http://76.13.244.125:8080",
     "https://myapp-production-532a.up.railway.app",
     "https://flowdeskapp.tech",
     "https://www.flowdeskapp.tech"
