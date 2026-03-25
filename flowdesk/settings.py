@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,7 +32,7 @@ SECRET_KEY = 'django-insecure-vo-1)uaf_7^+t^(fbhnqox0$#8$fjg#rno3tuwp8$%@mk!cu-i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['myapp-production-532a.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','myapp-production-532a.up.railway.app']
 CSRF_TRUSTED_ORIGINS = [
     "https://myapp-production-532a.up.railway.app"
 ]
@@ -83,13 +87,20 @@ WSGI_APPLICATION = 'flowdesk.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600
-    )
-}
 
+if os.getenv("USE_SQLITE") == "True":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL')
+        )
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
