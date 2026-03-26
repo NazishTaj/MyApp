@@ -350,6 +350,8 @@ def add_prescription(request, patient_id):
             notes=notes,
             weight=weight,
             blood_group=blood_group,
+            created_by=profile,
+            doctor=profile  
         )
 
         return redirect("patient_history", patient_id=patient.id)
@@ -569,7 +571,7 @@ def edit_profile(request):
 
     if request.method == "POST":
 
-        profile.doctor_name = request.POST.get("doctor_name")
+        profile.name = request.POST.get("name")
         profile.phone = request.POST.get("phone")
 
         clinic.name = request.POST.get("clinic_name")
@@ -952,3 +954,15 @@ def print_prescription(request, id):
         "prescription": prescription,
         "clinic": clinic
     })
+
+@login_required
+def enable_advanced_mode(request):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    if not clinic.is_advanced:
+        clinic.is_advanced = True
+        clinic.save()
+
+    return redirect("dashboard")
