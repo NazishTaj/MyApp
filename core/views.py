@@ -845,6 +845,17 @@ def create_bill(request):
 
         subtotal = 0
 
+
+@login_required
+def staff_list(request):
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    staff = UserProfile.objects.filter(clinic=clinic)
+
+    return render(request, "staff/staff_list.html", {
+        "staff": staff
+    })
         for name, amount in zip(item_names, item_amounts):
 
             if name and amount:
