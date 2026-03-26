@@ -979,7 +979,8 @@ def add_staff(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-
+    if not profile.is_owner:
+        return HttpResponse("Unauthorized", status=403)
     if request.method == "POST":
 
         username = request.POST.get("username")
@@ -1033,6 +1034,8 @@ def add_staff(request):
 def staff_list(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not profile.is_owner:
+        return HttpResponse("Unauthorized", status=403)
 
     staff = UserProfile.objects.filter(clinic=clinic,is_owner=False)
 
