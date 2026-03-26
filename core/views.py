@@ -979,6 +979,10 @@ def add_staff(request):
         password = request.POST.get("password")
         name = request.POST.get("name")
         role = request.POST.get("role")
+        if User.objects.filter(username=username).exists():
+            return render(request, "staff/add_staff.html", {
+                "error": "Username already exists"
+            })
 
         # Create user
         user = User.objects.create_user(
