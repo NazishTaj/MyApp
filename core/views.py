@@ -969,7 +969,6 @@ def enable_advanced_mode(request):
         clinic.save()
 
     return redirect("dashboard")
-from django.contrib.auth.models import User
 
 from django.contrib.auth.models import User
 from .models import UserProfile, UserPermission, Permission
@@ -1061,12 +1060,12 @@ def edit_staff_permissions(request, staff_id):
 
         # Naye add
         for perm_code in selected_perms:
-            perm = Permission.objects.get(code=perm_code)
-
-            UserPermission.objects.create(
-                user_profile=staff,
-                permission=perm
-            )
+            perm = Permission.objects.filter(code=perm_code).first()
+            if perm:
+                UserPermission.objects.create(
+                    user_profile=staff,
+                    permission=perm
+                )
 
         return redirect("staff_list")
 
