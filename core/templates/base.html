@@ -93,18 +93,20 @@ overflow-x:hidden;
     ➕ Add Patient
   </a>
   
-  {% if request.user.userprofile.clinic.is_advanced %}
-  <p class="px-3 mt-3 mb-1 text-xs text-gray-400">Team</p>
-  <a href="/staff/"
-  class="block px-3 py-2 rounded-lg 
-  {% if '/staff' in request.path %}
-  bg-white/10 text-white font-medium
-  {% else %}
-  hover:bg-gray-800 text-gray-300
-  {% endif %}">
-  👥 Staff
-  </a>
-  {% endif %}
+  {% if request.user.userprofile.clinic.is_advanced and request.user.userprofile.is_owner %}
+<p class="px-3 mt-3 mb-1 text-xs text-gray-400">Team</p>
+
+<a href="/staff/"
+class="block px-3 py-2 rounded-lg 
+{% if '/staff' in request.path %}
+bg-white/10 text-white font-medium
+{% else %}
+hover:bg-gray-800 text-gray-300
+{% endif %}">
+👥 Staff
+</a>
+
+{% endif %}
 
   {% if request.user.userprofile.clinic.billing_enabled %}
   <div>
