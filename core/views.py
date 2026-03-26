@@ -844,18 +844,6 @@ def create_bill(request):
         item_amounts = request.POST.getlist("item_amount[]")
 
         subtotal = 0
-
-
-@login_required
-def staff_list(request):
-    profile = get_object_or_404(UserProfile, user=request.user)
-    clinic = profile.clinic
-
-    staff = UserProfile.objects.filter(clinic=clinic)
-
-    return render(request, "staff/staff_list.html", {
-        "staff": staff
-    })
         for name, amount in zip(item_names, item_amounts):
 
             if name and amount:
@@ -1010,3 +998,15 @@ def add_staff(request):
         return redirect("staff_list")
 
     return render(request, "staff/add_staff.html")
+
+@login_required
+def staff_list(request):
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    staff = UserProfile.objects.filter(clinic=clinic,is_owner=False)
+
+    return render(request, "staff/staff_list.html", {
+        "staff": staff
+    })
+
