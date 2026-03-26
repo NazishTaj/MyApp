@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="text-xl font-semibold mb-4">Add Staff</h2>
+
+<form method="POST" class="space-y-4 bg-white p-6 rounded-xl shadow max-w-md">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Name"
+    class="w-full border p-2 rounded">
+
+    <input type="text" name="username" placeholder="Username"
+    class="w-full border p-2 rounded">
+
+    <input type="password" name="password" placeholder="Password"
+    class="w-full border p-2 rounded">
+
+    <select name="role" class="w-full border p-2 rounded">
+        <option value="receptionist">Receptionist</option>
+        <option value="assistant">Assistant</option>
+    </select>
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded w-full">
+        Create Staff
+    </button>
+
+</form>
+
+{% endblock %}
