@@ -1041,8 +1041,6 @@ def staff_list(request):
     })
 
 from .models import UserPermission, Permission
-
-})
 @login_required
 def edit_staff_permissions(request, staff_id):
 
