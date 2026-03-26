@@ -29,8 +29,8 @@ Doctor Information
 
 <div>
 <label class="text-xs text-gray-500">Doctor Name</label>
-<input type="text" name="doctor_name"
-value="{{ profile.doctor_name }}"
+<input type="text" name="name"
+value="{{ profile.name }}"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
 </div>
 
@@ -179,19 +179,34 @@ class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
 </div>
 
 
-<!-- 🔥 TOGGLE -->
-<div class="bg-white border rounded-xl p-4 shadow-sm">
+<!-- 🔥 SETTINGS -->
+<div class="bg-white border rounded-xl p-4 shadow-sm space-y-4">
 
+<!-- Billing -->
 <label class="flex items-center justify-between">
+    <span class="text-sm text-gray-700">
+        Enable Billing Module
+    </span>
 
-<span class="text-sm text-gray-700">
-Enable Billing Module
-</span>
+    <input type="checkbox" name="billing_enabled"
+    class="w-4 h-4"
+    {% if clinic.billing_enabled %}checked{% endif %}>
+</label>
 
-<input type="checkbox" name="billing_enabled"
-class="w-4 h-4"
-{% if clinic.billing_enabled %}checked{% endif %}>
+<!-- 🔥 ADVANCED MODE -->
+<label class="flex items-center justify-between border-t pt-3">
+    <div>
+        <p class="text-sm text-gray-700">
+            Advanced Mode
+        </p>
+        <p class="text-xs text-gray-500">
+            Enable staff & permission system
+        </p>
+    </div>
 
+    <input type="checkbox" name="is_advanced"
+    class="w-4 h-4"
+    {% if clinic.is_advanced %}checked{% endif %}>
 </label>
 
 </div>
