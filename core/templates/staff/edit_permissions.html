@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="text-xl font-semibold mb-4">
+    Permissions - {{ staff.name }}
+</h2>
+
+<form method="POST" class="bg-white p-6 rounded-xl shadow space-y-3">
+    {% csrf_token %}
+
+    {% for perm in permissions %}
+    <label class="flex items-center gap-2">
+        <input type="checkbox" name="permissions" value="{{ perm.code }}"
+        {% if perm.code in user_perm_codes %}checked{% endif %}>
+        {{ perm.code }}
+    </label>
+    {% endfor %}
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded">
+        Save Permissions
+    </button>
+
+</form>
+
+{% endblock %}
