@@ -44,17 +44,30 @@ phone_validator = RegexValidator(
 class Patient(models.Model):
 
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
+    patient_id = models.IntegerField(blank=True, null=True) 
 
     name = models.CharField(max_length=100)
-
-    phone = models.CharField(
-        max_length=10,
-        validators=[phone_validator]
-    )
+    phone = models.CharField(max_length=10, validators=[phone_validator])
 
     address = models.TextField(blank=True, null=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
+
+    def save(self, *args, **kwargs):
+        if not self.patient_id:
+            last_patient = Patient.objects.filter(
+                clinic=self.clinic
+            ).order_by('-patient_id').first()
+
+            if last_patient:
+                self.patient_id = last_patient.patient_id + 1
+            else:
+                self.patient_id = 1
+
+        super().save(*args, **kwargs)
+        
+    class Meta:
+        unique_together = ['clinic', 'patient_id']
 
     def __str__(self):
         return f"{self.name} ({self.phone})"
