@@ -9,6 +9,7 @@ class Clinic(models.Model):
     phone = models.CharField(max_length=20)
     address = models.TextField()
     logo = models.ImageField(upload_to="clinic_logos/", blank=True, null=True)
+    is_advanced = models.BooleanField(default=False)
     billing_enabled = models.BooleanField(default=False)
     consultation_fee = models.DecimalField(
         max_digits=10,
@@ -25,11 +26,24 @@ class Clinic(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
-    doctor_name = models.CharField(max_length=200)
+
+    ROLE_CHOICES = (
+        ('owner', 'Owner'),
+        ('receptionist', 'Receptionist'),
+        ('assistant', 'Assistant'),
+    )
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='owner')
+    is_owner = models.BooleanField(default=True)
+
+    # 👇 CHANGE HERE
+    name = models.CharField(max_length=200)
+
     phone = models.CharField(max_length=20, blank=True)
     photo = models.ImageField(upload_to="doctor_photos/", blank=True, null=True)
+
     def __str__(self):
-        return self.user.username
+        return self.name
 
 
 # Patient Model
@@ -122,7 +136,20 @@ class Prescription(models.Model):
 
     blood_group = models.CharField(max_length=5, blank=True, null=True)
     weight = models.IntegerField(blank=True, null=True)
+    created_by = models.ForeignKey(
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_prescriptions"
+    )
 
+    doctor = models.ForeignKey(
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="doctor_prescriptions"
+    )
     def __str__(self):
         return f"{self.patient.name} - {self.created_at}"
     
@@ -213,3 +240,15 @@ class BillItem(models.Model):
 
     def __str__(self):
         return f"{self.item_name} - {self.amount}"
+
+
+class Permission(models.Model):
+    code = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.code
+
+
+class UserPermission(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
