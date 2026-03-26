@@ -25,7 +25,7 @@
 
                 <div>
                     <p class="text-sm font-medium text-gray-700">
-                        {{ perm.code|title|replace:"_"," " }}
+                        {{ perm.code|cut:"_"|title }}
                     </p>
                 </div>
 
