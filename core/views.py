@@ -967,6 +967,9 @@ def enable_advanced_mode(request):
     return redirect("dashboard")
 from django.contrib.auth.models import User
 
+from django.contrib.auth.models import User
+from .models import UserProfile, UserPermission, Permission
+
 @login_required
 def add_staff(request):
 
@@ -979,25 +982,44 @@ def add_staff(request):
         password = request.POST.get("password")
         name = request.POST.get("name")
         role = request.POST.get("role")
+
+        # Username validation
         if User.objects.filter(username=username).exists():
             return render(request, "staff/add_staff.html", {
                 "error": "Username already exists"
             })
 
-        # Create user
+        # ✅ Create user
         user = User.objects.create_user(
             username=username,
             password=password
         )
 
-        # Create profile
-        UserProfile.objects.create(
+        # ✅ Create profile
+        profile_obj = UserProfile.objects.create(
             user=user,
             clinic=clinic,
             role=role,
             is_owner=False,
             name=name
         )
+
+        # 🔥 DEFAULT PERMISSIONS AUTO ASSIGN
+        if role == "receptionist":
+            default_perms = [
+                "manage_patients",
+                "manage_appointments",
+                "manage_billing"
+            ]
+
+            for perm_code in default_perms:
+                perm = Permission.objects.filter(code=perm_code).first()
+                if perm:
+
+                    UserPermission.objects.create(
+                        user_profile=profile_obj,
+                        permission=perm
+                    )
 
         return redirect("staff_list")
 
@@ -1012,5 +1034,45 @@ def staff_list(request):
 
     return render(request, "staff/staff_list.html", {
         "staff": staff
+    })
+
+from .models import UserPermission, Permission
+
+@login_required
+def edit_staff_permissions(request, staff_id):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    staff = get_object_or_404(UserProfile, id=staff_id, clinic=clinic)
+
+    permissions = Permission.objects.all()
+
+    if request.method == "POST":
+
+        selected_perms = request.POST.getlist("permissions")
+
+        # Purane delete
+        UserPermission.objects.filter(user_profile=staff).delete()
+
+        # Naye add
+        for perm_code in selected_perms:
+            perm = Permission.objects.get(code=perm_code)
+
+            UserPermission.objects.create(
+                user_profile=staff,
+                permission=perm
+            )
+
+        return redirect("staff_list")
+
+    # Existing permissions
+    user_perms = UserPermission.objects.filter(user_profile=staff)
+    user_perm_codes = [p.permission.code for p in user_perms]
+
+    return render(request, "staff/edit_permissions.html", {
+        "staff": staff,
+        "permissions": permissions,
+        "user_perm_codes": user_perm_codes
     })
 
