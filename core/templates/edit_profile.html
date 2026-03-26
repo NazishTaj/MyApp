@@ -103,9 +103,12 @@ class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focu
 
 <div>
 <label class="text-xs text-gray-500">Consultation Fee</label>
-<input type="number" name="consultation_fee"
-value="{{ clinic.consultation_fee }}"
-class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
+<input 
+  type="number" name="consultation_fee"
+  value="{{ clinic.consultation_fee }}"
+  step="0.01"
+  min="0"
+  class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
 </div>
 
 <div>
