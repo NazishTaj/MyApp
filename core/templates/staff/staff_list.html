@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-semibold">Staff</h2>
+
+    <a href="/staff/add/" 
+    class="bg-blue-600 text-white px-4 py-2 rounded">
+        + Add Staff
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4">
+
+<table class="w-full text-sm">
+    <thead>
+        <tr class="text-left text-gray-500 border-b">
+            <th class="py-2">Name</th>
+            <th>Username</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for s in staff %}
+        <tr class="border-b">
+            <td class="py-2">{{ s.name }}</td>
+            <td>{{ s.user.username }}</td>
+            <td>{{ s.role }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center py-6 text-gray-400">
+                No staff added yet
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+
+{% endblock %}
