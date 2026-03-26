@@ -966,3 +966,36 @@ def enable_advanced_mode(request):
         clinic.save()
 
     return redirect("dashboard")
+from django.contrib.auth.models import User
+
+@login_required
+def add_staff(request):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    if request.method == "POST":
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        name = request.POST.get("name")
+        role = request.POST.get("role")
+
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+
+        # Create profile
+        UserProfile.objects.create(
+            user=user,
+            clinic=clinic,
+            role=role,
+            is_owner=False,
+            name=name
+        )
+
+        return redirect("staff_list")
+
+    return render(request, "staff/add_staff.html")
