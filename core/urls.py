@@ -36,6 +36,7 @@ path("bill/<int:bill_id>/print/", views.print_bill, name="print_bill"),
 path("prescription/<int:id>/print/", views.print_prescription, name="print_prescription"),
 path("enable-advanced/", views.enable_advanced_mode, name="enable_advanced"),
 path("staff/add/", views.add_staff, name="add_staff"),
+path("staff/", views.staff_list, name="staff_list"),
 
 
 
