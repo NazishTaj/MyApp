@@ -1042,6 +1042,7 @@ def staff_list(request):
 
 from .models import UserPermission, Permission
 
+})
 @login_required
 def edit_staff_permissions(request, staff_id):
 
@@ -1051,6 +1052,15 @@ def edit_staff_permissions(request, staff_id):
     staff = get_object_or_404(UserProfile, id=staff_id, clinic=clinic)
 
     permissions = Permission.objects.all()
+
+    # 🔥 CLEAN LABEL BANANE KE LIYE
+    permissions_data = []
+    for p in permissions:
+        label = p.code.replace("_", " ").title()
+        permissions_data.append({
+            "code": p.code,
+            "label": label
+        })
 
     if request.method == "POST":
 
@@ -1076,7 +1086,7 @@ def edit_staff_permissions(request, staff_id):
 
     return render(request, "staff/edit_permissions.html", {
         "staff": staff,
-        "permissions": permissions,
+        "permissions": permissions_data,   # 🔥 IMPORTANT CHANGE
         "user_perm_codes": user_perm_codes
     })
 
