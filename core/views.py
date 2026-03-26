@@ -104,7 +104,7 @@ def patient_list(request):
 
     query = request.GET.get("q", "").strip()
 
-    patients = Patient.objects.filter(clinic=clinic)
+    patients = Patient.objects.filter(clinic=clinic).order_by('patient_id')
 
     if query:
         patients = patients.filter(
