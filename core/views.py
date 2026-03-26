@@ -325,7 +325,9 @@ def cancel_appointment(request, appointment_id):
 
 @login_required(login_url="login")
 def add_prescription(request, patient_id):
-
+    if not has_permission(request.user, "create_prescription"):
+        return HttpResponse("Unauthorized", status=403)
+    
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     
@@ -384,7 +386,8 @@ def patient_history(request, patient_id):
     })
 @login_required
 def create_bill_for_patient(request, patient_id):
-
+    if not has_permission(request.user, "manage_billing"):
+        return HttpResponse("Unauthorized", status=403)
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
