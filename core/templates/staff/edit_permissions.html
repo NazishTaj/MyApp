@@ -2,25 +2,63 @@
 
 {% block content %}
 
-<h2 class="text-xl font-semibold mb-4">
-    Permissions - {{ staff.name }}
-</h2>
+<div class="max-w-xl mx-auto">
 
-<form method="POST" class="bg-white p-6 rounded-xl shadow space-y-3">
-    {% csrf_token %}
+    <!-- Header -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">
+            Manage Permissions
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">
+            Staff: <span class="font-medium text-gray-700">{{ staff.name }}</span>
+        </p>
+    </div>
 
-    {% for perm in permissions %}
-    <label class="flex items-center gap-2">
-        <input type="checkbox" name="permissions" value="{{ perm.code }}"
-        {% if perm.code in user_perm_codes %}checked{% endif %}>
-        {{ perm.code }}
-    </label>
-    {% endfor %}
+    <!-- Card -->
+    <form method="POST" class="bg-white p-6 rounded-xl shadow space-y-4">
+        {% csrf_token %}
 
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">
-        Save Permissions
-    </button>
+        <div class="space-y-3">
 
-</form>
+            {% for perm in permissions %}
+            <label class="flex items-center justify-between border rounded-lg px-4 py-3 hover:bg-gray-50 transition cursor-pointer">
+
+                <div>
+                    <p class="text-sm font-medium text-gray-700">
+                        {{ perm.code|title|replace:"_"," " }}
+                    </p>
+                </div>
+
+                <input 
+                    type="checkbox" 
+                    name="permissions" 
+                    value="{{ perm.code }}"
+                    class="w-4 h-4 accent-blue-600"
+                    {% if perm.code in user_perm_codes %}checked{% endif %}
+                >
+
+            </label>
+            {% endfor %}
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 pt-4">
+
+            <a href="/staff/" 
+            class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                Cancel
+            </a>
+
+            <button 
+            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Save Permissions
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
 
 {% endblock %}
