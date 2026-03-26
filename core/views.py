@@ -583,6 +583,7 @@ def edit_profile(request):
         clinic.address = request.POST.get("clinic_address")
         clinic.consultation_fee = request.POST.get("consultation_fee")
         clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
+        clinic.is_advanced = bool(request.POST.get("is_advanced"))
 
         if request.FILES.get("photo"):
             profile.photo = request.FILES["photo"]
