@@ -102,6 +102,11 @@ Download All Data
 <tr>
 <th class="px-6 py-3 text-left">Date</th>
 <th class="px-6 py-3 text-left">Patient</th>
+
+{% if show_doctor_column %}
+<th class="px-6 py-3 text-left">Doctor</th>
+{% endif %}
+
 <th class="px-6 py-3 text-left">Time</th>
 <th class="px-6 py-3 text-left">Problem</th>
 <th class="px-6 py-3 text-left">Status</th>
@@ -118,9 +123,15 @@ Download All Data
 
 <td class="px-6 py-3">{{ a.appointment_date }}</td>
 
-<td class="px-6 py-3"><a href="/patient-history/{{ a.patient.id }}/" class="text-blue-600 hover:underline">
+<td class="px-6 py-3">
+<a href="/patient-history/{{ a.patient.id }}/" class="text-blue-600 hover:underline">
 {{ a.patient.name }}
-</a></td>
+</a>
+</td>
+
+{% if show_doctor_column %}
+<td class="px-6 py-3">{{ a.doctor.name }}</td>
+{% endif %}
 
 <td class="px-6 py-3">{{ a.appointment_time }}</td>
 
@@ -173,7 +184,7 @@ No actions
 {% empty %}
 
 <tr>
-<td colspan="6" class="text-center py-6 text-gray-500 text-sm">
+<td colspan="{% if show_doctor_column %}7{% else %}6{% endif %}" class="text-center py-6 text-gray-500 text-sm">
 No appointments found
 </td>
 </tr>
