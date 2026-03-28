@@ -128,6 +128,8 @@ def add_patient(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_patients"):
+        return HttpResponse("Unauthorized", status=403)
 
     prefill_phone = request.GET.get("phone","")
 
@@ -197,6 +199,8 @@ def edit_patient(request, patient_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_patients"):
+        return HttpResponse("Unauthorized", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -220,6 +224,8 @@ def delete_patient(request, patient_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_patients"):
+        return HttpResponse("Unauthorized", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -235,6 +241,8 @@ def book_appointment(request, patient_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_patients"):
+        return HttpResponse("Unauthorized", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -812,6 +820,8 @@ def create_bill(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_patients"):
+        return HttpResponse("Unauthorized", status=403)
 
     if not clinic.billing_enabled:
         return redirect("dashboard")
