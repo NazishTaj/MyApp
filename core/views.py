@@ -251,6 +251,16 @@ def book_appointment(request, patient_id):
         date_val = request.POST.get("date")
         time = request.POST.get("time")
         problem = request.POST.get("problem")
+        doctors = UserProfile.objects.filter(
+            clinic=clinic,
+        role__in=["owner", "doctor"]
+        )
+
+        if doctors.count() == 1:
+            doctor = doctors.first()
+        else:
+            doctor_id = request.POST.get("doctor_id")
+            doctor = UserProfile.objects.get(id=doctor_id, clinic=clinic)
 
         # ✅ DATE FIX (MAIN FIX)
         if date_val:
@@ -281,12 +291,25 @@ def book_appointment(request, patient_id):
             appointment_date=date_val,
             appointment_time=time,
             problem=problem,
-            token_number=token
+            token_number=token,
+            doctor=doctor 
         )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
 
-    return render(request, "book_appointment.html", {"patient": patient})
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
+
+    return render(request, "book_appointment.html", {
+        "patient": patient,
+        "doctors": doctors
+    })
+
+
+
+
 @login_required(login_url="login")
 def appointments(request):
 
@@ -356,13 +379,15 @@ def add_prescription(request, patient_id):
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
         blood_group = request.POST.get("blood_group")
-        if profile.is_owner:
-            doctor = profile
+        appointment = Appointment.objects.filter(
+            clinic=clinic,
+            patient=patient
+        ).order_by("-appointment_date", "-appointment_time").first()
+
+        if appointment and appointment.doctor:
+            doctor = appointment.doctor
         else:
-            doctor = UserProfile.objects.get(
-            clinic=profile.clinic,
-            is_owner=True
-        )
+            doctor = profile
 
 
         Prescription.objects.create(
