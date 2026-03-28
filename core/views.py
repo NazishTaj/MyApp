@@ -322,8 +322,17 @@ def appointments(request):
         "-appointment_date",
         "appointment_time"
     )
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
 
-    return render(request, "appointments.html", {"appointments": appointments})
+    show_doctor_column = doctors.count() > 1
+
+    return render(request, "appointments.html", {
+    "appointments": appointments,
+    "show_doctor_column": show_doctor_column
+    })
 
 
 @login_required(login_url="login")
