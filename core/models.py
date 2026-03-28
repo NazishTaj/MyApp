@@ -100,6 +100,12 @@ class Appointment(models.Model):
 
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
+    doctor = models.ForeignKey(
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     token_number = models.PositiveIntegerField(blank=True, null=True)
 
