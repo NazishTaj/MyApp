@@ -821,7 +821,7 @@ def create_bill(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-    if not has_permission(request.user, "manage_billing""):
+    if not has_permission(request.user, "manage_billing"):
         return render(request, "403.html", status=403)
 
     if not clinic.billing_enabled:
