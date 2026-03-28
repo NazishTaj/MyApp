@@ -356,6 +356,14 @@ def add_prescription(request, patient_id):
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
         blood_group = request.POST.get("blood_group")
+        if profile.is_owner:
+            doctor = profile
+        else:
+            doctor = UserProfile.objects.get(
+            clinic=profile.clinic,
+            is_owner=True
+        )
+
 
         Prescription.objects.create(
             clinic=clinic,
@@ -368,7 +376,7 @@ def add_prescription(request, patient_id):
             weight=weight,
             blood_group=blood_group,
             created_by=profile,
-            doctor=profile  
+            doctor=doctor  
         )
 
         return redirect("patient_history", patient_id=patient.id)
