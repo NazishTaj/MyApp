@@ -63,10 +63,9 @@ def dashboard(request):
 
     appointments_today = Appointment.objects.filter(
         clinic=clinic,
-        appointment_date=today
+        appointment_date=today,
+        doctor=profile
     )
-    if profile.role == "doctor":
-        appointments_today = appointments_today.filter(doctor=profile)
     today_revenue = Bill.objects.filter(
         clinic=clinic,
         created_at__date=today
