@@ -1089,6 +1089,21 @@ def add_staff(request):
         )
 
         # 🔥 DEFAULT PERMISSIONS AUTO ASSIGN
+        if role == "doctor":
+            default_perms = [
+              "manage_patients",
+              "manage_appointments",
+              "create_prescription",
+              "manage_billing"
+            ]
+
+            for perm_code in default_perms:
+                perm = Permission.objects.filter(code=perm_code).first()
+                if perm:
+                    UserPermission.objects.create(
+                        user_profile=profile_obj,
+                        permission=perm
+                    )
         if role == "receptionist":
             default_perms = [
                 "manage_patients",
