@@ -292,6 +292,8 @@ def appointments(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_appointments"):
+        return render(request, "403.html", status=403)
 
     appointments = Appointment.objects.filter(clinic=clinic).order_by(
         "-appointment_date",
@@ -306,6 +308,8 @@ def complete_appointment(request, appointment_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_appointments"):
+        return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -320,6 +324,8 @@ def cancel_appointment(request, appointment_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_appointments"):
+        return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -375,7 +381,7 @@ def patient_history(request, patient_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-
+   
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
     bills = Bill.objects.filter(
     clinic=clinic,
@@ -467,6 +473,8 @@ def view_prescription(request, id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "create_prescription"):
+        return render(request, "403.html", status=403)
 
     prescription = get_object_or_404(Prescription, id=id, clinic=clinic)
 
@@ -681,6 +689,8 @@ def export_month_appointments(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
 
     month = request.GET.get("month")
     year = request.GET.get("year")
@@ -748,6 +758,8 @@ def export_all_appointments(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
 
     appointments = Appointment.objects.filter(clinic=clinic)
 
@@ -801,9 +813,12 @@ def export_all_appointments(request):
 
 @login_required
 def mark_pending(request, appointment_id):
+    
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_appointments"):
+        return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -903,6 +918,8 @@ def bill_history(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_billing"):
+        return render(request, "403.html", status=403)
 
     if not clinic.billing_enabled:
         return redirect("dashboard")
@@ -919,6 +936,8 @@ def view_bill(request, bill_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_billing"):
+        return render(request, "403.html", status=403)
 
     bill = get_object_or_404(Bill, id=bill_id, clinic=clinic)
 
@@ -937,6 +956,8 @@ def print_bill(request, bill_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not has_permission(request.user, "manage_billing"):
+        return render(request, "403.html", status=403)
 
     bill = get_object_or_404(
         Bill,
@@ -976,6 +997,8 @@ def enable_advanced_mode(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
 
     if not clinic.is_advanced:
         clinic.is_advanced = True
@@ -1063,6 +1086,8 @@ def edit_staff_permissions(request, staff_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
 
     staff = get_object_or_404(UserProfile, id=staff_id, clinic=clinic)
 
