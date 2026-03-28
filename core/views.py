@@ -129,7 +129,7 @@ def add_patient(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
 
     prefill_phone = request.GET.get("phone","")
 
@@ -200,7 +200,7 @@ def edit_patient(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -225,7 +225,7 @@ def delete_patient(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -241,8 +241,8 @@ def book_appointment(request, patient_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-    if not has_permission(request.user, "manage_patients"):
-        return HttpResponse("Unauthorized", status=403)
+    if not has_permission(request.user, "manage_appointments"):
+        return render(request, "403.html", status=403)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -334,7 +334,7 @@ def cancel_appointment(request, appointment_id):
 @login_required(login_url="login")
 def add_prescription(request, patient_id):
     if not has_permission(request.user, "create_prescription"):
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
     
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
@@ -395,7 +395,7 @@ def patient_history(request, patient_id):
 @login_required
 def create_bill_for_patient(request, patient_id):
     if not has_permission(request.user, "manage_billing"):
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
@@ -493,6 +493,7 @@ def online_booking(request):
 
         if not clinic:
             return HttpResponse("No clinic configured", status=400)
+            
 
         # ✅ DATE FIX
         if date_val:
@@ -820,8 +821,8 @@ def create_bill(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-    if not has_permission(request.user, "manage_patients"):
-        return HttpResponse("Unauthorized", status=403)
+    if not has_permission(request.user, "manage_billing""):
+        return render(request, "403.html", status=403)
 
     if not clinic.billing_enabled:
         return redirect("dashboard")
@@ -991,7 +992,7 @@ def add_staff(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
     if request.method == "POST":
 
         username = request.POST.get("username")
@@ -1048,7 +1049,7 @@ def staff_list(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return HttpResponse("Unauthorized", status=403)
+        return render(request, "403.html", status=403)
 
     staff = UserProfile.objects.filter(clinic=clinic,is_owner=False)
 
