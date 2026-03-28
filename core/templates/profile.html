@@ -30,13 +30,13 @@ Manage your doctor & clinic details
 class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
 {% else %}
 <div class="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-semibold shadow">
-{{ profile.doctor_name|slice:":1" }}
+{{ profile.name|slice:":1" }}
 </div>
 {% endif %}
 
 <div>
 <h2 class="text-xl font-semibold text-gray-800">
-{{ profile.doctor_name }}
+{{ profile.name }}
 </h2>
 
 <!-- ✅ PHONE -->
@@ -104,7 +104,7 @@ Doctor Information
 
 <div class="flex justify-between">
 <span class="text-gray-500">👨‍⚕️ Name</span>
-<span class="font-medium text-gray-800">{{ profile.doctor_name }}</span>
+<span class="font-medium text-gray-800">{{ profile.name }}</span>
 </div>
 
 <div class="flex justify-between">
