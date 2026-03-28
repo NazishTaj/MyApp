@@ -65,6 +65,8 @@ def dashboard(request):
         clinic=clinic,
         appointment_date=today
     )
+    if profile.role == "doctor":
+        appointments_today = appointments_today.filter(doctor=profile)
     today_revenue = Bill.objects.filter(
         clinic=clinic,
         created_at__date=today
@@ -235,6 +237,8 @@ def delete_patient(request, patient_id):
 
 
 # ---------------- APPOINTMENTS ---------------- #
+
+
 from django.utils import timezone
 @login_required(login_url="login")
 def book_appointment(request, patient_id):
@@ -260,7 +264,25 @@ def book_appointment(request, patient_id):
             doctor = doctors.first()
         else:
             doctor_id = request.POST.get("doctor_id")
-            doctor = UserProfile.objects.get(id=doctor_id, clinic=clinic)
+
+            if not doctor_id:
+                return render(request, "book_appointment.html", {
+                "patient": patient,
+                "doctors": doctors,
+                "error": "Please select doctor"
+                })
+
+            doctor = UserProfile.objects.filter(
+                id=doctor_id,
+                clinic=clinic
+            ).first()
+           
+            if not doctor:
+                return render(request, "book_appointment.html", {
+                    "patient": patient,
+                    "doctors": doctors,
+                    "error": "Invalid doctor selected"
+            })         
 
         # ✅ DATE FIX (MAIN FIX)
         if date_val:
@@ -467,12 +489,12 @@ def create_bill_for_patient(request, patient_id):
             new_number = 1001
 
         bill_number = f"FD-{new_number}"
-
+        doctor = profile if profile.role in ["owner", "doctor"] else None
         # Create bill
         bill = Bill.objects.create(
             clinic=clinic,
             patient=patient,   # 🔥 FIXED PATIENT
-            doctor=profile,
+            doctor=doctor,
             bill_number=bill_number,
             payment_mode=payment_mode,
         )
@@ -567,6 +589,10 @@ def online_booking(request):
                 "gender": "Unknown"
             }
         )
+        doctor = UserProfile.objects.filter(
+            clinic=clinic,
+            role__in=["owner", "doctor"]
+        ).first()
 
         # ✅ PREVENT DUPLICATE BOOKING SAME DAY
         if Appointment.objects.filter(
@@ -593,7 +619,8 @@ def online_booking(request):
             appointment_date=date_val,
             appointment_time=time,
             problem=problem,
-            token_number=token
+            token_number=token,
+            doctor=doctor
         )
 
         return render(request, "booking_success.html", {
@@ -905,11 +932,13 @@ def create_bill(request):
 
         bill_number = f"FD-{new_number}"
 
+        doctor = profile if profile.role in ["owner", "doctor"] else None
+
         # Create empty bill
         bill = Bill.objects.create(
             clinic=clinic,
             patient=patient,
-            doctor=profile,
+            doctor=doctor,
             bill_number=bill_number,
             payment_mode=payment_mode,
         )
