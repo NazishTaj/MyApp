@@ -988,6 +988,7 @@ def add_staff(request):
         password = request.POST.get("password")
         name = request.POST.get("name")
         role = request.POST.get("role")
+        email = request.POST.get("email")
 
         # Username validation
         if User.objects.filter(username=username).exists():
@@ -998,7 +999,8 @@ def add_staff(request):
         # ✅ Create user
         user = User.objects.create_user(
             username=username,
-            password=password
+            password=password,
+            email=email
         )
 
         # ✅ Create profile
