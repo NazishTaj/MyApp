@@ -577,13 +577,14 @@ def edit_profile(request):
 
         profile.name = request.POST.get("name")
         profile.phone = request.POST.get("phone")
-
-        clinic.name = request.POST.get("clinic_name")
-        clinic.phone = request.POST.get("clinic_phone")
-        clinic.address = request.POST.get("clinic_address")
-        clinic.consultation_fee = request.POST.get("consultation_fee")
-        clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
-        clinic.is_advanced = bool(request.POST.get("is_advanced"))
+        if profile.is_owner:
+            clinic.name = request.POST.get("clinic_name")
+            clinic.phone = request.POST.get("clinic_phone")
+            clinic.address = request.POST.get("clinic_address")
+            clinic.consultation_fee = request.POST.get("consultation_fee")
+        
+            clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
+            clinic.is_advanced = bool(request.POST.get("is_advanced"))
 
         if request.FILES.get("photo"):
             profile.photo = request.FILES["photo"]
