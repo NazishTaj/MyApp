@@ -57,6 +57,12 @@ def dashboard(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
+
+    show_doctor_column = doctors.count() > 1
 
     today = timezone.localtime().date()
     if profile.role in ["doctor", "owner"]:
@@ -97,6 +103,7 @@ def dashboard(request):
 
     context = {
         "appointments": appointments_today,
+        "show_doctor_column": show_doctor_column,
         "total_patients": total_patients,
         "total_appointments": total_appointments,
         "pending_appointments": pending_appointments,
@@ -312,7 +319,8 @@ def book_appointment(request, patient_id):
         # 🔹 Token logic
         last_token = Appointment.objects.filter(
             clinic=clinic,
-            appointment_date=date_val
+            appointment_date=date_val,
+            doctor=doctor
         ).order_by('-token_number').first()
 
         if last_token and last_token.token_number:
@@ -664,7 +672,8 @@ def online_booking(request):
         # ✅ TOKEN LOGIC (per day reset)
         last_token = Appointment.objects.filter(
             clinic=clinic,
-            appointment_date=date_val
+            appointment_date=date_val,
+            doctor=doctor
         ).order_by('-token_number').first()
 
         token = last_token.token_number + 1 if last_token else 1
