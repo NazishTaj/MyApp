@@ -105,6 +105,31 @@ def dashboard(request):
 
     total_patients = Patient.objects.filter(clinic=clinic).count()
     total_appointments = Appointment.objects.filter(clinic=clinic).count()
+    from collections import defaultdict  # (top pe import kar lena ek baar)
+
+    # 🔥 busy doctors find karo
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="In Consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    next_tokens = {}
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="Waiting"
+    ).order_by("doctor", "token_number")
+
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens[appt.id] = True
+            seen_doctors.add(appt.doctor_id)
 
     context = {
         "appointments": appointments_today,
@@ -115,6 +140,7 @@ def dashboard(request):
         "completed_appointments": completed_appointments,
         "today_appointments": today_appointments,
         "today_revenue": today_revenue,
+        "next_tokens": next_tokens
     }
 
     return render(request, "dashboard.html", context)
