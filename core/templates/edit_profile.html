@@ -138,7 +138,7 @@ class="text-sm border px-2 py-1 rounded">
 
 {% endif %}
 
-<!-- ⏱️ TIMING (sab ke liye allowed — optional change later) -->
+<!-- ⏱️ TIMING -->
 <div class="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
 
 <div class="flex justify-between items-center mb-3">
@@ -204,7 +204,8 @@ class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
         </p>
     </div>
 
-    <input type="checkbox" name="is_advanced"
+    <!-- ✅ UPDATED -->
+    <input type="checkbox" name="is_advanced" id="advancedToggle"
     class="w-4 h-4"
     {% if clinic.is_advanced %}checked{% endif %}>
 </label>
@@ -231,5 +232,32 @@ Cancel
 </form>
 
 </div>
+
+<!-- ✅ JS ADDED -->
+<script>
+const toggle = document.getElementById("advancedToggle");
+
+if (toggle) {
+    toggle.addEventListener("change", function() {
+
+        if (!this.checked) {
+
+            const confirmAction = confirm(
+                "⚠️ Are you sure?\n\n" +
+                "Disabling Advanced Mode will:\n\n" +
+                "• Block all staff access\n" +
+                "• Disable permissions system\n" +
+                "• Switch clinic to single-user mode\n\n" +
+                "You can enable it again anytime.\n\n" +
+                "Do you want to continue?"
+            );
+
+            if (!confirmAction) {
+                this.checked = true;
+            }
+        }
+    });
+}
+</script>
 
 {% endblock %}
