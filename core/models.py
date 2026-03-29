@@ -127,6 +127,18 @@ class Appointment(models.Model):
         choices=STATUS_CHOICES,
         default='Pending'
     )
+    
+    QUEUE_STATUS_CHOICES = [
+        ('Waiting', 'Waiting'),
+        ('In Consultation', 'In Consultation'),
+        ('Done', 'Done'),
+    ]
+
+    queue_status = models.CharField(
+        max_length=20,
+        choices=QUEUE_STATUS_CHOICES,
+        default='Waiting'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
