@@ -26,7 +26,7 @@
     <!-- GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- LEFT SIDE -->
+        <!-- LEFT -->
         <div class="lg:col-span-2">
 
             <form method="POST"
@@ -41,28 +41,57 @@
                     <span class="text-xs text-gray-400">Step 2</span>
                 </div>
 
-                <!-- Permissions List -->
+                <!-- Permissions -->
                 <div class="space-y-3">
 
                     {% for perm in permissions %}
-                    <label class="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 
+                    <label class="block border border-gray-200 rounded-xl px-4 py-3 
                     hover:bg-blue-50 hover:border-blue-200 transition cursor-pointer group">
 
-                        <!-- Left -->
-                        <div>
-                            <p class="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition">
-                                {{ perm.label }}
-                            </p>
-                        </div>
+                        <div class="flex items-start justify-between gap-3">
 
-                        <!-- Checkbox -->
-                        <input 
-                            type="checkbox" 
-                            name="permissions" 
-                            value="{{ perm.code }}"
-                            class="w-5 h-5 accent-blue-600 cursor-pointer"
-                            {% if perm.code in user_perm_codes %}checked{% endif %}
-                        >
+                            <!-- Left -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition">
+                                    {{ perm.label }}
+                                </p>
+
+                                <!-- Description -->
+                                <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+
+                                    {% if perm.code == "manage_patients" %}
+                                        Can add, edit, and delete patient records.
+                                    
+                                    {% elif perm.code == "manage_appointments" %}
+                                        Can book, update, and manage appointments.
+                                    
+                                    {% elif perm.code == "create_prescription" %}
+                                        Can create and view prescriptions for patients. 
+                                        <span class="text-red-500 font-medium">
+                                            If disabled, user cannot create or view prescriptions.
+                                        </span>
+                                    
+                                    {% elif perm.code == "manage_billing" %}
+                                        Can create bills and access billing history.
+                                    
+                                    {% else %}
+                                        Control access for this module.
+                                    {% endif %}
+
+                                </p>
+
+                            </div>
+
+                            <!-- Checkbox -->
+                            <input 
+                                type="checkbox" 
+                                name="permissions" 
+                                value="{{ perm.code }}"
+                                class="w-5 h-5 mt-1 accent-blue-600 cursor-pointer"
+                                {% if perm.code in user_perm_codes %}checked{% endif %}
+                            >
+
+                        </div>
 
                     </label>
                     {% endfor %}
@@ -116,28 +145,28 @@
 
                     <li class="flex items-start gap-2">
                         <span>✔</span>
-                        <span>Control what staff can access</span>
+                        <span>Manage Patients → Add, edit & delete patient records</span>
                     </li>
 
                     <li class="flex items-start gap-2">
                         <span>✔</span>
-                        <span>Limit sensitive operations like billing</span>
+                        <span>Manage Appointments → Book & manage appointments</span>
                     </li>
 
                     <li class="flex items-start gap-2">
                         <span>✔</span>
-                        <span>Assign only necessary permissions</span>
+                        <span>Create Prescription → Create & view prescriptions</span>
                     </li>
 
                     <li class="flex items-start gap-2">
                         <span>✔</span>
-                        <span>Update anytime as roles change</span>
+                        <span>Manage Billing → Handle bills & payment history</span>
                     </li>
 
                 </ul>
 
-                <div class="mt-6 text-xs opacity-70 border-t border-white/20 pt-3">
-                    Secure access ensures better clinic management 🔒
+                <div class="mt-6 text-xs opacity-80 border-t border-white/20 pt-3">
+                    ⚠️ Disabling permissions will restrict access completely for that feature
                 </div>
 
             </div>
