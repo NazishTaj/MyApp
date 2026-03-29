@@ -6,6 +6,7 @@
 
 <!-- Header -->
 
+
 <div>
 <h2 class="text-2xl font-semibold text-blue-600">
 Dashboard
@@ -109,6 +110,9 @@ Today's Queue
 
 <th class="px-6 py-3 text-left">Token</th>
 <th class="px-6 py-3 text-left">Patient</th>
+{% if show_doctor_column %}
+<th class="px-6 py-3 text-left">Doctor</th>
+{% endif %}
 <th class="px-6 py-3 text-left">Problem</th>
 <th class="px-6 py-3 text-left">Status</th>
 <th class="px-6 py-3 text-left">Actions</th>
@@ -142,6 +146,11 @@ Today's Queue
 <td class="px-6 py-4 font-medium text-gray-800">
 {{ a.patient.name }}
 </td>
+{% if show_doctor_column %}
+<td class="px-6 py-4 text-gray-700">
+{{ a.doctor.name|default:"N/A" }}
+</td>
+{% endif %}
 
 
 
@@ -244,7 +253,7 @@ Undo
 
 <tr>
 
-<td colspan="5" class="text-center py-10 text-gray-500">
+<td colspan="{% if show_doctor_column %}6{% else %}5{% endif %}" class="text-center py-10 text-gray-500">
 No appointments today
 </td>
 
