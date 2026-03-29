@@ -110,30 +110,33 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="flex justify-between items-center pt-4 border-t">
+                <div class="pt-4 border-t space-y-3 md:space-y-0 md:flex md:justify-between md:items-center">
 
-                    <p class="text-xs text-gray-400">
-                        You can update permissions after creating the account
-                    </p>
+    <!-- Hint -->
+    <p class="text-xs text-gray-400">
+        You can update permissions after creating the account
+    </p>
 
-                    <div class="flex gap-3">
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row gap-2">
 
-                        <a href="/staff/" 
-                        class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
-                            Cancel
-                        </a>
+        <a href="/staff/" 
+        class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+            Cancel
+        </a>
 
-                        <button type="submit"
-                        class="px-6 py-2 text-sm text-white rounded-lg 
-                        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
-                        hover:from-blue-700 hover:to-indigo-700 
-                        shadow-md hover:shadow-lg active:scale-95 transition">
-                            🚀 Create Staff
-                        </button>
+        <button type="submit"
+        class="w-full sm:w-auto px-6 py-2 text-sm text-white rounded-lg 
+        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
+        hover:from-blue-700 hover:to-indigo-700 
+        shadow-md hover:shadow-lg active:scale-95 transition">
+            🚀 Create Staff
+        </button>
 
-                    </div>
+    </div>
 
-                </div>
+</div>
+
 
             </form>
 
