@@ -127,15 +127,26 @@ Today's Queue
 
 {% for a in appointments %}
 
-<tr class="hover:bg-gray-50 transition">
+<tr class="
+hover:bg-gray-50 transition
+{% if a.id in next_tokens %}
+bg-green-50 border-l-4 border-green-500
+{% endif %}
+">
 
 <!-- Token -->
 
-<td class="px-6 py-4">
+<td class="px-6 py-4 flex items-center gap-2">
 
 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
 {{ a.token_number }}
 </span>
+
+{% if a.id in next_tokens %}
+<span class="text-xs text-green-600 font-semibold">
+NEXT
+</span>
+{% endif %}
 
 </td>
 
