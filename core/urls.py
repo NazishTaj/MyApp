@@ -38,6 +38,7 @@ path("enable-advanced/", views.enable_advanced_mode, name="enable_advanced"),
 path("staff/add/", views.add_staff, name="add_staff"),
 path("staff/", views.staff_list, name="staff_list"),
 path("staff/<int:staff_id>/permissions/", views.edit_staff_permissions, name="edit_staff_permissions"),
+path('staff-blocked/', views.staff_blocked, name='staff_blocked'),
 
 
 
