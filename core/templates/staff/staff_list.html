@@ -3,108 +3,167 @@
 
 {% block content %}
 
-<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-    
-    <!-- Heading -->
-    <div>
-        <h2 class="text-2xl font-semibold text-gray-800">Staff Management</h2>
-        <p class="text-sm text-gray-500">Manage your clinic staff and permissions</p>
-    </div>
+<div class="px-4 md:px-8 py-6">
 
-    <!-- Button -->
-    <a href="/staff/add/" 
-    class="w-full md:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg shadow-sm text-sm font-medium transition">
-        + Add Staff
-    </a>
-</div>
-
-
-<!-- DESKTOP TABLE -->
-<div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
-    <table class="w-full text-sm">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         
-        <thead class="bg-gray-50 text-gray-500 uppercase text-xs tracking-wide">
-            <tr>
-                <th class="px-6 py-3 text-left">Name</th>
-                <th class="px-6 py-3 text-left">Username</th>
-                <th class="px-6 py-3 text-left">Role</th>
-                <th class="px-6 py-3 text-right">Actions</th>
-            </tr>
-        </thead>
+        <div>
+            <div class="mb-2 flex items-center gap-2 text-xs text-blue-600 font-medium">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                Team Management
+            </div>
 
-        <tbody class="divide-y">
+            <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">
+                Your Team
+            </h2>
 
-            {% for s in staff %}
-            <tr class="hover:bg-gray-50 transition">
-
-                <td class="px-6 py-4 font-medium text-gray-800">
-                    {{ s.name }}
-                </td>
-
-                <td class="px-6 py-4 text-gray-600">
-                    {{ s.user.username }}
-                </td>
-
-                <td class="px-6 py-4">
-                    <span class="inline-flex items-center px-3 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
-                        {{ s.role }}
-                    </span>
-                </td>
-
-                <td class="px-6 py-4 text-right">
-                    <a href="/staff/{{ s.id }}/permissions/" 
-                    class="inline-block px-4 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition">
-                        Manage
-                    </a>
-                </td>
-
-            </tr>
-            {% endfor %}
-
-        </tbody>
-    </table>
-</div>
-
-
-<!-- MOBILE CARDS -->
-<div class="md:hidden space-y-4">
-
-    {% for s in staff %}
-    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-
-        <!-- Top -->
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="font-medium text-gray-800 text-sm">
-                {{ s.name }}
-            </h3>
-
-            <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
-                {{ s.role }}
-            </span>
+            <p class="text-sm text-gray-500 mt-1">
+                Manage staff members, roles and permissions
+            </p>
         </div>
 
-        <!-- Username -->
-        <p class="text-xs text-gray-500 mb-3">
-            @{{ s.user.username }}
-        </p>
-
-        <!-- Action -->
-        <a href="/staff/{{ s.id }}/permissions/" 
-        class="block text-center text-sm bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition">
-            Manage Permissions
+        <!-- Button -->
+        <a href="/staff/add/" 
+        class="w-full md:w-auto text-center px-5 py-2.5 text-sm font-medium text-white rounded-lg 
+        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
+        hover:from-blue-700 hover:to-indigo-700 
+        shadow-md hover:shadow-lg transition">
+            + Add Team Member
         </a>
 
     </div>
 
-    {% empty %}
-    <div class="text-center py-10 text-gray-400">
-        <p class="text-sm">No staff added yet</p>
-        <a href="/staff/add/" class="text-blue-600 text-sm hover:underline">
-            Add your first staff member
-        </a>
+    <!-- DESKTOP TABLE -->
+    <div class="hidden md:block bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+
+        <table class="w-full text-sm">
+            
+            <thead class="bg-gray-50 text-gray-500 uppercase text-xs tracking-wide">
+                <tr>
+                    <th class="px-6 py-3 text-left">Staff</th>
+                    <th class="px-6 py-3 text-left">Username</th>
+                    <th class="px-6 py-3 text-left">Role</th>
+                    <th class="px-6 py-3 text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y">
+
+                {% for s in staff %}
+                <tr class="hover:bg-blue-50 transition group">
+
+                    <!-- Name + Avatar -->
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            
+                            <!-- Avatar -->
+                            <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-semibold">
+                                {{ s.name|slice:":1" }}
+                            </div>
+
+                            <div>
+                                <p class="font-medium text-gray-800 group-hover:text-blue-700 transition">
+                                    {{ s.name }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </td>
+
+                    <!-- Username -->
+                    <td class="px-6 py-4 text-gray-600">
+                        @{{ s.user.username }}
+                    </td>
+
+                    <!-- Role -->
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-3 py-1 text-xs font-medium 
+                        bg-blue-50 text-blue-700 rounded-full">
+                            {{ s.role }}
+                        </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="px-6 py-4 text-right">
+
+                        <a href="/staff/{{ s.id }}/permissions/" 
+                        class="inline-flex items-center gap-1 px-4 py-1.5 text-xs font-medium 
+                        bg-gray-100 text-gray-700 rounded-lg 
+                        hover:bg-blue-100 hover:text-blue-700 transition">
+                            ⚙ Manage
+                        </a>
+
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
     </div>
-    {% endfor %}
+
+
+    <!-- MOBILE CARDS -->
+    <div class="md:hidden space-y-4">
+
+        {% for s in staff %}
+        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+
+            <!-- Top -->
+            <div class="flex items-center justify-between mb-3">
+
+                <div class="flex items-center gap-3">
+
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-semibold">
+                        {{ s.name|slice:":1" }}
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-800 text-sm">
+                            {{ s.name }}
+                        </h3>
+
+                        <p class="text-xs text-gray-500">
+                            @{{ s.user.username }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                    {{ s.role }}
+                </span>
+
+            </div>
+
+            <!-- Action -->
+            <a href="/staff/{{ s.id }}/permissions/" 
+            class="block text-center text-sm font-medium 
+            bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 
+            py-2 rounded-lg hover:from-blue-100 hover:to-blue-200 hover:text-blue-700 transition">
+                Manage Permissions
+            </a>
+
+        </div>
+
+        {% empty %}
+        <div class="text-center py-12 text-gray-400">
+
+            <div class="mb-3 text-4xl">👥</div>
+
+            <p class="text-sm mb-2">No team members yet</p>
+
+            <a href="/staff/add/" 
+            class="text-blue-600 text-sm hover:underline">
+                Add your first team member
+            </a>
+
+        </div>
+        {% endfor %}
+
+    </div>
 
 </div>
 
