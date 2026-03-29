@@ -163,10 +163,15 @@ Today's Queue
 
 
 <!-- Status -->
-
 <td class="px-6 py-4">
 
-{% if a.status == "Pending" %}
+{% if a.queue_status == "In Consultation" %}
+
+<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+In Room
+</span>
+
+{% elif a.status == "Pending" %}
 
 <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
 Pending
@@ -189,7 +194,6 @@ Cancelled
 </td>
 
 
-
 <!-- Actions -->
 <td class="px-6 py-4">
 
@@ -210,11 +214,18 @@ History
 </a>
 
 {% if a.status == "Pending" %}
+{% if show_doctor_column and a.queue_status == "Waiting" %}
+<a href="/send-to-doctor/{{ a.id }}/"
+class="px-3 py-1.5 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
+Send
+</a>
+{% endif %}
 
 <a href="/complete-appointment/{{ a.id }}/"
 class="px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200 transition">
 Complete
 </a>
+
 
 <a href="/cancel-appointment/{{ a.id }}/"
 class="px-3 py-1.5 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition">
