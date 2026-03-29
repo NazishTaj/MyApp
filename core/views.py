@@ -52,7 +52,6 @@ def logout_view(request):
 # ---------------- DASHBOARD ---------------- #
 
 from django.utils import timezone
-
 @login_required(login_url="login")
 def dashboard(request):
 
@@ -61,11 +60,29 @@ def dashboard(request):
 
     today = timezone.localtime().date()
 
-    appointments_today = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        doctor=profile
-    )
+    if profile.role == "doctor":
+        appointments_today = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            doctor=profile
+        )
+
+    elif profile.role == "assistant":
+        if profile.assigned_doctor:
+            appointments_today = Appointment.objects.filter(
+                clinic=clinic,
+                appointment_date=today,
+                doctor=profile.assigned_doctor
+            )
+        else:
+            appointments_today = Appointment.objects.none()
+
+    else:  # owner + receptionist
+        appointments_today = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today
+        )
+
     today_revenue = Bill.objects.filter(
         clinic=clinic,
         created_at__date=today
@@ -77,7 +94,6 @@ def dashboard(request):
 
     total_patients = Patient.objects.filter(clinic=clinic).count()
     total_appointments = Appointment.objects.filter(clinic=clinic).count()
-    
 
     context = {
         "appointments": appointments_today,
@@ -90,9 +106,6 @@ def dashboard(request):
     }
 
     return render(request, "dashboard.html", context)
-    
-
-
 # ---------------- PATIENTS ---------------- #
 
 from django.db.models import Q
@@ -273,7 +286,8 @@ def book_appointment(request, patient_id):
 
             doctor = UserProfile.objects.filter(
                 id=doctor_id,
-                clinic=clinic
+                clinic=clinic,
+                role__in=["owner", "doctor"]
             ).first()
            
             if not doctor:
@@ -336,13 +350,31 @@ def appointments(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not has_permission(request.user, "manage_appointments"):
         return render(request, "403.html", status=403)
 
-    appointments = Appointment.objects.filter(clinic=clinic).order_by(
-        "-appointment_date",
-        "appointment_time"
-    )
+    # 🔥 NEW LOGIC
+    if profile.role == "doctor":
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            doctor=profile
+        )
+
+    elif profile.role == "assistant":
+        if profile.assigned_doctor:
+            appointments = Appointment.objects.filter(
+                clinic=clinic,
+                doctor=profile.assigned_doctor
+            )
+        else:
+            appointments = Appointment.objects.none()
+
+    else:
+        appointments = Appointment.objects.filter(clinic=clinic)
+
+    appointments = appointments.order_by("-appointment_date", "appointment_time")
+
     doctors = UserProfile.objects.filter(
         clinic=clinic,
         role__in=["owner", "doctor"]
@@ -351,8 +383,8 @@ def appointments(request):
     show_doctor_column = doctors.count() > 1
 
     return render(request, "appointments.html", {
-    "appointments": appointments,
-    "show_doctor_column": show_doctor_column
+        "appointments": appointments,
+        "show_doctor_column": show_doctor_column
     })
 
 
@@ -392,12 +424,13 @@ def cancel_appointment(request, appointment_id):
 
 @login_required(login_url="login")
 def add_prescription(request, patient_id):
+
     if not has_permission(request.user, "create_prescription"):
         return render(request, "403.html", status=403)
-    
+
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-    
+
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
     if request.method == "POST":
@@ -409,17 +442,32 @@ def add_prescription(request, patient_id):
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
         blood_group = request.POST.get("blood_group")
-        appointment = Appointment.objects.filter(
-            clinic=clinic,
-            patient=patient
-        ).order_by("-appointment_date", "-appointment_time").first()
 
-        if appointment and appointment.doctor:
-            doctor = appointment.doctor
-        else:
+        # 🔥 NEW DOCTOR LOGIC (FINAL)
+        doctor_id = request.POST.get("doctor_id")
+
+        if profile.role == "owner":
             doctor = profile
 
+        elif profile.role == "doctor":
+            doctor = profile
 
+        elif profile.role == "assistant":
+            doctor = profile.assigned_doctor
+
+        elif profile.role == "receptionist":
+            if doctor_id:
+                doctor = UserProfile.objects.filter(
+                    id=doctor_id,
+                    clinic=clinic,
+                    role__in=["owner", "doctor"]
+                ).first()
+            else:
+                doctor = None
+        else:
+            doctor = None
+
+        # 🔥 CREATE PRESCRIPTION
         Prescription.objects.create(
             clinic=clinic,
             patient=patient,
@@ -431,12 +479,22 @@ def add_prescription(request, patient_id):
             weight=weight,
             blood_group=blood_group,
             created_by=profile,
-            doctor=doctor  
+            doctor=doctor
         )
 
         return redirect("patient_history", patient_id=patient.id)
 
-    return render(request, "add_prescription.html", {"patient": patient})
+    # 🔥 Doctors list (for receptionist dropdown)
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
+
+    return render(request, "add_prescription.html", {
+        "patient": patient,
+        "doctors": doctors,
+        "profile": profile 
+    })
 
 
 @login_required(login_url="login")
@@ -488,7 +546,7 @@ def create_bill_for_patient(request, patient_id):
             new_number = 1001
 
         bill_number = f"FD-{new_number}"
-        doctor = profile if profile.role in ["owner", "doctor"] else None
+        doctor = None
         # Create bill
         bill = Bill.objects.create(
             clinic=clinic,
@@ -1084,8 +1142,16 @@ def add_staff(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not profile.is_owner:
         return render(request, "403.html", status=403)
+
+    # 🔥 doctors list (for dropdown)
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
+
     if request.method == "POST":
 
         username = request.POST.get("username")
@@ -1094,10 +1160,11 @@ def add_staff(request):
         role = request.POST.get("role")
         email = request.POST.get("email")
 
-        # Username validation
+        # ❗ Username validation
         if User.objects.filter(username=username).exists():
             return render(request, "staff/add_staff.html", {
-                "error": "Username already exists"
+                "error": "Username already exists",
+                "doctors": doctors
             })
 
         # ✅ Create user
@@ -1107,22 +1174,35 @@ def add_staff(request):
             email=email
         )
 
+        # 🔥 Assistant doctor mapping
+        assigned_doctor_id = request.POST.get("assigned_doctor")
+
+        assigned_doctor = None
+        if role == "assistant" and assigned_doctor_id:
+            assigned_doctor = UserProfile.objects.filter(
+                id=assigned_doctor_id,
+                clinic=clinic,
+                role__in=["owner", "doctor"]
+            ).first()
+
         # ✅ Create profile
         profile_obj = UserProfile.objects.create(
             user=user,
             clinic=clinic,
             role=role,
             is_owner=False,
-            name=name
+            name=name,
+            assigned_doctor=assigned_doctor
         )
 
         # 🔥 DEFAULT PERMISSIONS AUTO ASSIGN
+
         if role == "doctor":
             default_perms = [
-              "manage_patients",
-              "manage_appointments",
-              "create_prescription",
-              "manage_billing"
+                "manage_patients",
+                "manage_appointments",
+                "create_prescription",
+                "manage_billing"
             ]
 
             for perm_code in default_perms:
@@ -1132,7 +1212,8 @@ def add_staff(request):
                         user_profile=profile_obj,
                         permission=perm
                     )
-        if role == "receptionist":
+
+        elif role == "receptionist":
             default_perms = [
                 "manage_patients",
                 "manage_appointments",
@@ -1142,7 +1223,6 @@ def add_staff(request):
             for perm_code in default_perms:
                 perm = Permission.objects.filter(code=perm_code).first()
                 if perm:
-
                     UserPermission.objects.create(
                         user_profile=profile_obj,
                         permission=perm
@@ -1150,7 +1230,9 @@ def add_staff(request):
 
         return redirect("staff_list")
 
-    return render(request, "staff/add_staff.html")
+    return render(request, "staff/add_staff.html", {
+        "doctors": doctors
+    })
 
 @login_required
 def staff_list(request):
