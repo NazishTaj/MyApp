@@ -2,69 +2,149 @@
 
 {% block content %}
 
-<div class="max-w-2xl mx-auto px-4">
+<div class="px-4 md:px-8 py-6">
 
     <!-- Header -->
     <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">
-            Manage Permissions
+        
+        <div class="mb-2 flex items-center gap-2 text-xs text-blue-600 font-medium">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            Team Management
+        </div>
+
+        <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">
+            Manage Access
         </h2>
+
         <p class="text-sm text-gray-500 mt-1">
-            Staff: 
+            Configure permissions for 
             <span class="font-medium text-gray-700">{{ staff.name }}</span>
         </p>
+
     </div>
 
-    <!-- Card -->
-    <form method="POST" class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 space-y-5">
-        {% csrf_token %}
+    <!-- GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Permissions List -->
-        <div class="space-y-3">
+        <!-- LEFT SIDE -->
+        <div class="lg:col-span-2">
 
-            {% for perm in permissions %}
-            <label class="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50 transition cursor-pointer">
+            <form method="POST"
+            class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6 hover:shadow-xl transition duration-300">
+                {% csrf_token %}
 
-                <!-- Left -->
-                <div>
-                    <p class="text-sm font-medium text-gray-800">
-                        {{ perm.label }}
-                    </p>
+                <!-- Section Header -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Permissions
+                    </h3>
+                    <span class="text-xs text-gray-400">Step 2</span>
                 </div>
 
-                <!-- Checkbox -->
-                <input 
-                    type="checkbox" 
-                    name="permissions" 
-                    value="{{ perm.code }}"
-                    class="w-5 h-5 accent-blue-600 cursor-pointer"
-                    {% if perm.code in user_perm_codes %}checked{% endif %}
-                >
+                <!-- Permissions List -->
+                <div class="space-y-3">
 
-            </label>
-            {% endfor %}
+                    {% for perm in permissions %}
+                    <label class="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3 
+                    hover:bg-blue-50 hover:border-blue-200 transition cursor-pointer group">
+
+                        <!-- Left -->
+                        <div>
+                            <p class="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition">
+                                {{ perm.label }}
+                            </p>
+                        </div>
+
+                        <!-- Checkbox -->
+                        <input 
+                            type="checkbox" 
+                            name="permissions" 
+                            value="{{ perm.code }}"
+                            class="w-5 h-5 accent-blue-600 cursor-pointer"
+                            {% if perm.code in user_perm_codes %}checked{% endif %}
+                        >
+
+                    </label>
+                    {% endfor %}
+
+                </div>
+
+                <!-- Footer -->
+                <div class="pt-4 border-t space-y-3 md:space-y-0 md:flex md:justify-between md:items-center">
+
+                    <p class="text-xs text-gray-400">
+                        You can update permissions anytime later
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+
+                        <a href="/staff/" 
+                        class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </a>
+
+                        <button 
+                        class="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white rounded-lg 
+                        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
+                        hover:from-blue-700 hover:to-indigo-700 
+                        shadow-md hover:shadow-lg active:scale-95 transition">
+                            🔐 Save Permissions
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
 
         </div>
 
-        <!-- Divider -->
-        <div class="border-t pt-4"></div>
+        <!-- RIGHT PANEL -->
+        <div class="hidden lg:block">
 
-        <!-- Buttons -->
-        <div class="flex flex-col-reverse md:flex-row md:justify-end gap-3">
+            <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 
+            text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
 
-            <a href="/staff/" 
-            class="w-full md:w-auto text-center px-4 py-2.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
-                Cancel
-            </a>
+                <!-- Glow -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
-            <button 
-            class="w-full md:w-auto px-4 py-2.5 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm">
-                Save Permissions
-            </button>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    🔐 Permission Guide
+                </h3>
+
+                <ul class="space-y-3 text-sm opacity-90">
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Control what staff can access</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Limit sensitive operations like billing</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Assign only necessary permissions</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Update anytime as roles change</span>
+                    </li>
+
+                </ul>
+
+                <div class="mt-6 text-xs opacity-70 border-t border-white/20 pt-3">
+                    Secure access ensures better clinic management 🔒
+                </div>
+
+            </div>
 
         </div>
 
-    </form>
+    </div>
 
 </div>
 
