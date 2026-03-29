@@ -5,23 +5,25 @@
 <div class="px-4 md:px-8 py-6">
 
     <!-- Header -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">
-            Add New Staff
-        </h2>
-        <p class="text-sm text-gray-500">
-            Create account & assign role
-        </p>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">
+                Add New Staff
+            </h2>
+            <p class="text-sm text-gray-500">
+                Create account & assign role
+            </p>
+        </div>
     </div>
 
-    <!-- GRID LAYOUT -->
+    <!-- GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- LEFT: FORM -->
+        <!-- LEFT FORM -->
         <div class="lg:col-span-2">
 
             <form method="POST" autocomplete="off"
-            class="bg-white rounded-2xl shadow-md border border-gray-100 p-5 md:p-7 space-y-5">
+            class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 space-y-6">
                 {% csrf_token %}
 
                 {% if error %}
@@ -30,37 +32,56 @@
                 </div>
                 {% endif %}
 
-                <!-- GRID -->
+                <!-- Section Title -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-700">
+                        Basic Details
+                    </h3>
+                    <span class="text-xs text-gray-400">Step 1</span>
+                </div>
+
+                <!-- Inputs -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+                    <!-- Name -->
                     <div class="md:col-span-2">
                         <label class="text-xs text-gray-500">Full Name</label>
-                        <input type="text" name="name" required
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        <input type="text" name="name" required autocomplete="off"
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
+                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
                     </div>
 
+                    <!-- Username -->
                     <div>
                         <label class="text-xs text-gray-500">Username</label>
-                        <input type="text" name="username" required
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        <input type="text" name="username" required autocomplete="off"
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
+                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
                     </div>
 
+                    <!-- Email -->
                     <div>
                         <label class="text-xs text-gray-500">Email</label>
-                        <input type="email" name="email"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        <input type="email" name="email" autocomplete="off"
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
+                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
                     </div>
 
+                    <!-- Password -->
                     <div>
                         <label class="text-xs text-gray-500">Password</label>
                         <input type="password" name="password" required minlength="6"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        autocomplete="new-password"
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
+                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
                     </div>
 
+                    <!-- Role -->
                     <div>
                         <label class="text-xs text-gray-500">Role</label>
-                        <select name="role" id="roleSelect" required
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                        <select name="role" id="roleSelect" required autocomplete="off"
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
+                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Role</option>
                             <option value="doctor">Doctor 👨‍⚕️</option>
                             <option value="receptionist">Receptionist 🧑‍💼</option>
@@ -70,11 +91,11 @@
 
                 </div>
 
-                <!-- Doctor -->
+                <!-- Doctor Assign -->
                 <div id="doctorSelectBox" class="hidden">
                     <label class="text-xs text-gray-500">Assign Doctor</label>
-                    <select name="assigned_doctor"
-                    class="w-full mt-1 px-4 py-2.5 rounded-lg border bg-gray-50">
+                    <select name="assigned_doctor" autocomplete="off"
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50">
                         <option value="">Select Doctor</option>
                         {% for doc in doctors %}
                             <option value="{{ doc.id }}">{{ doc.name }}</option>
@@ -83,18 +104,30 @@
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex justify-end gap-3 pt-4">
+                <div class="flex justify-between items-center pt-4 border-t">
 
-                    <a href="/staff/" 
-                    class="px-4 py-2 text-sm bg-gray-100 rounded-lg">
-                        Cancel
-                    </a>
+                    <!-- Left hint -->
+                    <p class="text-xs text-gray-400">
+                        You can edit permissions later
+                    </p>
 
-                    <button type="submit"
-                    class="px-6 py-2 text-sm text-white rounded-lg 
-                    bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90">
-                        🚀 Create Staff
-                    </button>
+                    <!-- Actions -->
+                    <div class="flex gap-3">
+
+                        <a href="/staff/" 
+                        class="px-4 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                        class="px-6 py-2 text-sm text-white rounded-lg 
+                        bg-gradient-to-r from-blue-600 to-indigo-600 
+                        hover:from-blue-700 hover:to-indigo-700 
+                        shadow-sm hover:shadow-md transition">
+                            🚀 Create Staff
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -102,25 +135,43 @@
 
         </div>
 
-        <!-- RIGHT: INFO PANEL -->
+        <!-- RIGHT PANEL -->
         <div class="hidden lg:block">
 
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl p-6 shadow-md">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
 
-                <h3 class="text-lg font-semibold mb-3">
+                <!-- Glow Effect -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
                     💡 Tips
                 </h3>
 
                 <ul class="space-y-3 text-sm opacity-90">
 
-                    <li>• Assign correct role to control access</li>
-                    <li>• Assistants can be linked to doctors</li>
-                    <li>• Username should be unique</li>
-                    <li>• Permissions can be managed later</li>
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Assign correct role to control access</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Assistants can be linked to doctors</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Username should be unique</span>
+                    </li>
+
+                    <li class="flex items-start gap-2">
+                        <span>✔</span>
+                        <span>Permissions can be managed later</span>
+                    </li>
 
                 </ul>
 
-                <div class="mt-6 text-xs opacity-70">
+                <div class="mt-6 text-xs opacity-70 border-t border-white/20 pt-3">
                     FlowDesk helps you manage your clinic staff efficiently 🚀
                 </div>
 
@@ -132,6 +183,7 @@
 
 </div>
 
+<!-- JS SAME -->
 <script>
 const roleSelect = document.getElementById("roleSelect");
 const doctorBox = document.getElementById("doctorSelectBox");
