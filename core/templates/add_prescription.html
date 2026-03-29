@@ -34,6 +34,18 @@ Patient Record
 <form method="POST" onsubmit="return fixWeight()">
 
 {% csrf_token %}
+{% if profile.role == "receptionist" %}
+<div class="mb-4">
+    <label class="block text-sm font-medium mb-1">Select Doctor</label>
+    <select name="doctor_id" required
+        class="w-full border rounded-lg px-3 py-2 text-sm">
+        <option value="">Select Doctor</option>
+        {% for doc in doctors %}
+            <option value="{{ doc.id }}">{{ doc.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
 
 
 <div class="grid grid-cols-3 gap-4 mb-4">
