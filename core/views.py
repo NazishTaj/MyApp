@@ -89,6 +89,9 @@ def dashboard(request):
             clinic=clinic,
             appointment_date=today
         )
+    appointments_today = appointments_today.order_by(
+        "doctor", "token_number"
+    )
 
 
     today_revenue = Bill.objects.filter(
@@ -261,6 +264,8 @@ def delete_patient(request, patient_id):
 
 
 from django.utils import timezone
+
+
 @login_required(login_url="login")
 def book_appointment(request, patient_id):
 
@@ -337,7 +342,8 @@ def book_appointment(request, patient_id):
             appointment_time=time,
             problem=problem,
             token_number=token,
-            doctor=doctor 
+            doctor=doctor,
+            queue_status="Waiting"
         )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
@@ -409,6 +415,32 @@ def complete_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "Completed"
+    appointment.queue_status = "Done" 
+    appointment.save()
+
+    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+
+
+@login_required(login_url="login")
+def send_to_doctor(request, appointment_id):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    # 🔥 Only for multi doctor + receptionist
+    if profile.role != "receptionist" or not clinic.is_advanced:
+        return redirect("dashboard")
+
+    # 🔥 Ensure only one In Consultation per doctor
+    Appointment.objects.filter(
+        clinic=clinic,
+        doctor=appointment.doctor,
+        queue_status="In Consultation"
+    ).update(queue_status="Waiting")
+
+    appointment.queue_status = "In Consultation"
     appointment.save()
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
@@ -425,6 +457,7 @@ def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "Cancelled"
+    appointment.queue_status = "Done"
     appointment.save()
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
@@ -688,7 +721,8 @@ def online_booking(request):
             appointment_time=time,
             problem=problem,
             token_number=token,
-            doctor=doctor
+            doctor=doctor,
+            queue_status="Waiting"
         )
 
         return render(request, "booking_success.html", {
@@ -960,6 +994,7 @@ def mark_pending(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "Pending"
+    appointment.queue_status = "Waiting"
     appointment.save()
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
