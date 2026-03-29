@@ -62,7 +62,9 @@ def dashboard(request):
         role__in=["owner", "doctor"]
     )
 
-    show_doctor_column = doctors.count() > 1
+    show_doctor_column = (
+        doctors.count() > 1 and profile.role == "receptionist"
+    )
 
     today = timezone.localtime().date()
     if profile.role in ["doctor", "owner"]:
