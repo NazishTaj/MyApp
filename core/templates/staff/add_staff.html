@@ -4,7 +4,6 @@
 
 <div class="max-w-md mx-auto">
 
-```
 <h2 class="text-xl font-semibold mb-4">Add Staff</h2>
 
 {% if error %}
@@ -29,7 +28,12 @@
         placeholder="Username"
         required
         class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <input type="email" name="email" placeholder="Email"
+
+    <!-- Email -->
+    <input 
+        type="email" 
+        name="email" 
+        placeholder="Email"
         class="w-full border p-2 rounded">
 
     <!-- Password -->
@@ -43,18 +47,29 @@
 
     <!-- Role -->
     <select 
-    name="role" 
-    required
-    class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+        name="role" 
+        id="roleSelect"
+        required
+        class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
 
-    <option value="">Select Role</option>
+        <option value="">Select Role</option>
+        <option value="doctor">Doctor 👨‍⚕️</option>
+        <option value="receptionist">Receptionist 🧑‍💼</option>
+        <option value="assistant">Assistant</option>
 
-    <option value="doctor">Doctor 👨‍⚕️</option>   <!-- 🔥 ADD THIS -->
+    </select>
 
-    <option value="receptionist">Receptionist 🧑‍💼</option>
-    <option value="assistant">Assistant</option>
-
-</select>
+    <!-- 🔥 ASSIGNED DOCTOR (ONLY FOR ASSISTANT) -->
+    <div id="doctorSelectBox" class="hidden">
+        <label class="text-sm font-medium mb-1 block">Assign Doctor</label>
+        <select name="assigned_doctor"
+            class="w-full border p-2 rounded">
+            <option value="">Select Doctor</option>
+            {% for doc in doctors %}
+                <option value="{{ doc.id }}">{{ doc.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
     <!-- Submit Button -->
     <button 
@@ -64,8 +79,21 @@
     </button>
 
 </form>
-```
 
 </div>
+
+<!-- 🔥 JS FOR SHOW/HIDE -->
+<script>
+const roleSelect = document.getElementById("roleSelect");
+const doctorBox = document.getElementById("doctorSelectBox");
+
+roleSelect.addEventListener("change", function() {
+    if (this.value === "assistant") {
+        doctorBox.classList.remove("hidden");
+    } else {
+        doctorBox.classList.add("hidden");
+    }
+});
+</script>
 
 {% endblock %}
