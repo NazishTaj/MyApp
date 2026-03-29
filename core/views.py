@@ -1369,3 +1369,6 @@ def edit_staff_permissions(request, staff_id):
         "user_perm_codes": user_perm_codes
     })
 
+def staff_blocked(request):
+    return render(request, 'staff_blocked.html')
+
