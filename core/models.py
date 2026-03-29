@@ -29,18 +29,26 @@ class UserProfile(models.Model):
 
     ROLE_CHOICES = (
         ('owner', 'Owner'),
+        ('doctor', 'Doctor'),   # 🔥 ADD THIS
         ('receptionist', 'Receptionist'),
         ('assistant', 'Assistant'),
     )
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='owner')
-    is_owner = models.BooleanField(default=True)
+    is_owner = models.BooleanField(default=False)
 
-    # 👇 CHANGE HERE
     name = models.CharField(max_length=200)
-
     phone = models.CharField(max_length=20, blank=True)
     photo = models.ImageField(upload_to="doctor_photos/", blank=True, null=True)
+    assigned_doctor = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={"role__in": ["owner", "doctor"]},
+        related_name="assistants"
+    )
+
 
     def __str__(self):
         return self.name
@@ -104,7 +112,9 @@ class Appointment(models.Model):
         UserProfile,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        limit_choices_to={"role__in": ["owner", "doctor"]}
+        
     )
 
     token_number = models.PositiveIntegerField(blank=True, null=True)
@@ -154,7 +164,8 @@ class Prescription(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="doctor_prescriptions"
+        related_name="doctor_prescriptions",
+        limit_choices_to={"role__in": ["owner", "doctor"]}
     )
     def __str__(self):
         return f"{self.patient.name} - {self.created_at}"
