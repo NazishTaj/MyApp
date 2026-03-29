@@ -59,8 +59,7 @@ def dashboard(request):
     clinic = profile.clinic
 
     today = timezone.localtime().date()
-
-    if profile.role == "doctor":
+    if profile.role in ["doctor", "owner"]:
         appointments_today = Appointment.objects.filter(
             clinic=clinic,
             appointment_date=today,
@@ -77,11 +76,12 @@ def dashboard(request):
         else:
             appointments_today = Appointment.objects.none()
 
-    else:  # owner + receptionist
+    else:  # receptionist
         appointments_today = Appointment.objects.filter(
             clinic=clinic,
             appointment_date=today
         )
+
 
     today_revenue = Bill.objects.filter(
         clinic=clinic,
