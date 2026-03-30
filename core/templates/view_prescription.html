@@ -40,6 +40,18 @@ Dr. {{ prescription.doctor.name }}
 </div>
 
 </div>
+{% if prescription.parent %}
+<div class="mb-3 print:hidden">
+    <p class="text-xs text-yellow-600 font-medium">
+        ✏️ This is a revised prescription
+    </p>
+
+    <a href="/prescription/{{ prescription.parent.id }}/"
+    class="text-xs text-blue-600 underline">
+        View Previous Prescription
+    </a>
+</div>
+{% endif %}
 
 
 <!-- Patient Info -->
@@ -209,6 +221,14 @@ Signature
 </p>
 
 </div>
+
+</div>
+<div class="mb-3 flex justify-between items-center print:hidden">
+
+<a href="/prescription/{{ prescription.id }}/revise/"
+class="inline-block px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg hover:bg-yellow-600 transition">
+✏️ Revise Prescription
+</a>
 
 </div>
 
