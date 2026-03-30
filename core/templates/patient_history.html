@@ -107,38 +107,24 @@ Prescriptions
 {{ p.created_at|date:"d M Y, h:i A" }}
 </div>
 
-<div class="font-medium text-gray-800 flex items-center flex-wrap gap-1">
+<div class="font-medium text-gray-800 flex items-center gap-2">
 
 {{ p.diagnosis }}
 
 {% if p.parent %}
+<!-- NEW (Revised) -->
 <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">
 Revised
 </span>
-{% endif %}
-
-{% if p.revisions.all %}
+{% else %}
+<!-- OLD (Original) -->
 <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-Updated
-</span>
-{% endif %}
-
-{% if forloop.first %}
-<span class="text-xs text-green-600 font-semibold">
-Latest
+Original
 </span>
 {% endif %}
 
 </div>
 
-{% if p.parent %}
-<div class="text-xs mt-1">
-<a href="/prescription/{{ p.parent.id }}/"
-class="text-blue-500 underline">
-View Previous
-</a>
-</div>
-{% endif %}
 
 <div class="text-gray-500 text-xs">
 {{ p.medicines|truncatechars:60 }}
