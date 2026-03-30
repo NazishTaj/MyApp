@@ -179,6 +179,13 @@ class Prescription(models.Model):
         related_name="doctor_prescriptions",
         limit_choices_to={"role__in": ["owner", "doctor"]}
     )
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="revisions"
+    )
     def __str__(self):
         return f"{self.patient.name} - {self.created_at}"
     
