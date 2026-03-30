@@ -131,6 +131,7 @@ View Previous
 <tr class="text-gray-600 border-b">
 <th class="text-left py-2">Medicine</th>
 <th class="text-left py-2">Dose</th>
+<th class="text-left py-2">Duration</th>
 <th class="text-left py-2">Remarks</th>
 </tr>
 </thead>
@@ -147,6 +148,9 @@ View Previous
 
 <td class="py-2 text-gray-600">
 {{ med.dose|default:"-" }}
+</td>
+<td class="py-2 text-gray-600">
+{{ med.duration|default:"-" }}   
 </td>
 
 <td class="py-2 text-gray-600">
