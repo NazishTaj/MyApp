@@ -564,6 +564,60 @@ def add_prescription(request, patient_id):
         "doctors": doctors,
         "profile": profile 
     })
+    
+#Revise Prescription
+@login_required(login_url="login")
+def revise_prescription(request, id):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    old = get_object_or_404(Prescription, id=id, clinic=clinic)
+
+    patient = old.patient
+
+    if request.method == "POST":
+
+        diagnosis = request.POST.get("diagnosis")
+        symptoms = request.POST.get("symptoms")
+        medicines = request.POST.get("medicines")
+        tests = request.POST.get("tests")
+        notes = request.POST.get("notes")
+        weight = request.POST.get("weight")
+        blood_group = request.POST.get("blood_group")
+
+        doctor = old.doctor   # same doctor
+
+        # 🔥 NEW PRESCRIPTION CREATE (CLONE)
+        Prescription.objects.create(
+            clinic=clinic,
+            patient=patient,
+            diagnosis=diagnosis,
+            symptoms=symptoms,
+            medicines=medicines,
+            tests=tests,
+            notes=notes,
+            weight=weight,
+            blood_group=blood_group,
+            created_by=profile,
+            doctor=doctor,
+            parent=old   # 🔥 LINK
+        )
+
+        return redirect("patient_history", patient_id=patient.id)
+
+    # 🔥 PREFILL DATA
+    return render(request, "add_prescription.html", {
+        "patient": patient,
+        "profile": profile,
+        "doctors": UserProfile.objects.filter(
+            clinic=clinic,
+            role__in=["owner", "doctor"]
+        ),
+        "old": old   # 👈 IMPORTANT
+    })
+
+
 
 
 @login_required(login_url="login")
