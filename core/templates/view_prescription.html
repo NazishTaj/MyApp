@@ -133,38 +133,27 @@ View Previous
 
 <ol class="list-decimal ml-5 space-y-3">
 
-{% for med in prescription.medicines.splitlines %}
-
-{% if "||" in med %}
-{% with parts=med.split:"||" %}
+{% for med in med_lines %}
 
 <li>
 
 <div class="font-medium text-gray-800">
-{{ parts.0 }}
+{{ med.name }}
 </div>
 
-{% if parts|length > 1 %}
+{% if med.dose %}
 <div class="text-xs text-gray-600">
-{{ parts.1 }}
+{{ med.dose }}
 </div>
 {% endif %}
 
-{% if parts|length > 2 %}
+{% if med.remark %}
 <div class="text-xs text-gray-500 italic">
-{{ parts.2 }}
+{{ med.remark }}
 </div>
 {% endif %}
 
 </li>
-
-{% endwith %}
-
-{% else %}
-
-<li>{{ med }}</li>
-
-{% endif %}
 
 {% endfor %}
 
