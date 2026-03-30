@@ -572,7 +572,11 @@ def revise_prescription(request, id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
-    old = get_object_or_404(Prescription, id=id, clinic=clinic)
+    old = get_object_or_404(
+        Prescription.objects.select_related("patient", "doctor"),
+        id=id,
+        clinic=clinic
+    )
 
     patient = old.patient
 
@@ -631,11 +635,11 @@ def patient_history(request, patient_id):
     clinic=clinic,
     patient=patient
 ).order_by("-created_at")
-
     prescriptions = Prescription.objects.filter(
         clinic=clinic,
         patient=patient
-    ).order_by("-created_at") 
+).select_related("doctor", "patient").prefetch_related("revisions").order_by("-created_at")
+
 
     return render(request, "patient_history.html", {
         "patient": patient,
@@ -720,7 +724,11 @@ def view_prescription(request, id):
     if not has_permission(request.user, "create_prescription"):
         return render(request, "403.html", status=403)
 
-    prescription = get_object_or_404(Prescription, id=id, clinic=clinic)
+    prescription = get_object_or_404(
+        Prescription.objects.select_related("patient", "doctor", "clinic"),
+        id=id,
+        clinic=clinic
+    )
 
     return render(request, "view_prescription.html", {
     "prescription": prescription,
