@@ -157,18 +157,32 @@ if(weight.value === ""){
 return true
 }
 
-// ✅ ENTER CONTROL
+// ✅ SMART ENTER NAVIGATION
 function handleEnter(e){
     if(e.key === "Enter"){
         let tag = e.target.tagName.toLowerCase()
 
-        // textarea me allow
+        // ✅ TEXTAREA → allow new line
         if(tag === "textarea"){
             return true
         }
 
-        // baaki sab me block
+        // ❌ prevent submit
         e.preventDefault()
+
+        let form = e.target.form
+        let elements = Array.from(form.elements)
+
+        let index = elements.indexOf(e.target)
+
+        // ✅ find next visible input
+        for(let i = index + 1; i < elements.length; i++){
+            if(elements[i].offsetParent !== null && !elements[i].disabled){
+                elements[i].focus()
+                break
+            }
+        }
+
         return false
     }
 }
