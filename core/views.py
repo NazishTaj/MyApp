@@ -16,6 +16,7 @@ from django.db.models import Sum
 def format_medicines(request):
     names = request.POST.getlist('medicine_name[]')
     dosages = request.POST.getlist('dosage[]')
+    durations = request.POST.getlist('duration[]')
     remarks = request.POST.getlist('remark[]')
 
     med_list = []
@@ -23,11 +24,13 @@ def format_medicines(request):
     for i in range(len(names)):
         name = (names[i] or "").strip()
         dose = (dosages[i] if i < len(dosages) else "").strip()
+        duration = (durations[i] if i < len(durations) else "").strip()
         remark = (remarks[i] if i < len(remarks) else "").strip()
 
         # 👇 allow partial entries (safe)
-        if name or dose or remark:
-            med_list.append(f"{name}||{dose}||{remark}")
+        if name or dose or duration or remark:
+            duration = (durations[i] if i < len(durations) else "").strip()
+            med_list.append(f"{name}||{dose}||{duration}||{remark}")
 
     return "\n".join(med_list)
 
@@ -759,7 +762,8 @@ def view_prescription(request, id):
                 med_lines.append({
                     "name": parts[0],
                     "dose": parts[1] if len(parts) > 1 else "",
-                    "remark": parts[2] if len(parts) > 2 else "",
+                    "duration": parts[2] if len(parts) > 2 else "",
+                    "remark": parts[3] if len(parts) > 3 else "",
                 })
             else:
                 med_lines.append({
