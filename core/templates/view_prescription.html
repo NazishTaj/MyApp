@@ -40,6 +40,9 @@ Dr. {{ prescription.doctor.name }}
 </div>
 
 </div>
+
+<!-- Revised Badge -->
+
 {% if prescription.parent %}
 <div class="mb-4 flex items-center gap-3 print:hidden">
 
@@ -55,14 +58,12 @@ View Previous
 </div>
 {% endif %}
 
-
 <!-- Patient Info -->
 
 <div class="text-sm mb-5">
 
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-4">
 
-<!-- ROW 1 -->
 <p><span class="text-gray-500">Patient:</span>
 <span class="font-medium break-words">{{ prescription.patient.name }}</span></p>
 
@@ -72,7 +73,6 @@ View Previous
 <p><span class="text-gray-500">Gender:</span>
 <span class="font-medium">{{ prescription.patient.gender }}</span></p>
 
-<!-- ROW 2 -->
 <p><span class="text-gray-500">Date:</span>
 <span class="font-medium">{{ prescription.created_at|date:"d M Y" }}</span></p>
 
@@ -82,7 +82,6 @@ View Previous
 <p><span class="text-gray-500">Blood:</span>
 <span class="font-medium">{{ prescription.blood_group|default:"-" }}</span></p>
 
-<!-- ROW 3 -->
 <p><span class="text-gray-500">Weight:</span>
 <span class="font-medium">
 {{ prescription.weight|default:"-" }}{% if prescription.weight %} kg{% endif %}
@@ -99,51 +98,36 @@ View Previous
 
 <hr class="mb-6">
 
-
 <!-- Diagnosis -->
 
 {% if prescription.diagnosis %}
 <div class="mb-6">
-
-<h4 class="text-base font-semibold text-gray-800 mb-2">
-Diagnosis
-</h4>
-
+<h4 class="text-base font-semibold text-gray-800 mb-2">Diagnosis</h4>
 <p class="text-sm text-gray-700 leading-relaxed">
 {{ prescription.diagnosis|linebreaksbr }}
 </p>
-
 </div>
 {% endif %}
-
 
 <!-- Symptoms -->
 
 {% if prescription.symptoms %}
 <div class="mb-6">
-
-<h4 class="text-base font-semibold text-gray-800 mb-2">
-Symptoms
-</h4>
-
+<h4 class="text-base font-semibold text-gray-800 mb-2">Symptoms</h4>
 <p class="text-sm text-gray-700 leading-relaxed">
 {{ prescription.symptoms|linebreaksbr }}
 </p>
-
 </div>
 {% endif %}
-
 
 <!-- Medicines -->
 
 {% if prescription.medicines %}
 <div class="mb-6">
 
-<h4 class="text-base font-semibold text-gray-800 mb-3">
-Medicines
-</h4>
+<h4 class="text-base font-semibold text-gray-800 mb-3">Medicines</h4>
 
-<div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800">
+<div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 overflow-x-auto">
 
 <ol class="list-decimal ml-5 space-y-1">
 {% for med in prescription.medicines.splitlines %}
@@ -154,61 +138,44 @@ Medicines
 </div>
 
 <p class="text-xs text-gray-500 mt-3 leading-relaxed">
-
 <b>Dosage format:</b> Morning – Afternoon – Night  
 Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
 <br>
-
 <b>Abbreviations:</b>  
 <b>OD</b> – Once Daily • <b>TDS</b> – Three Times Daily • <b>BD</b> – Twice Daily  
 <b>AF</b> – After Food • <b>BBF</b> – Before Breakfast • <b>HS</b> – At Bedtime • <b>SOS</b> – When Required
-
 </p>
 
 </div>
 {% endif %}
-
 
 <!-- Tests -->
 
 {% if prescription.tests %}
 <div class="mb-6">
-
-<h4 class="text-base font-semibold text-gray-800 mb-2">
-Recommended Tests
-</h4>
-
+<h4 class="text-base font-semibold text-gray-800 mb-2">Recommended Tests</h4>
 <p class="text-sm text-gray-700 leading-relaxed">
 {{ prescription.tests|linebreaksbr }}
 </p>
-
 </div>
 {% endif %}
-
 
 <!-- Advice -->
 
 {% if prescription.notes %}
 <div class="mb-6">
-
-<h4 class="text-base font-semibold text-gray-800 mb-2">
-Advice
-</h4>
-
+<h4 class="text-base font-semibold text-gray-800 mb-2">Advice</h4>
 <p class="text-sm text-gray-700 leading-relaxed">
 {{ prescription.notes|linebreaksbr }}
 </p>
-
 </div>
 {% endif %}
 
-
 <hr class="my-8">
-
 
 <!-- Signature -->
 
-<div class="flex justify-end">
+<div class="flex justify-center sm:justify-end">
 
 <div class="text-center">
 
@@ -225,29 +192,24 @@ Signature
 </div>
 
 </div>
-<div class="mb-3 flex justify-between items-center print:hidden">
+
+<!-- Buttons (Responsive) -->
+
+<div class="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
 
 <a href="/prescription/{{ prescription.id }}/revise/"
-class="inline-block px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg hover:bg-yellow-600 transition">
-✏️ Revise Prescription
+class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition shadow-sm">
+✏️ Revise
 </a>
-
-
-
-<!-- Print Button -->
-
-
 
 <button
 onclick="printPrescription({{ prescription.id }})"
-class="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-6 py-2.5 text-sm font-medium text-white
-bg-gradient-to-r from-emerald-500 to-teal-500
-rounded-lg shadow hover:from-emerald-600 hover:to-teal-600
-transition-all duration-200 cursor-pointer">
+class="w-full sm:w-auto px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
 
-🖨 Print Prescription
+🖨 Print
 
 </button>
+
 </div>
 
 <script>
@@ -255,8 +217,6 @@ function printPrescription(id){
     window.open(`/prescription/${id}/print/`, '_blank');
 }
 </script>
-
-</div>
 
 </div>
 
