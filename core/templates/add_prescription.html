@@ -31,7 +31,7 @@ Patient Record
 <!-- Form -->
 <div class="bg-white rounded-xl shadow p-6">
 
-<form method="POST" onsubmit="return fixWeight()">
+<form method="POST" onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
 {% csrf_token %}
 
 {% if profile.role == "receptionist" %}
@@ -69,6 +69,7 @@ class="w-full border rounded-lg px-3 py-2 text-sm">
 <div class="mb-5">
 <label class="block text-sm font-medium mb-1">Diagnosis</label>
 <textarea name="diagnosis" rows="2"
+placeholder="Enter each diagnosis on a new line"
 class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.diagnosis|default:'' }}</textarea>
 </div>
 
@@ -76,17 +77,19 @@ class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.diagnosis|default:'' }
 <div class="mb-5">
 <label class="block text-sm font-medium mb-1">Symptoms</label>
 <textarea name="symptoms" rows="2"
+placeholder="Enter each symptom on a new line (e.g. Fever ↵ Cough ↵ Cold)"
 class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.symptoms|default:'' }}</textarea>
 </div>
 
-<!-- 🔥 MEDICINES (NEW UI) -->
+<!-- 🔥 MEDICINES -->
 <div class="mb-5">
 
 <div class="flex justify-between items-center mb-2">
 <label class="text-sm font-medium">Medicines</label>
 
 <button type="button" onclick="addRow()"
-class="text-xs bg-blue-600 text-white px-2 py-1 rounded">
+class="text-xs bg-blue-600 text-white px-2 py-1 rounded"
+tabindex="-1">
 + Add
 </button>
 </div>
@@ -119,7 +122,7 @@ class="border rounded px-2 py-2 text-sm">
 class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.tests|default:'' }}</textarea>
 </div>
 
-<!-- Notes -->
+<!-- Advice -->
 <div class="mb-6">
 <label class="block text-sm font-medium mb-1">Advice</label>
 <textarea name="notes" rows="2"
@@ -154,6 +157,23 @@ if(weight.value === ""){
 return true
 }
 
+// ✅ ENTER CONTROL
+function handleEnter(e){
+    if(e.key === "Enter"){
+        let tag = e.target.tagName.toLowerCase()
+
+        // textarea me allow
+        if(tag === "textarea"){
+            return true
+        }
+
+        // baaki sab me block
+        e.preventDefault()
+        return false
+    }
+}
+
+// ✅ ADD MEDICINE ROW
 function addRow(){
 let container = document.getElementById("medicine-container")
 
