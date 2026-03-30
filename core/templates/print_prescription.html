@@ -17,13 +17,20 @@
             margin: 0;
             padding: 0;
             font-size: 12px;
-            line-height: 1.4;
+            line-height: 1.5;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        .bg-white, .mb-6, .signature-section {
+        .no-break {
             page-break-inside: avoid;
+        }
+
+        /* Force grid in print */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px 12px;
         }
     }
     </style>
@@ -31,55 +38,83 @@
 
 <body onload="window.print()">
 
-<div class="max-w-3xl mx-auto bg-white p-8">
+<div class="max-w-3xl mx-auto bg-white p-6">
 
-<!-- Header -->
-<div class="flex justify-between border-b pb-4 mb-6">
+<!-- ================= HEADER ================= -->
+<div class="flex justify-between items-center border-b pb-4 mb-6 no-break">
 
-    <div class="flex gap-3 items-center">
+    <div class="flex items-center gap-3">
         {% if clinic.logo %}
-        <img src="{{ clinic.logo.url }}" class="h-12 w-12">
+        <img src="{{ clinic.logo.url }}" class="h-12 w-12 object-contain">
         {% endif %}
 
         <div>
-            <h2 class="font-semibold">{{ clinic.name }}</h2>
-            <p class="text-sm text-gray-600">Dr. {{ prescription.doctor.name }}</p>
+            <h2 class="text-lg font-bold">
+                {{ clinic.name }}
+            </h2>
+            <p class="text-sm font-medium text-gray-700">
+                Dr. {{ prescription.doctor.name }}
+            </p>
         </div>
     </div>
 
-    <div class="text-sm text-gray-600 text-right">
+    <div class="text-right text-sm text-gray-600">
         <p>{{ clinic.phone }}</p>
         <p>{{ clinic.address }}</p>
     </div>
 
 </div>
 
-<!-- Patient Info -->
-<div class="text-sm mb-6 space-y-2">
-    <p><b>Patient:</b> {{ prescription.patient.name }}</p>
-    <p><b>Age:</b> {{ prescription.patient.age }} | <b>Gender:</b> {{ prescription.patient.gender }}</p>
-    <p><b>Date:</b> {{ prescription.created_at|date:"d M Y" }}</p>
+<!-- ================= PATIENT INFO ================= -->
+<div class="text-sm mb-6 no-break">
+
+<div class="grid-3">
+
+<p><b>Patient:</b> {{ prescription.patient.name }}</p>
+
+<p><b>Age:</b> {{ prescription.patient.age }}</p>
+
+<p><b>Gender:</b> {{ prescription.patient.gender }}</p>
+
+<p><b>Date:</b> {{ prescription.created_at|date:"d M Y" }}</p>
+
+<p><b>Phone:</b> {{ prescription.patient.phone|default:"-" }}</p>
+
+<p><b>Blood:</b> {{ prescription.blood_group|default:"-" }}</p>
+
+<p>
+<b>Weight:</b>
+{{ prescription.weight|default:"-" }}{% if prescription.weight %} kg{% endif %}
+</p>
+
+<p style="grid-column: span 2;">
+<b>Address:</b>
+{{ prescription.patient.address|default:"-" }}
+</p>
+
+</div>
+
 </div>
 
 <hr class="mb-6">
 
-<!-- Diagnosis -->
+<!-- ================= DIAGNOSIS ================= -->
 {% if prescription.diagnosis %}
-<div class="mb-6">
-    <h4 class="font-semibold">Diagnosis</h4>
+<div class="mb-6 no-break">
+    <h4 class="font-semibold mb-1">Diagnosis</h4>
     <p>{{ prescription.diagnosis|linebreaksbr }}</p>
 </div>
 {% endif %}
 
-<!-- Symptoms -->
+<!-- ================= SYMPTOMS ================= -->
 {% if prescription.symptoms %}
-<div class="mb-6">
-    <h4 class="font-semibold">Symptoms</h4>
+<div class="mb-6 no-break">
+    <h4 class="font-semibold mb-1">Symptoms</h4>
     <p>{{ prescription.symptoms|linebreaksbr }}</p>
 </div>
 {% endif %}
 
-<!-- ✅ MEDICINES FIXED -->
+<!-- ================= MEDICINES ================= -->
 {% if med_lines %}
 <div class="mb-6">
 
@@ -87,7 +122,7 @@
 
 <div class="bg-gray-50 p-3 rounded">
 
-<table class="w-full text-sm">
+<table class="w-full text-xs border-collapse">
 
 <thead>
 <tr class="border-b text-left">
@@ -102,21 +137,19 @@
 
 {% for m in med_lines %}
 <tr class="border-b">
-
 <td class="py-1">{{ m.name }}</td>
 
 <td class="py-1">
-    {% if m.dose %}{{ m.dose }}{% else %}-{% endif %}
+{% if m.dose %}{{ m.dose }}{% else %}-{% endif %}
 </td>
 
 <td class="py-1">
-    {% if m.duration %}{{ m.duration }}{% else %}-{% endif %}
+{% if m.duration %}{{ m.duration }}{% else %}-{% endif %}
 </td>
 
 <td class="py-1">
-    {% if m.remark %}{{ m.remark }}{% else %}-{% endif %}
+{% if m.remark %}{{ m.remark }}{% else %}-{% endif %}
 </td>
-
 </tr>
 {% endfor %}
 
@@ -129,28 +162,37 @@
 </div>
 {% endif %}
 
-<!-- Tests -->
+<!-- ================= TESTS ================= -->
 {% if prescription.tests %}
-<div class="mb-6">
-<h4 class="font-semibold">Tests</h4>
-<p>{{ prescription.tests|linebreaksbr }}</p>
+<div class="mb-6 no-break">
+    <h4 class="font-semibold mb-1">Tests</h4>
+    <p>{{ prescription.tests|linebreaksbr }}</p>
 </div>
 {% endif %}
 
-<!-- Advice -->
+<!-- ================= ADVICE ================= -->
 {% if prescription.notes %}
-<div class="mb-6">
-<h4 class="font-semibold">Advice</h4>
-<p>{{ prescription.notes|linebreaksbr }}</p>
+<div class="mb-6 no-break">
+    <h4 class="font-semibold mb-1">Advice</h4>
+    <p>{{ prescription.notes|linebreaksbr }}</p>
 </div>
 {% endif %}
 
 <hr class="my-8">
 
-<!-- Signature -->
-<div class="text-right">
-<div class="border-t w-40 ml-auto mb-1"></div>
-<p>Dr. {{ prescription.doctor.name }}</p>
+<!-- ================= SIGNATURE ================= -->
+<div class="text-right mt-10 no-break">
+
+<div class="inline-block text-center">
+<div class="border-t w-40 mb-1"></div>
+<p class="text-sm font-medium">
+Dr. {{ prescription.doctor.name }}
+</p>
+<p class="text-xs text-gray-500">
+Signature
+</p>
+</div>
+
 </div>
 
 </div>
