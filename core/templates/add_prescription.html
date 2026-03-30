@@ -6,20 +6,15 @@
 <div class="max-w-3xl mx-auto">
 
 <!-- Header -->
-
 <div class="mb-6 flex items-center justify-between">
-
 <div>
 <h2 class="text-2xl font-semibold text-gray-800">
-{% if old %}
-Revise Prescription
-{% else %}
-Add Prescription
-{% endif %}
+{% if old %}Revise Prescription{% else %}Add Prescription{% endif %}
 </h2>
+
 {% if old %}
 <p class="text-xs text-yellow-600 mt-1">
-You are editing a copy. Original prescription will remain unchanged.
+Editing copy • Original محفوظ रहेगा
 </p>
 {% endif %}
 
@@ -28,154 +23,148 @@ for <span class="font-medium text-gray-700">{{ patient.name }}</span>
 </p>
 </div>
 
-<!-- Optional badge (premium feel) -->
 <div class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
 Patient Record
 </div>
-
 </div>
 
-
-<!-- Form Card -->
-
+<!-- Form -->
 <div class="bg-white rounded-xl shadow p-6">
 
 <form method="POST" onsubmit="return fixWeight()">
-
 {% csrf_token %}
+
 {% if profile.role == "receptionist" %}
 <div class="mb-4">
-    <label class="block text-sm font-medium mb-1">Select Doctor</label>
-    <select name="doctor_id" required
-        class="w-full border rounded-lg px-3 py-2 text-sm">
-        <option value="">Select Doctor</option>
-        {% for doc in doctors %}
-            <option value="{{ doc.id }}">{{ doc.name }}</option>
-        {% endfor %}
-    </select>
+<label class="block text-sm font-medium mb-1">Select Doctor</label>
+<select name="doctor_id" required class="w-full border rounded-lg px-3 py-2 text-sm">
+<option value="">Select Doctor</option>
+{% for doc in doctors %}
+<option value="{{ doc.id }}">{{ doc.name }}</option>
+{% endfor %}
+</select>
 </div>
 {% endif %}
 
-
-<div class="grid grid-cols-3 gap-4 mb-4">
+<!-- Basic Info -->
+<div class="grid grid-cols-2 gap-4 mb-4">
 
 <div>
 <label class="text-sm font-medium">Weight</label>
-<input type="number" name="weight" id= "weight" value="{{ old.weight|default:'' }}" class="w-full border rounded-lg px-3 py-2 text-sm">
+<input type="number" name="weight" id="weight"
+value="{{ old.weight|default:'' }}"
+class="w-full border rounded-lg px-3 py-2 text-sm">
 </div>
 
 <div>
 <label class="text-sm font-medium">Blood Group</label>
-<input type="text" name="blood_group" value= "{{ old.blood_group|default:'' }}" class="w-full border rounded-lg px-3 py-2 text-sm">
+<input type="text" name="blood_group"
+value="{{ old.blood_group|default:'' }}"
+class="w-full border rounded-lg px-3 py-2 text-sm">
 </div>
 
-
 </div>
+
 <!-- Diagnosis -->
-
 <div class="mb-5">
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Diagnosis
-</label>
-
-<textarea name="diagnosis" rows="2" placeholder="Enter diagnosis" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ old.diagnosis|default:'' }}</textarea>
-
+<label class="block text-sm font-medium mb-1">Diagnosis</label>
+<textarea name="diagnosis" rows="2"
+class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.diagnosis|default:'' }}</textarea>
 </div>
-
 
 <!-- Symptoms -->
+<div class="mb-5">
+<label class="block text-sm font-medium mb-1">Symptoms</label>
+<textarea name="symptoms" rows="2"
+class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.symptoms|default:'' }}</textarea>
+</div>
 
+<!-- 🔥 MEDICINES (NEW UI) -->
 <div class="mb-5">
 
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Symptoms
-</label>
+<div class="flex justify-between items-center mb-2">
+<label class="text-sm font-medium">Medicines</label>
 
-<textarea name="symptoms" rows="2" placeholder="Enter symptoms" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ old.symptoms|default:'' }}</textarea>
+<button type="button" onclick="addRow()"
+class="text-xs bg-blue-600 text-white px-2 py-1 rounded">
++ Add
+</button>
+</div>
+
+<div id="medicine-container" class="space-y-2">
+
+<!-- Default row -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<input name="medicine_name[]" placeholder="Medicine"
+class="border rounded px-2 py-2 text-sm">
+
+<input name="dosage[]" placeholder="Dosage (1-0-1)"
+class="border rounded px-2 py-2 text-sm">
+
+<input name="remark[]" placeholder="Remark (After food)"
+class="border rounded px-2 py-2 text-sm">
+</div>
 
 </div>
 
-
-<!-- Medicines -->
-
-<div class="mb-5">
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Medicines
-</label>
-
-<textarea name="medicines" rows="4"
-placeholder="Example: 
-Dolo 650 - 1-0-1 AF  
-Pantoprazole 40 - 1-0-0 BBF  
-Cetirizine - 0-0-1 HS"
-class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ old.medicines|default:'' }}</textarea>
-
 </div>
-
 
 <!-- Tests -->
-
 <div class="mb-5">
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Tests
-</label>
-
-<textarea name="tests" rows="2" placeholder="Blood test, X-ray, etc"class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ old.tests|default:'' }}</textarea>
-
+<label class="block text-sm font-medium mb-1">Tests</label>
+<textarea name="tests" rows="2"
+class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.tests|default:'' }}</textarea>
 </div>
-
 
 <!-- Notes -->
-
 <div class="mb-6">
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Notes
-</label>
-
-<textarea name="notes" rows="2" placeholder="Any additional advice" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{{ old.notes|default:'' }}</textarea>
-
+<label class="block text-sm font-medium mb-1">Advice</label>
+<textarea name="notes" rows="2"
+class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.notes|default:'' }}</textarea>
 </div>
-
 
 <!-- Buttons -->
 <div class="flex gap-3">
-
-<!-- ✅ FIX 1: sidebar color -->
 <button type="submit"
-class="px-4 py-2 text-sm bg-[#0f172a] text-white rounded-lg hover:bg-black transition shadow-sm">
-{% if old %}
-Save Revised Prescription
-{% else %}
-Save Prescription
-{% endif %}
+class="px-4 py-2 text-sm bg-black text-white rounded-lg">
+{% if old %}Save Revised{% else %}Save Prescription{% endif %}
 </button>
 
 <a href="/patient-history/{{ patient.id }}/"
-class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+class="px-4 py-2 text-sm bg-gray-100 rounded-lg">
 Cancel
 </a>
-
 </div>
-
 
 </form>
-
+</div>
 </div>
 
-</div>
+<!-- JS -->
 <script>
+
 function fixWeight(){
 let weight = document.getElementById("weight")
-
 if(weight.value === ""){
-    weight.removeAttribute("name")   // 👈 MAIN FIX
+    weight.removeAttribute("name")
 }
-
 return true
 }
+
+function addRow(){
+let container = document.getElementById("medicine-container")
+
+let row = `
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm">
+<input name="dosage[]" placeholder="Dosage" class="border rounded px-2 py-2 text-sm">
+<input name="remark[]" placeholder="Remark" class="border rounded px-2 py-2 text-sm">
+</div>
+`
+
+container.insertAdjacentHTML('beforeend', row)
+}
+
 </script>
+
 {% endblock %}
