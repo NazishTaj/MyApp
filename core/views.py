@@ -1292,9 +1292,31 @@ def print_prescription(request, id):
         clinic=clinic
     )
 
+    # ✅ SAME LOGIC AS VIEW PRESCRIPTION
+    med_lines = []
+
+    if prescription.medicines:
+        for med in prescription.medicines.split("\n"):
+            if "||" in med:
+                parts = med.split("||")
+                med_lines.append({
+                    "name": parts[0],
+                    "dose": parts[1] if len(parts) > 1 else "",
+                    "duration": parts[2] if len(parts) > 2 else "",
+                    "remark": parts[3] if len(parts) > 3 else "",
+                })
+            else:
+                med_lines.append({
+                    "name": med,
+                    "dose": "",
+                    "duration": "",
+                    "remark": "",
+                })
+
     return render(request, "print_prescription.html", {
         "prescription": prescription,
-        "clinic": clinic
+        "clinic": clinic,
+        "med_lines": med_lines   # 🔥 IMPORTANT
     })
 
 @login_required
