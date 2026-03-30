@@ -41,15 +41,17 @@ Dr. {{ prescription.doctor.name }}
 
 </div>
 {% if prescription.parent %}
-<div class="mb-3 print:hidden">
-    <p class="text-xs text-yellow-600 font-medium">
-        ✏️ This is a revised prescription
-    </p>
+<div class="mb-4 flex items-center gap-3 print:hidden">
 
-    <a href="/prescription/{{ prescription.parent.id }}/"
-    class="text-xs text-blue-600 underline">
-        View Previous Prescription
-    </a>
+<span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-medium">
+Revised
+</span>
+
+<a href="/prescription/{{ prescription.parent.id }}/"
+class="text-xs text-blue-600 underline">
+View Previous
+</a>
+
 </div>
 {% endif %}
 
@@ -230,12 +232,11 @@ class="inline-block px-4 py-2 bg-yellow-500 text-white text-sm rounded-lg hover:
 ✏️ Revise Prescription
 </a>
 
-</div>
 
 
 <!-- Print Button -->
 
-<div class="mt-6">
+
 
 <button
 onclick="printPrescription({{ prescription.id }})"
@@ -247,6 +248,7 @@ transition-all duration-200 cursor-pointer">
 🖨 Print Prescription
 
 </button>
+</div>
 
 <script>
 function printPrescription(id){
