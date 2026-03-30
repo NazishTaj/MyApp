@@ -588,6 +588,7 @@ def add_prescription(request, patient_id):
     })
     
 #Revise Prescription
+
 @login_required(login_url="login")
 def revise_prescription(request, id):
 
@@ -612,9 +613,8 @@ def revise_prescription(request, id):
         weight = request.POST.get("weight")
         blood_group = request.POST.get("blood_group")
 
-        doctor = old.doctor   # same doctor
+        doctor = old.doctor
 
-        # 🔥 NEW PRESCRIPTION CREATE (CLONE)
         Prescription.objects.create(
             clinic=clinic,
             patient=patient,
@@ -627,12 +627,32 @@ def revise_prescription(request, id):
             blood_group=blood_group,
             created_by=profile,
             doctor=doctor,
-            parent=old   # 🔥 LINK
+            parent=old
         )
 
         return redirect("patient_history", patient_id=patient.id)
 
-    # 🔥 PREFILL DATA
+    # 🔥 NEW: medicines prefill logic
+    med_lines = []
+
+    if old.medicines:
+        for med in old.medicines.split("\n"):
+            if "||" in med:
+                parts = med.split("||")
+                med_lines.append({
+                    "name": parts[0],
+                    "dose": parts[1] if len(parts) > 1 else "",
+                    "duration": parts[2] if len(parts) > 2 else "",
+                    "remark": parts[3] if len(parts) > 3 else "",
+                })
+            else:
+                med_lines.append({
+                    "name": med,
+                    "dose": "",
+                    "duration": "",
+                    "remark": "",
+                })
+
     return render(request, "add_prescription.html", {
         "patient": patient,
         "profile": profile,
@@ -640,8 +660,10 @@ def revise_prescription(request, id):
             clinic=clinic,
             role__in=["owner", "doctor"]
         ),
-        "old": old   # 👈 IMPORTANT
+        "old": old,
+        "med_lines": med_lines   # 🔥 IMPORTANT FIX
     })
+
 
 @login_required(login_url="login")
 def patient_history(request, patient_id):
