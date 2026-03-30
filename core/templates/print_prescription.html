@@ -79,47 +79,50 @@
 </div>
 {% endif %}
 
-<!-- Medicines -->
-{% if prescription.medicines %}
+<!-- ✅ MEDICINES FIXED -->
+{% if med_lines %}
 <div class="mb-6">
 
 <h4 class="font-semibold mb-2">Medicines</h4>
 
 <div class="bg-gray-50 p-3 rounded">
 
-<ol class="list-decimal ml-5 space-y-1">
+<table class="w-full text-sm">
 
-{% for med in prescription.medicines.splitlines %}
-{% if med %}
+<thead>
+<tr class="border-b text-left">
+<th class="py-1">Medicine</th>
+<th class="py-1">Dose</th>
+<th class="py-1">Duration</th>
+<th class="py-1">Remarks</th>
+</tr>
+</thead>
 
-<li>
-{% with parts=med.split:"||" %}
+<tbody>
 
-<strong>{{ parts.0 }}</strong>
+{% for m in med_lines %}
+<tr class="border-b">
 
-{% if parts|length > 1 and parts.1 %}
-<span class="text-gray-600">
-({{ parts.1 }}
+<td class="py-1">{{ m.name }}</td>
 
-{% if parts|length > 2 and parts.2 %}
- • {{ parts.2 }}
-{% endif %}
+<td class="py-1">
+    {% if m.dose %}{{ m.dose }}{% else %}-{% endif %}
+</td>
 
-{% if parts|length > 3 and parts.3 %}
- • {{ parts.3 }}
-{% endif %}
+<td class="py-1">
+    {% if m.duration %}{{ m.duration }}{% else %}-{% endif %}
+</td>
 
-)
-</span>
-{% endif %}
+<td class="py-1">
+    {% if m.remark %}{{ m.remark }}{% else %}-{% endif %}
+</td>
 
-{% endwith %}
-</li>
-
-{% endif %}
+</tr>
 {% endfor %}
 
-</ol>
+</tbody>
+
+</table>
 
 </div>
 
