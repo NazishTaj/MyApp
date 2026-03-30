@@ -643,9 +643,6 @@ def revise_prescription(request, id):
         "old": old   # 👈 IMPORTANT
     })
 
-
-
-
 @login_required(login_url="login")
 def patient_history(request, patient_id):
 
@@ -653,21 +650,52 @@ def patient_history(request, patient_id):
     clinic = profile.clinic
    
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+
     bills = Bill.objects.filter(
-    clinic=clinic,
-    patient=patient
-).order_by("-created_at")
+        clinic=clinic,
+        patient=patient
+    ).order_by("-created_at")
+
     prescriptions = Prescription.objects.filter(
         clinic=clinic,
         patient=patient
-).select_related("doctor", "patient").prefetch_related("revisions").order_by("-created_at")
+    ).select_related("doctor", "patient").prefetch_related("revisions").order_by("-created_at")
 
+    # 🔥 NEW: medicines clean mapping
+    med_map = {}
+
+    for p in prescriptions:
+        med_lines = []
+
+        if p.medicines:
+            for med in p.medicines.split("\n"):
+                if "||" in med:
+                    parts = med.split("||")
+                    med_lines.append({
+                        "name": parts[0],
+                        "dose": parts[1] if len(parts) > 1 else "",
+                        "duration": parts[2] if len(parts) > 2 else "",
+                        "remark": parts[3] if len(parts) > 3 else "",
+                    })
+                else:
+                    med_lines.append({
+                        "name": med,
+                        "dose": "",
+                        "duration": "",
+                        "remark": "",
+                    })
+
+        med_map[p.id] = med_lines
 
     return render(request, "patient_history.html", {
         "patient": patient,
         "prescriptions": prescriptions,
-        "bills":bills
+        "bills": bills,
+        "med_map": med_map   # 🔥 IMPORTANT
     })
+
+
+
 @login_required
 def create_bill_for_patient(request, patient_id):
     if not has_permission(request.user, "manage_billing"):
