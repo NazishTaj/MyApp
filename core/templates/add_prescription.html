@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl mx-auto px-2 sm:px-0">
 
 <!-- Header -->
 <div class="mb-6 flex items-center justify-between">
@@ -29,7 +29,7 @@ Patient Record
 </div>
 
 <!-- Form -->
-<div class="bg-white rounded-xl shadow p-6">
+<div class="bg-white rounded-xl shadow p-5 sm:p-6">
 
 <form method="POST" onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
 {% csrf_token %}
@@ -47,12 +47,13 @@ Patient Record
 {% endif %}
 
 <!-- Basic Info -->
-<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
 
 <div>
 <label class="text-sm font-medium">Weight</label>
 <input type="number" name="weight" id="weight"
 value="{{ old.weight|default:'' }}"
+placeholder="e.g. 70"
 class="w-full border rounded-lg px-3 py-2 text-sm">
 </div>
 
@@ -60,6 +61,7 @@ class="w-full border rounded-lg px-3 py-2 text-sm">
 <label class="text-sm font-medium">Blood Group</label>
 <input type="text" name="blood_group"
 value="{{ old.blood_group|default:'' }}"
+placeholder="e.g. B+"
 class="w-full border rounded-lg px-3 py-2 text-sm">
 </div>
 
@@ -93,20 +95,49 @@ tabindex="-1">
 + Add
 </button>
 </div>
-<div id="medicine-container" class="space-y-2">
+
+<!-- column labels -->
+<div class="hidden sm:grid grid-cols-4 gap-2 text-xs text-gray-500 px-1">
+<div>Medicine</div>
+<div>Dosage</div>
+<div>Duration</div>
+<div>Remark</div>
+</div>
+
+<div id="medicine-container" class="space-y-2 mt-1">
 
 {% if old and med_lines %}
 
 {% for m in med_lines %}
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 
-<input name="medicine_name[]" value="{{ m.name }}" class="border rounded px-2 py-2 text-sm">
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Medicine</label>
+<input name="medicine_name[]" value="{{ m.name }}"
+placeholder="Medicine"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
 
-<input name="dosage[]" value="{{ m.dose }}" class="border rounded px-2 py-2 text-sm">
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Dosage</label>
+<input name="dosage[]" value="{{ m.dose }}"
+placeholder="1-0-1"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
 
-<input name="duration[]" value="{{ m.duration }}" class="border rounded px-2 py-2 text-sm">
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Duration</label>
+<input name="duration[]" value="{{ m.duration }}"
+placeholder="5 days"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
 
-<input name="remark[]" value="{{ m.remark }}" class="border rounded px-2 py-2 text-sm">
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Remark</label>
+<input name="remark[]" value="{{ m.remark }}"
+placeholder="After food"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
 
 </div>
 {% endfor %}
@@ -114,10 +145,31 @@ tabindex="-1">
 {% else %}
 
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm">
-<input name="dosage[]" placeholder="Dosage (1-0-1)" class="border rounded px-2 py-2 text-sm">
-<input name="duration[]" placeholder="Duration (5 days)" class="border rounded px-2 py-2 text-sm">
-<input name="remark[]" placeholder="Remark (After food)" class="border rounded px-2 py-2 text-sm">
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Medicine</label>
+<input name="medicine_name[]" placeholder="Medicine"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Dosage</label>
+<input name="dosage[]" placeholder="1-0-1"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Duration</label>
+<input name="duration[]" placeholder="5 days"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Remark</label>
+<input name="remark[]" placeholder="After food"
+class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
 </div>
 
 {% endif %}
@@ -142,7 +194,7 @@ class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.notes|default:'' }}</t
 </div>
 
 <!-- Buttons -->
-<div class="flex gap-3">
+<div class="flex gap-3 flex-wrap">
 <button type="submit"
 class="px-4 py-2 text-sm bg-black text-white rounded-lg">
 {% if old %}Save Revised{% else %}Save Prescription{% endif %}
@@ -160,7 +212,6 @@ Cancel
 
 <!-- JS -->
 <script>
-
 function fixWeight(){
 let weight = document.getElementById("weight")
 if(weight.value === ""){
@@ -169,23 +220,15 @@ if(weight.value === ""){
 return true
 }
 
-// 🔥 FINAL ENTER LOGIC (PRO UX)
 function handleEnter(e){
     if(e.key === "Enter"){
-
         let tag = e.target.tagName.toLowerCase()
-
-        // ✅ SHIFT + ENTER → new line (textarea)
         if(tag === "textarea" && e.shiftKey){
             return true
         }
-
-        // ❌ prevent default (submit/new line)
         e.preventDefault()
-
         let form = e.target.form
         let elements = Array.from(form.elements)
-
         let index = elements.indexOf(e.target)
 
         for(let i = index + 1; i < elements.length; i++){
@@ -194,27 +237,41 @@ function handleEnter(e){
                 break
             }
         }
-
         return false
     }
 }
 
-// ADD MEDICINE ROW
 function addRow(){
 let container = document.getElementById("medicine-container")
 
 let row = `
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm">
-<input name="dosage[]" placeholder="Dosage" class="border rounded px-2 py-2 text-sm">
-<input name="duration[]" placeholder="Duration" class="border rounded px-2 py-2 text-sm">
-<input name="remark[]" placeholder="Remark" class="border rounded px-2 py-2 text-sm">
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Medicine</label>
+<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Dosage</label>
+<input name="dosage[]" placeholder="1-0-1" class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Duration</label>
+<input name="duration[]" placeholder="5 days" class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
+<div>
+<label class="text-xs text-gray-500 sm:hidden">Remark</label>
+<input name="remark[]" placeholder="After food" class="border rounded px-2 py-2 text-sm w-full">
+</div>
+
 </div>
 `
 
 container.insertAdjacentHTML('beforeend', row)
 }
-
 </script>
 
 {% endblock %}
