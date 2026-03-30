@@ -13,6 +13,25 @@ from django.db.models import Sum
 
 
 
+def format_medicines(request):
+    names = request.POST.getlist('medicine_name[]')
+    dosages = request.POST.getlist('dosage[]')
+    remarks = request.POST.getlist('remark[]')
+
+    med_list = []
+
+    for i in range(len(names)):
+        name = (names[i] or "").strip()
+        dose = (dosages[i] if i < len(dosages) else "").strip()
+        remark = (remarks[i] if i < len(remarks) else "").strip()
+
+        # 👇 allow partial entries (safe)
+        if name or dose or remark:
+            med_list.append(f"{name}||{dose}||{remark}")
+
+    return "\n".join(med_list)
+
+
 def billing_enabled(request):
 
     # ✅ check login
@@ -506,7 +525,7 @@ def add_prescription(request, patient_id):
 
         diagnosis = request.POST.get("diagnosis")
         symptoms = request.POST.get("symptoms")
-        medicines = request.POST.get("medicines")
+        medicines = format_medicines(request)
         tests = request.POST.get("tests")
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
@@ -584,7 +603,7 @@ def revise_prescription(request, id):
 
         diagnosis = request.POST.get("diagnosis")
         symptoms = request.POST.get("symptoms")
-        medicines = request.POST.get("medicines")
+        medicines = format_medicines(request)
         tests = request.POST.get("tests")
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
