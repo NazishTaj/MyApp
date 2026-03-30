@@ -14,7 +14,7 @@
 
 {% if old %}
 <p class="text-xs text-yellow-600 mt-1">
-Editing copy • Original محفوظ रहेगा
+Editing copy • Original will remain unchanged
 </p>
 {% endif %}
 
@@ -94,11 +94,14 @@ class="text-xs bg-blue-600 text-white px-2 py-1 rounded">
 <div id="medicine-container" class="space-y-2">
 
 <!-- Default row -->
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 <input name="medicine_name[]" placeholder="Medicine"
 class="border rounded px-2 py-2 text-sm">
 
 <input name="dosage[]" placeholder="Dosage (1-0-1)"
+class="border rounded px-2 py-2 text-sm">
+
+<input name="duration[]" placeholder="Duration (5 days)" 
 class="border rounded px-2 py-2 text-sm">
 
 <input name="remark[]" placeholder="Remark (After food)"
@@ -155,9 +158,10 @@ function addRow(){
 let container = document.getElementById("medicine-container")
 
 let row = `
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 <input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm">
 <input name="dosage[]" placeholder="Dosage" class="border rounded px-2 py-2 text-sm">
+<input name="duration[]" placeholder="Duration" class="border rounded px-2 py-2 text-sm">
 <input name="remark[]" placeholder="Remark" class="border rounded px-2 py-2 text-sm">
 </div>
 `
