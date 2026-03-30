@@ -41,8 +41,6 @@ Dr. {{ prescription.doctor.name }}
 
 </div>
 
-
-
 <!-- Patient Info -->
 
 <div class="text-sm mb-5">
@@ -85,7 +83,6 @@ Dr. {{ prescription.doctor.name }}
 
 {% if prescription.parent %}
 <div class="mb-4 flex items-center gap-3 print:hidden">
-
 <span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-medium">
 Revised
 </span>
@@ -94,11 +91,8 @@ Revised
 class="text-xs text-blue-600 underline">
 View Previous
 </a>
-
 </div>
 {% endif %}
-
-<!-- Diagnosis -->
 
 <!-- Diagnosis -->
 
@@ -122,44 +116,50 @@ View Previous
 </div>
 {% endif %}
 
-<!-- Medicines -->
+<!-- ✅ MEDICINES (FIXED + PROFESSIONAL) -->
 
 {% if prescription.medicines %}
 <div class="mb-6">
 
 <h4 class="text-base font-semibold text-gray-800 mb-3">Medicines</h4>
 
-<div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 overflow-x-auto">
+<div class="bg-gray-50 rounded-lg p-4 overflow-x-auto">
 
-<ol class="list-decimal ml-5 space-y-3">
+<table class="w-full text-sm">
+
+<thead>
+<tr class="text-gray-600 border-b">
+<th class="text-left py-2">Medicine</th>
+<th class="text-left py-2">Dose</th>
+<th class="text-left py-2">Remarks</th>
+</tr>
+</thead>
+
+<tbody>
 
 {% for med in med_lines %}
 
-<li>
+<tr class="border-b last:border-0">
 
-<div class="font-medium text-gray-800">
+<td class="py-2 font-medium text-gray-800">
 {{ med.name }}
-</div>
+</td>
 
-{% if med.dose %}
-<div class="text-xs text-gray-600">
-{{ med.dose }}
-</div>
-{% endif %}
+<td class="py-2 text-gray-600">
+{{ med.dose|default:"-" }}
+</td>
 
-{% if med.remark %}
-<div class="text-xs text-gray-500 italic">
-{{ med.remark }}
-</div>
-{% endif %}
+<td class="py-2 text-gray-600">
+{{ med.remark|default:"-" }}
+</td>
 
-</li>
+</tr>
 
 {% endfor %}
 
-</ol>
+</tbody>
 
-</div>
+</table>
 
 </div>
 
@@ -202,24 +202,17 @@ Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
 <!-- Signature -->
 
 <div class="flex justify-center sm:justify-end">
-
 <div class="text-center">
-
-
-
 <p class="text-sm font-semibold">
 Dr. {{ prescription.doctor.name }}
 </p>
-
 <p class="text-xs text-gray-500">
 Signature
 </p>
-
+</div>
 </div>
 
-</div>
-
-<!-- Buttons (Responsive) -->
+<!-- Buttons -->
 
 <div class="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
 
@@ -231,9 +224,7 @@ class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-yellow-500 text-white r
 <button
 onclick="printPrescription({{ prescription.id }})"
 class="w-full sm:w-auto px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
-
 🖨 Print
-
 </button>
 
 </div>
@@ -245,7 +236,6 @@ function printPrescription(id){
 </script>
 
 </div>
-
 </div>
 
 {% endblock %}
