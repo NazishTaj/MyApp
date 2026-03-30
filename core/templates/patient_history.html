@@ -118,10 +118,22 @@ Revised
 {% endif %}
 
 </div>
+<div class="text-gray-500 text-xs space-y-1">
 
+{% for m in med_map[p.id]|slice:":2" %}
+<div>
+{{ m.name }}
+{% if m.dose %} ({{ m.dose }}{% endif %}
+{% if m.duration %} • {{ m.duration }}{% endif %}
+{% if m.remark %} • {{ m.remark }}{% endif %}
+{% if m.dose %}){% endif %}
+</div>
+{% endfor %}
 
-<div class="text-gray-500 text-xs">
-{{ p.medicines|truncatechars:60 }}
+{% if med_map[p.id]|length > 2 %}
+<div class="text-gray-400">...</div>
+{% endif %}
+
 </div>
 
 </td>
