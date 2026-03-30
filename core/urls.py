@@ -33,13 +33,15 @@ path(
     name="create_bill_for_patient"
 ),
 path("bill/<int:bill_id>/print/", views.print_bill, name="print_bill"),
+path('prescription/<int:id>/', views.view_prescription, name='view_prescription'),
+path("prescription/<int:id>/revise/", views.revise_prescription, name="revise_prescription"),
 path("prescription/<int:id>/print/", views.print_prescription, name="print_prescription"),
 path("enable-advanced/", views.enable_advanced_mode, name="enable_advanced"),
 path("staff/add/", views.add_staff, name="add_staff"),
 path("staff/", views.staff_list, name="staff_list"),
 path("staff/<int:staff_id>/permissions/", views.edit_staff_permissions, name="edit_staff_permissions"),
 path('staff-blocked/', views.staff_blocked, name='staff_blocked'),
-path("prescription/<int:id>/revise/", views.revise_prescription, name="revise_prescription"),
+
 
 
 
