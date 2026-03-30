@@ -43,7 +43,6 @@ Create Bill
 
 </div>
 
-
 <!-- Patient Details -->
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-5 text-sm">
@@ -71,8 +70,6 @@ Create Bill
 </div>
 
 </div>
-
-
 
 <!-- Content Grid -->
 
@@ -107,12 +104,41 @@ Prescriptions
 <td class="px-4 py-3">
 
 <div class="text-xs text-gray-500">
-{{ p.created_at|date:"d M Y" }}
+{{ p.created_at|date:"d M Y, h:i A" }}
 </div>
 
-<div class="font-medium text-gray-800">
+<div class="font-medium text-gray-800 flex items-center flex-wrap gap-1">
+
 {{ p.diagnosis }}
+
+{% if p.parent %}
+<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">
+Revised
+</span>
+{% endif %}
+
+{% if p.revisions.all %}
+<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+Updated
+</span>
+{% endif %}
+
+{% if forloop.first %}
+<span class="text-xs text-green-600 font-semibold">
+Latest
+</span>
+{% endif %}
+
 </div>
+
+{% if p.parent %}
+<div class="text-xs mt-1">
+<a href="/prescription/{{ p.parent.id }}/"
+class="text-blue-500 underline">
+View Previous
+</a>
+</div>
+{% endif %}
 
 <div class="text-gray-500 text-xs">
 {{ p.medicines|truncatechars:60 }}
@@ -150,8 +176,6 @@ No prescriptions available
 </div>
 
 </div>
-
-
 
 <!-- Billing -->
 
@@ -236,7 +260,6 @@ No bills found
 </div>
 
 </div>
-
 
 </div>
 
