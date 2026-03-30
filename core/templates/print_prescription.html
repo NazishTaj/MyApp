@@ -6,34 +6,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-    @media print {
-        @page {
-            size: A4;
-            margin: 10mm;
-        }
+<style>
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-size: 12px;
-            line-height: 1.5;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+/* ✅ ADD THIS (MOST IMPORTANT) */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px 12px;
+}
 
-        .no-break {
-            page-break-inside: avoid;
-        }
-
-        /* Force grid in print */
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px 12px;
-        }
+@media print {
+    @page {
+        size: A4;
+        margin: 10mm;
     }
-    </style>
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-size: 12px;
+        line-height: 1.5;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .no-break {
+        page-break-inside: avoid;
+    }
+}
+
+</style>
 </head>
 
 <body onload="window.print()">
