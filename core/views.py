@@ -661,9 +661,7 @@ def patient_history(request, patient_id):
         patient=patient
     ).select_related("doctor", "patient").prefetch_related("revisions").order_by("-created_at")
 
-    # 🔥 NEW: medicines clean mapping
-    med_map = {}
-
+    # ✅ FIXED: medicines attach to each prescription
     for p in prescriptions:
         med_lines = []
 
@@ -685,15 +683,13 @@ def patient_history(request, patient_id):
                         "remark": "",
                     })
 
-        med_map[p.id] = med_lines
+        p.med_lines = med_lines  # 🔥 attach here
 
     return render(request, "patient_history.html", {
         "patient": patient,
         "prescriptions": prescriptions,
-        "bills": bills,
-        "med_map": med_map   # 🔥 IMPORTANT
+        "bills": bills
     })
-
 
 
 @login_required
