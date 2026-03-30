@@ -749,9 +749,29 @@ def view_prescription(request, id):
         clinic=clinic
     )
 
+    # 👇 NEW CODE
+    med_lines = []
+
+    if prescription.medicines:
+        for med in prescription.medicines.split("\n"):
+            if "||" in med:
+                parts = med.split("||")
+                med_lines.append({
+                    "name": parts[0],
+                    "dose": parts[1] if len(parts) > 1 else "",
+                    "remark": parts[2] if len(parts) > 2 else "",
+                })
+            else:
+                med_lines.append({
+                    "name": med,
+                    "dose": "",
+                    "remark": "",
+                })
+
     return render(request, "view_prescription.html", {
-    "prescription": prescription,
-    "clinic": clinic
+        "prescription": prescription,
+        "clinic": clinic,
+        "med_lines": med_lines
     })
 
 
