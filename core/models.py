@@ -160,7 +160,7 @@ class Prescription(models.Model):
     tests = models.TextField(blank=True)
     notes = models.TextField(blank=True)
 
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     blood_group = models.CharField(max_length=5, blank=True, null=True)
     weight = models.IntegerField(blank=True, null=True)
