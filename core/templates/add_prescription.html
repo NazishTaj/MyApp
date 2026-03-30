@@ -93,24 +93,34 @@ tabindex="-1">
 + Add
 </button>
 </div>
-
 <div id="medicine-container" class="space-y-2">
 
+{% if old and med_lines %}
+
+{% for m in med_lines %}
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-<input name="medicine_name[]" placeholder="Medicine"
-class="border rounded px-2 py-2 text-sm">
 
-<input name="dosage[]" placeholder="Dosage (1-0-1)"
-class="border rounded px-2 py-2 text-sm">
+<input name="medicine_name[]" value="{{ m.name }}" class="border rounded px-2 py-2 text-sm">
 
-<input name="duration[]" placeholder="Duration (5 days)" 
-class="border rounded px-2 py-2 text-sm">
+<input name="dosage[]" value="{{ m.dose }}" class="border rounded px-2 py-2 text-sm">
 
-<input name="remark[]" placeholder="Remark (After food)"
-class="border rounded px-2 py-2 text-sm">
-</div>
+<input name="duration[]" value="{{ m.duration }}" class="border rounded px-2 py-2 text-sm">
+
+<input name="remark[]" value="{{ m.remark }}" class="border rounded px-2 py-2 text-sm">
 
 </div>
+{% endfor %}
+
+{% else %}
+
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm">
+<input name="dosage[]" placeholder="Dosage (1-0-1)" class="border rounded px-2 py-2 text-sm">
+<input name="duration[]" placeholder="Duration (5 days)" class="border rounded px-2 py-2 text-sm">
+<input name="remark[]" placeholder="Remark (After food)" class="border rounded px-2 py-2 text-sm">
+</div>
+
+{% endif %}
 
 </div>
 
