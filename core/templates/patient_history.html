@@ -120,7 +120,7 @@ Revised
 </div>
 <div class="text-gray-500 text-xs space-y-1">
 
-{% for m in med_map[p.id]|slice:":2" %}
+{% for m in p.med_lines|slice:":2" %}
 <div>
 {{ m.name }}
 {% if m.dose %} ({{ m.dose }}{% endif %}
@@ -130,7 +130,7 @@ Revised
 </div>
 {% endfor %}
 
-{% if med_map[p.id]|length > 2 %}
+{% if p.med_lines|length > 2 %}
 <div class="text-gray-400">...</div>
 {% endif %}
 
