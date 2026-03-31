@@ -78,7 +78,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 {% endif %}">
 
 <!-- Token -->
-<td class="px-6 py-4 status">
+<td class="px-6 py-4">
     <div class="flex items-center gap-2">
         <span class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
             {{ a.token_number }}
@@ -106,7 +106,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 </td>
 
 <!-- Status -->
-<td class="px-6 py-4">
+<td class="px-6 py-4 status">
 {% if a.queue_status == "In Consultation" %}
 <span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
 {% elif a.status == "Pending" %}
