@@ -5,7 +5,7 @@
 
 <div class="max-w-5xl mx-auto px-3 md:px-0 space-y-4 animate-fadeIn">
 
-<!-- 🔥 HEADER -->
+<!-- HEADER -->
 <div>
 <h2 class="text-xl font-semibold text-gray-800">
 Edit Profile
@@ -18,7 +18,7 @@ Update your details
 <form method="POST" enctype="multipart/form-data" class="space-y-4">
 {% csrf_token %}
 
-<!-- 👤 USER INFO -->
+<!-- USER INFO -->
 <div class="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
 
 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
@@ -27,6 +27,7 @@ Your Information
 
 <div class="grid md:grid-cols-2 gap-4">
 
+<!-- NAME -->
 <div>
 <label class="text-xs text-gray-500">Name</label>
 <input type="text" name="name"
@@ -34,12 +35,32 @@ value="{{ profile.name }}"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
 </div>
 
+<!-- PHONE -->
 <div>
 <label class="text-xs text-gray-500">Phone</label>
 <input type="text" name="phone"
 value="{{ profile.phone }}"
 class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
 </div>
+
+<!-- ✅ DEGREE (Doctor / Owner only) -->
+{% if profile.role == "doctor" or profile.role == "owner" %}
+<div>
+<label class="text-xs text-gray-500">Degree</label>
+<input type="text" name="degree"
+value="{{ profile.degree }}"
+placeholder="e.g. MBBS, MD"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
+</div>
+
+<div>
+<label class="text-xs text-gray-500">Registration No</label>
+<input type="text" name="reg_no"
+value="{{ profile.reg_no }}"
+placeholder="e.g. 12345"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
+</div>
+{% endif %}
 
 </div>
 
@@ -66,9 +87,9 @@ class="text-sm border px-2 py-1 rounded">
 
 </div>
 
+<!-- CLINIC INFO (ONLY OWNER) -->
 {% if request.user.userprofile.is_owner %}
 
-<!-- 🏥 CLINIC INFO -->
 <div class="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
 
 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
@@ -103,12 +124,10 @@ class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focu
 
 <div>
 <label class="text-xs text-gray-500">Consultation Fee</label>
-<input 
-  type="number" name="consultation_fee"
-  value="{{ clinic.consultation_fee }}"
-  step="0.01"
-  min="0"
-  class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
+<input type="number" name="consultation_fee"
+value="{{ clinic.consultation_fee }}"
+step="0.01" min="0"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500">
 </div>
 
 <div>
@@ -138,7 +157,7 @@ class="text-sm border px-2 py-1 rounded">
 
 {% endif %}
 
-<!-- ⏱️ TIMING -->
+<!-- TIMING -->
 <div class="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
 
 <div class="flex justify-between items-center mb-3">
@@ -179,42 +198,41 @@ class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
 
 </div>
 
+<!-- SETTINGS (ONLY OWNER) -->
 {% if request.user.userprofile.is_owner %}
 
-<!-- 🔥 SETTINGS -->
 <div class="bg-white border rounded-xl p-4 shadow-sm space-y-4">
 
 <label class="flex items-center justify-between">
-    <span class="text-sm text-gray-700">
-        Enable Billing Module
-    </span>
+<span class="text-sm text-gray-700">
+Enable Billing Module
+</span>
 
-    <input type="checkbox" name="billing_enabled"
-    class="w-4 h-4"
-    {% if clinic.billing_enabled %}checked{% endif %}>
+<input type="checkbox" name="billing_enabled"
+class="w-4 h-4"
+{% if clinic.billing_enabled %}checked{% endif %}>
 </label>
 
 <label class="flex items-center justify-between border-t pt-3">
-    <div>
-        <p class="text-sm text-gray-700">
-            Advanced Mode
-        </p>
-        <p class="text-xs text-gray-500">
-            Enable staff & permission system
-        </p>
-    </div>
+<div>
+<p class="text-sm text-gray-700">
+Advanced Mode
+</p>
+<p class="text-xs text-gray-500">
+Enable staff & permission system
+</p>
+</div>
 
-    <!-- ✅ UPDATED -->
-    <input type="checkbox" name="is_advanced" id="advancedToggle"
-    class="w-4 h-4"
-    {% if clinic.is_advanced %}checked{% endif %}>
+<input type="checkbox" name="is_advanced" id="advancedToggle"
+class="w-4 h-4"
+{% if clinic.is_advanced %}checked{% endif %}>
 </label>
 
 </div>
 
 {% endif %}
 
-<!-- 🔥 BUTTONS -->
+<!-- BUTTONS -->
 <div class="flex gap-3 pt-1">
 
 <button type="submit"
@@ -232,32 +250,5 @@ Cancel
 </form>
 
 </div>
-
-<!-- ✅ JS ADDED -->
-<script>
-const toggle = document.getElementById("advancedToggle");
-
-if (toggle) {
-    toggle.addEventListener("change", function() {
-
-        if (!this.checked) {
-
-            const confirmAction = confirm(
-                "⚠️ Are you sure?\n\n" +
-                "Disabling Advanced Mode will:\n\n" +
-                "• Block all staff access\n" +
-                "• Disable permissions system\n" +
-                "• Switch clinic to single-user mode\n\n" +
-                "You can enable it again anytime.\n\n" +
-                "Do you want to continue?"
-            );
-
-            if (!confirmAction) {
-                this.checked = true;
-            }
-        }
-    });
-}
-</script>
 
 {% endblock %}
