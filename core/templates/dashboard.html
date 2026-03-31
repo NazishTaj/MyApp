@@ -121,21 +121,21 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 <!-- Actions -->
 <td class="px-6 py-4">
 
-<div class="flex items-center justify-between w-full">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
 
     <!-- LEFT SIDE -->
-    <div>
+    <div class="flex flex-wrap gap-2">
     {% if request.user.userprofile.role == "receptionist" %}
 
         {% if a.id in next_tokens and a.status == "Pending" %}
             <a href="{% url 'send_to_doctor' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
+            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
                 ▶ Send
             </a>
 
         {% elif a.queue_status == "In Consultation" %}
             <a href="{% url 'complete_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
+            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
                 Complete
             </a>
         {% endif %}
@@ -143,18 +143,18 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
     {% else %}
 
         <a href="{% url 'add_prescription' a.patient.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
+        class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
             Prescription
         </a>
 
         {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
             <a href="{% url 'complete_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white ml-2 shadow hover:shadow-md transition">
+            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
                 Complete
             </a>
 
             <a href="{% url 'cancel_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white ml-2 shadow hover:shadow-md transition">
+            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white  shadow hover:shadow-md transition">
                 Cancel
             </a>
         {% endif %}
@@ -163,7 +163,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
     </div>
 
     <!-- RIGHT SIDE -->
-    <div class="relative">
+    <div class="relative self-end sm:self-auto">
         <button onclick="toggleMenu('menu{{ a.id }}')" 
         class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg transition">
             ⋮
