@@ -255,6 +255,7 @@ socket.onmessage = function(e) {
 
         const id = data.data.appointment_id;
         const status = data.data.status;
+        const queue_status = data.data.queue_status;
 
         let row = document.getElementById("appointment-" + id);
 
@@ -263,6 +264,7 @@ socket.onmessage = function(e) {
 
             if (status === "Completed") {
                 statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+                 row.classList.remove("bg-blue-50");
             }
 
             if (status === "Cancelled") {
@@ -274,6 +276,10 @@ socket.onmessage = function(e) {
             }
             if (status === "In Consultation") {
                 statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+            }
+            if (queue_status === "In Consultation") {
+                row.classList.remove("bg-green-50");   // remove NEXT highlight
+                row.classList.add("bg-blue-50");       // add doctor active highlight
             }
         }
     }
