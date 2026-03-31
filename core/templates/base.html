@@ -28,6 +28,9 @@ overflow-x:hidden;
 
 <!-- ✅ CLEAN PROFESSIONAL BACKGROUND -->
 <body class="bg-gray-50 text-gray-800">
+  <form style="display:none;">
+    {% csrf_token %}
+</form>
 
 <div class="flex h-screen">
 
@@ -240,6 +243,14 @@ menu.classList.add("hidden");
 }
 }
 }
+</script>
+<script>
+document.body.addEventListener('htmx:configRequest', (event) => {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfToken) {
+        event.detail.headers['X-CSRFToken'] = csrfToken.value;
+    }
+});
 </script>
 <!-- HTMX -->
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
