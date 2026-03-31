@@ -25,6 +25,13 @@
 <p class="text-xs sm:text-sm text-gray-600">
 Dr. {{ prescription.doctor.name }}
 </p>
+{% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
+    {% if prescription.doctor.degree %}
+    <p class="text-xs text-gray-500">
+        {{ prescription.doctor.degree }}
+    </p>
+    {% endif %}
+{% endif %}
 </div>
 
 </div>
