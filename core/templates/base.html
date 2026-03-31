@@ -1,7 +1,7 @@
 {% load static %}
 
-
 <link rel="icon" href="{% static '/images/favicon.png' %}" type="image/x-icon">
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,8 +26,8 @@ overflow-x:hidden;
 
 </head>
 
-<!-- ✅ GLOBAL BACKGROUND -->
-<body class="bg-gray-50 text-gray-800">
+<!-- ✅ PREMIUM GRADIENT BACKGROUND -->
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-gray-800">
 
 <div class="flex h-screen">
 
@@ -38,103 +38,102 @@ overflow-x:hidden;
 
   <!-- SIDEBAR -->
   <aside id="sidebar"
-  class="fixed md:static top-0 left-0 h-full w-64 shrink-0 bg-[#0f172a] text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
+  class="fixed md:static top-0 left-0 h-full w-64 shrink-0 bg-gradient-to-b from-[#0f172a] to-[#020617] text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
 
     <!-- Logo -->
-    <div class="h-16 flex items-center px-5 gap-2 text-lg font-semibold border-b border-gray-700">
+    <div class="h-16 flex items-center px-5 gap-2 text-lg font-semibold border-b border-white/10">
       <img src="{% static 'images/logo.png' %}" 
       class="h-9 w-9 object-contain bg-white rounded-md p-1">
-      <span>FlowDesk</span>
+      <span class="tracking-wide">FlowDesk</span>
     </div>
 
     <!-- Menu -->
-   <nav class="flex-1 p-3 space-y-1 text-sm">
+    <nav class="flex-1 p-3 space-y-1 text-sm">
 
-  <!-- Dashboard -->
-  <a href="/dashboard/"
-  class="block px-3 py-2 rounded-lg 
-  {% if request.path == '/dashboard/' %}
-    bg-white/10 text-white font-medium
-  {% else %}
-    hover:bg-gray-800 text-gray-300
-  {% endif %}">
-    📊 Dashboard
-  </a>
- <!-- Appointments -->
-  <a href="/appointments/"
-  class="block px-3 py-2 rounded-lg 
-  {% if request.path == '/appointments/' %}
-    bg-white/10 text-white font-medium
-  {% else %}
-    hover:bg-gray-800 text-gray-300
-  {% endif %}">
-    📅 Appointments
-  </a>
-  <!-- Patients -->
-  <a href="/patients/"
-  class="block px-3 py-2 rounded-lg 
-  {% if request.path == '/' %}
-    bg-white/10 text-white font-medium
-  {% else %}
-    hover:bg-gray-800 text-gray-300
-  {% endif %}">
-    👥 Patients
-  </a>
+      <!-- Dashboard -->
+      <a href="/dashboard/"
+      class="block px-3 py-2 rounded-lg transition-all duration-200
+      {% if request.path == '/dashboard/' %}
+        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      {% else %}
+        hover:bg-white/10 hover:pl-4 text-gray-300
+      {% endif %}">
+        📊 Dashboard
+      </a>
 
+      <!-- Appointments -->
+      <a href="/appointments/"
+      class="block px-3 py-2 rounded-lg transition-all duration-200
+      {% if request.path == '/appointments/' %}
+        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      {% else %}
+        hover:bg-white/10 hover:pl-4 text-gray-300
+      {% endif %}">
+        📅 Appointments
+      </a>
 
-  <!-- Add Patient -->
-  <a href="/add-patient/"
-  class="block px-3 py-2 rounded-lg 
-  {% if request.path == '/add-patient/' %}
-    bg-white/10 text-white font-medium
-  {% else %}
-    hover:bg-gray-800 text-gray-300
-  {% endif %}">
-    ➕ Add Patient
-  </a>
-  
-  {% if request.user.userprofile.clinic.is_advanced and request.user.userprofile.is_owner %}
-<p class="px-3 mt-3 mb-1 text-xs text-gray-400">Team</p>
+      <!-- Patients -->
+      <a href="/patients/"
+      class="block px-3 py-2 rounded-lg transition-all duration-200
+      {% if request.path == '/' %}
+        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      {% else %}
+        hover:bg-white/10 hover:pl-4 text-gray-300
+      {% endif %}">
+        👥 Patients
+      </a>
 
-<a href="/staff/"
-class="block px-3 py-2 rounded-lg 
-{% if '/staff' in request.path %}
-bg-white/10 text-white font-medium
-{% else %}
-hover:bg-gray-800 text-gray-300
-{% endif %}">
-👥 Staff
-</a>
+      <!-- Add Patient -->
+      <a href="/add-patient/"
+      class="block px-3 py-2 rounded-lg transition-all duration-200
+      {% if request.path == '/add-patient/' %}
+        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      {% else %}
+        hover:bg-white/10 hover:pl-4 text-gray-300
+      {% endif %}">
+        ➕ Add Patient
+      </a>
 
-{% endif %}
+      {% if request.user.userprofile.clinic.is_advanced and request.user.userprofile.is_owner %}
+      <p class="px-3 mt-3 mb-1 text-xs text-gray-400">Team</p>
 
-  {% if request.user.userprofile.clinic.billing_enabled %}
-  <div>
-    <p class="px-3 mt-3 mb-1 text-xs text-gray-400">Billing</p>
+      <a href="/staff/"
+      class="block px-3 py-2 rounded-lg transition-all duration-200
+      {% if '/staff' in request.path %}
+      bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      {% else %}
+      hover:bg-white/10 hover:pl-4 text-gray-300
+      {% endif %}">
+      👥 Staff
+      </a>
+      {% endif %}
 
-    <a href="{% url 'create_bill' %}"
-    class="block px-3 py-2 rounded-lg 
-    {% if request.path == '/create-bill/' %}
-      bg-white/10 text-white font-medium
-    {% else %}
-      hover:bg-gray-800 text-gray-300
-    {% endif %}">
-      🧾 Create Bill
-    </a>
+      {% if request.user.userprofile.clinic.billing_enabled %}
+      <div>
+        <p class="px-3 mt-3 mb-1 text-xs text-gray-400">Billing</p>
 
-    <a href="{% url 'bill_history' %}"
-    class="block px-3 py-2 rounded-lg 
-    {% if request.path == '/bill-history/' %}
-      bg-white/10 text-white font-medium
-    {% else %}
-      hover:bg-gray-800 text-gray-300
-    {% endif %}">
-      📁 Bill History
-    </a>
-  </div>
-  {% endif %}
+        <a href="{% url 'create_bill' %}"
+        class="block px-3 py-2 rounded-lg transition-all duration-200
+        {% if request.path == '/create-bill/' %}
+          bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        {% else %}
+          hover:bg-white/10 hover:pl-4 text-gray-300
+        {% endif %}">
+          🧾 Create Bill
+        </a>
 
-</nav>
+        <a href="{% url 'bill_history' %}"
+        class="block px-3 py-2 rounded-lg transition-all duration-200
+        {% if request.path == '/bill-history/' %}
+          bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        {% else %}
+          hover:bg-white/10 hover:pl-4 text-gray-300
+        {% endif %}">
+          📁 Bill History
+        </a>
+      </div>
+      {% endif %}
+
     </nav>
 
   </aside>
@@ -143,7 +142,7 @@ hover:bg-gray-800 text-gray-300
   <div class="flex-1 flex flex-col w-full">
 
     <!-- TOP BAR -->
-    <header class="h-16 bg-[#111827] border-b border-gray-800 flex items-center justify-between px-4 md:px-6 text-white">
+    <header class="h-16 bg-white/70 backdrop-blur-xl border-b border-white/30 flex items-center justify-between px-4 md:px-6">
 
       <!-- LEFT -->
       <div class="flex items-center gap-3">
@@ -152,7 +151,7 @@ hover:bg-gray-800 text-gray-300
           ☰
         </button>
 
-        <h1 class="text-xs text-gray-400 uppercase tracking-wide">
+        <h1 class="text-xs text-gray-500 uppercase tracking-wide">
           {% block page_title %}Dashboard{% endblock %}
         </h1>
 
@@ -165,35 +164,32 @@ hover:bg-gray-800 text-gray-300
           <button onclick="toggleSettings()" class="text-xl">⚙</button>
 
           <div id="settingsMenu"
-          class="hidden absolute right-0 mt-3 w-56 bg-[#0f172a] text-white border border-gray-700 shadow-2xl rounded-xl z-50 overflow-hidden">
+          class="hidden absolute right-0 mt-3 w-56 bg-white/80 backdrop-blur-xl text-gray-800 border border-white/30 shadow-2xl rounded-xl z-50 overflow-hidden">
 
-            <!-- User Info -->
-            <div class="px-4 py-3 border-b border-gray-700 bg-[#020617]">
+            <div class="px-4 py-3 border-b border-gray-200">
               <p class="text-sm font-semibold">{{ request.user.username }}</p>
-              <p class="text-xs text-gray-400">Manage your account</p>
+              <p class="text-xs text-gray-500">Manage your account</p>
             </div>
 
-            <!-- Menu -->
             <div class="py-2 text-sm">
 
               <a href="/profile/"
-              class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:text-white hover:bg-gray-800">
+              class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                 👤 My Profile
               </a>
 
               <a href="/change-password/"
-              class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:text-white hover:bg-gray-800">
+              class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
                 🔐 Change Password
               </a>
 
             </div>
 
-            <div class="border-t border-gray-700"></div>
+            <div class="border-t border-gray-200"></div>
 
-            <!-- Logout -->
             <div class="py-2">
               <a href="/logout/"
-              class="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-red-900/30">
+              class="flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-100">
                 🚪 Logout
               </a>
             </div>
@@ -206,10 +202,9 @@ hover:bg-gray-800 text-gray-300
 
     </header>
 
-    <!-- ✅ CONTENT AREA FIX -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
+    <!-- CONTENT -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-transparent">
 
-      <!-- CENTERED CONTENT -->
       <div class="max-w-6xl mx-auto">
 
         {% block content %}
