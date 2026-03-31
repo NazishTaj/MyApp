@@ -1,68 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
-from django.http import HttpResponse
 from .utils import has_permission
 from datetime import date , datetime
 from .forms import ClinicScheduleForm
 import openpyxl
+from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
 from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
 from django.db.models import Sum
-from django.utils import timezone
 
 
-def get_dashboard_context(request):
-    profile = request.user.userprofile
-    clinic = profile.clinic
 
-    today = timezone.localtime().date()
-
-    # ✅ SAME as dashboard
-    appointments = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today
-    ).order_by("doctor", "token_number")
-
-    # ✅ doctor column logic
-    doctors = UserProfile.objects.filter(
-        clinic=clinic,
-        role__in=["owner", "doctor"]
-    )
-
-    show_doctor_column = (
-        doctors.count() > 1 and profile.role == "receptionist"
-    )
-
-    # ✅ 🔥 BUSY DOCTORS (IMPORTANT FIX)
-    busy_doctors = set(
-        Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=today,
-            queue_status="In Consultation"
-        ).values_list("doctor_id", flat=True)
-    )
-
-    # ✅ NEXT logic (FINAL CORRECT)
-    next_tokens = {}
-    seen_doctors = set()
-
-    for appt in appointments:
-        if appt.queue_status == "Waiting":
-            if (
-                appt.doctor_id not in seen_doctors and
-                appt.doctor_id not in busy_doctors
-            ):
-                next_tokens[appt.id] = True
-                seen_doctors.add(appt.doctor_id)
-
-    return {
-        "appointments": appointments,
-        "next_tokens": next_tokens,
-        "show_doctor_column": show_doctor_column
-    }
 def format_medicines(request):
     names = request.POST.getlist('medicine_name[]')
     dosages = request.POST.getlist('dosage[]')
@@ -214,9 +164,6 @@ def dashboard(request):
         "today_revenue": today_revenue,
         "next_tokens": next_tokens
     }
-    if request.headers.get("HX-Request"):
-        context = get_dashboard_context(request)
-        return render(request, "partials/queue_table.html", context)
 
     return render(request, "dashboard.html", context)
 # ---------------- PATIENTS ---------------- #
@@ -519,19 +466,11 @@ def complete_appointment(request, appointment_id):
     appointment.queue_status = "Done" 
     appointment.save()
 
-    if request.headers.get("HX-Request"):
-        context = get_dashboard_context(request)
-        html = render_to_string("partials/queue_table.html", context, request=request)
-        return HttpResponse(html)
-
-    return redirect("dashboard")
+    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
 @login_required(login_url="login")
-
 def send_to_doctor(request, appointment_id):
-    if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
@@ -552,13 +491,7 @@ def send_to_doctor(request, appointment_id):
     appointment.queue_status = "In Consultation"
     appointment.save()
 
-     # 🔥 HTMX FIX
-    if request.headers.get("HX-Request"):
-        context = get_dashboard_context(request)
-        html = render_to_string("partials/queue_table.html", context, request=request)
-        return HttpResponse(html)
-        
-    return redirect("dashboard")
+    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
 @login_required(login_url="login")
@@ -575,12 +508,7 @@ def cancel_appointment(request, appointment_id):
     appointment.queue_status = "Done"
     appointment.save()
 
-    if request.headers.get("HX-Request"):
-        context = get_dashboard_context(request)
-        html = render_to_string("partials/queue_table.html", context, request=request)
-        return HttpResponse(html)
-
-    return redirect("dashboard")
+    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
 # ---------------- PRESCRIPTIONS ---------------- #
@@ -1621,4 +1549,3 @@ def edit_staff_permissions(request, staff_id):
 
 def staff_blocked(request):
     return render(request, 'staff_blocked.html')
-
