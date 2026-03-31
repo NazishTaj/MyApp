@@ -78,7 +78,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 {% endif %}">
 
 <!-- Token -->
-<td class="px-6 py-4">
+<td class="px-4 sm:px-6 py-4">
     <div class="flex items-center gap-2">
         <span class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
             {{ a.token_number }}
@@ -119,23 +119,23 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 </td>
 
 <!-- Actions -->
-<td class="px-6 py-4">
+<td class="px-4 sm:px-6 py-4">
 
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
 
     <!-- LEFT SIDE -->
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-2 w-full sm:w-auto">
     {% if request.user.userprofile.role == "receptionist" %}
 
         {% if a.id in next_tokens and a.status == "Pending" %}
             <a href="{% url 'send_to_doctor' a.id %}"
-            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
+            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
                 ▶ Send
             </a>
 
         {% elif a.queue_status == "In Consultation" %}
             <a href="{% url 'complete_appointment' a.id %}"
-            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
+            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
                 Complete
             </a>
         {% endif %}
@@ -143,20 +143,20 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
     {% else %}
 
         <a href="{% url 'add_prescription' a.patient.id %}"
-        class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
+        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
             Prescription
         </a>
 
         {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
-            <a href="{% url 'complete_appointment' a.id %}"
-            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
-                Complete
-            </a>
+        <a href="{% url 'complete_appointment' a.id %}"
+        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
+            Complete
+        </a>
 
-            <a href="{% url 'cancel_appointment' a.id %}"
-            class="px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white  shadow hover:shadow-md transition">
-                Cancel
-            </a>
+        <a href="{% url 'cancel_appointment' a.id %}"
+        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white">
+            Cancel
+        </a>
         {% endif %}
 
     {% endif %}
