@@ -73,7 +73,90 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 </td>
 
 <td class="px-6 py-4">
-    <!-- tera actions wala pura code yaha paste kar -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
+
+<!-- LEFT -->
+<div class="flex flex-wrap gap-2">
+
+{% if request.user.userprofile.role == "receptionist" %}
+
+    {% if a.id in next_tokens and a.status == "Pending" %}
+        <button 
+        hx-post="{% url 'send_to_doctor' a.id %}" 
+        hx-target="#queue-table" 
+        hx-swap="outerHTML"
+        class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+            ▶ Send
+        </button>
+
+    {% elif a.queue_status == "In Consultation" %}
+        <button 
+        hx-post="{% url 'complete_appointment' a.id %}" 
+        hx-target="#queue-table" 
+        hx-swap="outerHTML"
+        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+            Complete
+        </button>
+    {% endif %}
+
+{% else %}
+
+    <a href="{% url 'add_prescription' a.patient.id %}"
+    class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white">
+        Prescription
+    </a>
+
+    {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+
+        <button 
+        hx-post="{% url 'complete_appointment' a.id %}" 
+        hx-target="#queue-table" 
+        hx-swap="outerHTML"
+        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+            Complete
+        </button>
+
+        <button 
+        hx-post="{% url 'cancel_appointment' a.id %}" 
+        hx-target="#queue-table" 
+        hx-swap="outerHTML"
+        class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white">
+            Cancel
+        </button>
+
+    {% endif %}
+
+{% endif %}
+
+</div>
+
+<!-- RIGHT MENU -->
+<div class="relative">
+    <button onclick="toggleMenu('menu{{ a.id }}')" class="p-1 text-gray-500">
+        ⋮
+    </button>
+
+    <div id="menu{{ a.id }}" class="hidden absolute right-0 mt-2 w-40 bg-white shadow rounded">
+
+        <a href="{% url 'patient_history' a.patient.id %}" class="block px-4 py-2 text-sm">
+            View
+        </a>
+
+        <a href="{% url 'cancel_appointment' a.id %}" class="block px-4 py-2 text-sm text-red-600">
+            Cancel
+        </a>
+
+        {% if a.status != "Pending" %}
+        <a href="{% url 'mark_pending' a.id %}" class="block px-4 py-2 text-sm text-blue-600">
+            Undo
+        </a>
+        {% endif %}
+
+    </div>
+</div>
+
+</div>
+
 </td>
 
 </tr>
