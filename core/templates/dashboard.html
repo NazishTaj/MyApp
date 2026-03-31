@@ -244,7 +244,9 @@ document.addEventListener("click", function(e) {
 });
 </script>
 <script>
-const socket = new WebSocket("ws://" + window.location.host + "/ws/dashboard/");
+const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/");
 
 socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
