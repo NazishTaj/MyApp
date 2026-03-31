@@ -254,33 +254,12 @@ socket.onmessage = function(e) {
     if (data.type === "update") {
 
         const id = data.data.appointment_id;
-        const status = data.data.status;
-        const queue_status = data.data.queue_status;
+        const html = data.data.html;
 
         let row = document.getElementById("appointment-" + id);
 
         if (row) {
-            let statusCell = row.querySelector(".status");
-
-            if (status === "Completed") {
-                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
-                 row.classList.remove("bg-blue-50");
-            }
-
-            if (status === "Cancelled") {
-                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
-            }
-
-            if (status === "Pending") {
-                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
-            }
-            if (status === "In Consultation") {
-                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
-            }
-            if (queue_status === "In Consultation") {
-                row.classList.remove("bg-green-50");   // remove NEXT highlight
-                row.classList.add("bg-blue-50");       // add doctor active highlight
-            }
+            row.outerHTML = html;
         }
     }
 };
