@@ -518,7 +518,8 @@ def send_to_doctor(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "status": "In Consultation"   # 👈 IMPORTANT
+                "status": "In Consultation",
+                "queue_status": "In Consultation"# 👈 IMPORTANT
             }
         }
     )
