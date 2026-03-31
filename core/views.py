@@ -507,6 +507,22 @@ def send_to_doctor(request, appointment_id):
     appointment.queue_status = "In Consultation"
     appointment.save()
     
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        "dashboard",
+        {
+            "type": "send_update",
+            "data": {
+                "appointment_id": appointment.id,
+                "status": "In Consultation"   # 👈 IMPORTANT
+            }
+        }
+    )
+    
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
