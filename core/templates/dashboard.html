@@ -41,8 +41,14 @@
 </div>
 
 <!-- 🔥 HTMX READY QUEUE -->
-<div id="queue-table">
+<div id="queue-table"
+     hx-get="{% url 'dashboard' %}"
+     hx-trigger="every 5s"
+     hx-target="#queue-table"
+     hx-swap="outerHTML">
+     
     {% include "dashboard_table.html" %}
+
 </div>
 
 </div>
