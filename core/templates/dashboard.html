@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<meta http-equiv="refresh" content="15">
 
 <div class="space-y-8">
 
@@ -74,7 +75,7 @@
 
 <tr class="hover:bg-gray-50
 {% if a.id in next_tokens %}
-bg-green-50 border-l-4 border-green-500
+bg-green-50 border-l-4 border-green-500 shadow-sm
 {% endif %}">
 
 <!-- Token -->
@@ -84,7 +85,7 @@ bg-green-50 border-l-4 border-green-500
             {{ a.token_number }}
         </span>
         {% if a.id in next_tokens %}
-        <span class="text-xs text-green-600 font-semibold">NEXT</span>
+        <span class="text-xs text-green-600 font-semibold animate-pulse">NEXT</span>
         {% endif %}
     </div>
 </td>
@@ -129,13 +130,13 @@ bg-green-50 border-l-4 border-green-500
 
         {% if a.id in next_tokens and a.status == "Pending" %}
             <a href="{% url 'send_to_doctor' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+            class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
                 ▶ Send
             </a>
 
         {% elif a.queue_status == "In Consultation" %}
             <a href="{% url 'complete_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
                 Complete
             </a>
         {% endif %}
@@ -143,18 +144,18 @@ bg-green-50 border-l-4 border-green-500
     {% else %}
 
         <a href="{% url 'add_prescription' a.patient.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white">
+        class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
             Prescription
         </a>
 
         {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
             <a href="{% url 'complete_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white ml-2">
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white ml-2 shadow hover:shadow-md transition">
                 Complete
             </a>
 
             <a href="{% url 'cancel_appointment' a.id %}"
-            class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white ml-2">
+            class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white ml-2 shadow hover:shadow-md transition">
                 Cancel
             </a>
         {% endif %}
@@ -165,19 +166,39 @@ bg-green-50 border-l-4 border-green-500
     <!-- RIGHT SIDE -->
     <div class="relative">
         <button onclick="toggleMenu('menu{{ a.id }}')" 
-        class="px-2 py-1 text-gray-500 text-lg">
+        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg transition">
             ⋮
         </button>
-
         <div id="menu{{ a.id }}" 
-        class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border z-10">
+    class="hidden absolute right-0 mt-2 w-44 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden animate-dropdown">
 
-            <a href="{% url 'patient_history' a.patient.id %}" class="block px-4 py-2 text-sm hover:bg-gray-100">History</a>
-            <a href="{% url 'cancel_appointment' a.id %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Cancel</a>
+    <!-- History -->
+    <a href="{% url 'patient_history' a.patient.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition">
+        📄 <span>History</span>
+    </a>
 
-            {% if a.status != "Pending" %}
-            <a href="{% url 'mark_pending' a.id %}" class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">Undo</a>
-            {% endif %}
+    <!-- Divider -->
+    <div class="h-px bg-gray-200 mx-2"></div>
+
+    <!-- Cancel -->
+    <a href="{% url 'cancel_appointment' a.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
+        ❌ <span>Cancel Appointment</span>
+    </a>
+
+    {% if a.status != "Pending" %}
+    <!-- Undo -->
+    <a href="{% url 'mark_pending' a.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition">
+        ↩ <span>Undo Changes</span>
+    </a>
+    {% endif %}
+
+</div>
+        
+
+
 
         </div>
     </div>
@@ -211,8 +232,17 @@ function toggleMenu(id) {
     document.querySelectorAll('[id^="menu"]').forEach(m => {
         if (m.id !== id) m.classList.add("hidden");
     });
-    document.getElementById(id).classList.toggle("hidden");
+
+    const el = document.getElementById(id);
+    el.classList.toggle("hidden");
 }
+
+// click outside close
+document.addEventListener("click", function(e) {
+    if (!e.target.closest("[onclick^='toggleMenu']") && !e.target.closest("[id^='menu']")) {
+        document.querySelectorAll('[id^="menu"]').forEach(m => m.classList.add("hidden"));
+    }
+});
 </script>
 
 {% endblock %}
