@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<meta http-equiv="refresh" content="15">
 
 <div class="space-y-8">
 
@@ -243,6 +242,37 @@ document.addEventListener("click", function(e) {
         document.querySelectorAll('[id^="menu"]').forEach(m => m.classList.add("hidden"));
     }
 });
+</script>
+<script>
+const socket = new WebSocket("ws://" + window.location.host + "/ws/dashboard/");
+
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+
+    if (data.type === "update") {
+
+        const id = data.data.appointment_id;
+        const status = data.data.status;
+
+        let row = document.getElementById("appointment-" + id);
+
+        if (row) {
+            let statusCell = row.querySelector(".status");
+
+            if (status === "Completed") {
+                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+            }
+
+            if (status === "Cancelled") {
+                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
+            }
+
+            if (status === "Pending") {
+                statusCell.innerHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+            }
+        }
+    }
+};
 </script>
 
 {% endblock %}
