@@ -935,19 +935,24 @@ def edit_profile(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
-    # fetch clinic schedule
     schedules = ClinicSchedule.objects.filter(clinic=clinic).order_by('day','start_time')
 
     if request.method == "POST":
 
         profile.name = request.POST.get("name")
         profile.phone = request.POST.get("phone")
+
+        # ✅ FIX ADDED
+        if profile.role in ["doctor", "owner"]:
+            profile.degree = request.POST.get("degree") or ""
+            profile.reg_no = request.POST.get("reg_no") or ""
+
         if profile.is_owner:
             clinic.name = request.POST.get("clinic_name")
             clinic.phone = request.POST.get("clinic_phone")
             clinic.address = request.POST.get("clinic_address")
             clinic.consultation_fee = request.POST.get("consultation_fee")
-        
+
             clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
             clinic.is_advanced = bool(request.POST.get("is_advanced"))
 
@@ -965,7 +970,7 @@ def edit_profile(request):
     return render(request, "edit_profile.html", {
         "profile": profile,
         "clinic": clinic,
-        "schedules": schedules   # ← IMPORTANT
+        "schedules": schedules
     })
 
 
