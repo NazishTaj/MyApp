@@ -18,23 +18,22 @@
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-<!-- Card -->
-<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Appointments</p>
     <h2 class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl transition">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg">
     <p class="text-sm opacity-80">Waiting Patients</p>
     <h2 class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Completed</p>
     <h2 class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl transition">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Revenue</p>
     <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
@@ -44,7 +43,7 @@
 <!-- Queue Table -->
 <div class="bg-white/70 backdrop-blur rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
 
-<div class="px-6 py-4 border-b flex items-center justify-between">
+<div class="px-6 py-4 border-b">
     <h3 class="font-semibold text-gray-700 text-lg">
         Today's Queue
     </h3>
@@ -54,7 +53,7 @@
 
 <table class="w-full text-sm">
 
-<thead class="bg-gray-50 text-gray-500 uppercase text-xs tracking-wider">
+<thead class="bg-gray-50 text-gray-500 uppercase text-xs">
 <tr>
 <th class="px-6 py-3 text-left">Token</th>
 <th class="px-6 py-3 text-left">Patient</th>
@@ -73,23 +72,19 @@
 
 {% for a in appointments %}
 
-<tr class="hover:bg-gray-50 transition-all duration-200
+<tr class="hover:bg-gray-50
 {% if a.id in next_tokens %}
 bg-green-50 border-l-4 border-green-500
-{% endif %}
-">
+{% endif %}">
 
 <!-- Token -->
 <td class="px-6 py-4">
     <div class="flex items-center gap-2">
-        <span class="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600 font-semibold text-xs shadow">
+        <span class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
             {{ a.token_number }}
         </span>
-
         {% if a.id in next_tokens %}
-        <span class="text-xs text-green-600 font-semibold">
-            NEXT
-        </span>
+        <span class="text-xs text-green-600 font-semibold">NEXT</span>
         {% endif %}
     </div>
 </td>
@@ -112,88 +107,86 @@ bg-green-50 border-l-4 border-green-500
 
 <!-- Status -->
 <td class="px-6 py-4">
-
 {% if a.queue_status == "In Consultation" %}
-<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
-In Room
-</span>
-
+<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
 {% elif a.status == "Pending" %}
-<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
-Pending
-</span>
-
+<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
 {% elif a.status == "Completed" %}
-<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">
-Completed
-</span>
-
+<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
 {% elif a.status == "Cancelled" %}
-<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">
-Cancelled
-</span>
+<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
 {% endif %}
-
 </td>
 
 <!-- Actions -->
 <td class="px-6 py-4">
+<div class="flex items-center gap-2">
 
-<div class="flex flex-wrap gap-2 items-center">
+{% if request.user.userprofile.role == "receptionist" %}
 
-<a href="/add-prescription/{{ a.patient.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition shadow-sm">
-Prescription
-</a>
+    {% if a.id in next_tokens and a.status == "Pending" %}
+        <a href="{% url 'send_to_doctor' a.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+            ▶ Send
+        </a>
 
-<a href="/patient-history/{{ a.patient.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">
-History
-</a>
+    {% elif a.queue_status == "In Consultation" %}
+        <a href="{% url 'complete_appointment' a.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+            Complete
+        </a>
+    {% endif %}
 
-{% if a.status == "Pending" %}
+    <!-- Dropdown -->
+    <div class="relative">
+        <button onclick="toggleMenu('menu{{ a.id }}')" 
+        class="px-2 py-1 text-gray-500 text-lg">⋮</button>
 
-{% if show_doctor_column and a.queue_status == "Waiting" %}
-<a href="/send-to-doctor/{{ a.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition shadow-sm">
-Send
-</a>
-{% endif %}
+        <div id="menu{{ a.id }}" 
+        class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border z-10">
 
-<a href="/complete-appointment/{{ a.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white hover:bg-green-600 transition shadow-sm">
-Complete
-</a>
+            <a href="{% url 'patient_history' a.patient.id %}" class="block px-4 py-2 text-sm hover:bg-gray-100">History</a>
+            <a href="{% url 'cancel_appointment' a.id %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Cancel</a>
 
-<a href="/cancel-appointment/{{ a.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white hover:bg-red-600 transition shadow-sm">
-Cancel
-</a>
+            {% if a.status != "Pending" %}
+            <a href="{% url 'mark_pending' a.id %}" class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">Undo</a>
+            {% endif %}
 
-{% endif %}
+        </div>
+    </div>
 
-{% if a.status != "Pending" %}
-<a href="/mark-pending/{{ a.id }}/"
-class="px-3 py-1.5 text-xs rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
-Undo
-</a>
+{% else %}
+
+    <a href="{% url 'add_prescription' a.patient.id %}"
+    class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white">
+        Prescription
+    </a>
+
+    {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+        <a href="{% url 'complete_appointment' a.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+            Complete
+        </a>
+
+        <a href="{% url 'cancel_appointment' a.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white">
+            Cancel
+        </a>
+    {% endif %}
+
 {% endif %}
 
 </div>
-
 </td>
 
 </tr>
 
 {% empty %}
-
 <tr>
-<td colspan="{% if show_doctor_column %}6{% else %}5{% endif %}" 
-class="text-center py-12 text-gray-400">
+<td colspan="6" class="text-center py-12 text-gray-400">
 No appointments today
 </td>
 </tr>
-
 {% endfor %}
 
 </tbody>
@@ -204,5 +197,15 @@ No appointments today
 </div>
 
 </div>
+
+<!-- JS for dropdown -->
+<script>
+function toggleMenu(id) {
+    document.querySelectorAll('[id^="menu"]').forEach(m => {
+        if (m.id !== id) m.classList.add("hidden");
+    });
+    document.getElementById(id).classList.toggle("hidden");
+}
+</script>
 
 {% endblock %}
