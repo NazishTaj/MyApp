@@ -214,6 +214,9 @@ def dashboard(request):
         "today_revenue": today_revenue,
         "next_tokens": next_tokens
     }
+    if request.headers.get("HX-Request"):
+        context = get_dashboard_context(request)
+        return render(request, "partials/queue_table.html", context)
 
     return render(request, "dashboard.html", context)
 # ---------------- PATIENTS ---------------- #
