@@ -102,11 +102,30 @@ Profile Information
 
 <div class="space-y-4 text-sm">
 
+<!-- 👨‍⚕️ Name -->
 <div class="flex justify-between">
 <span class="text-gray-500">👨‍⚕️ Name</span>
 <span class="font-medium text-gray-800">{{ profile.name }}</span>
 </div>
 
+<!-- 🎓 Degree -->
+{% if profile.role == "doctor" or profile.role == "owner" %}
+    {% if profile.degree %}
+    <div class="flex justify-between">
+        <span class="text-gray-500">🎓 Degree</span>
+        <span class="font-medium text-gray-800">{{ profile.degree }}</span>
+    </div>
+    {% endif %}
+
+    {% if profile.reg_no %}
+    <div class="flex justify-between">
+        <span class="text-gray-500">🆔 Reg No</span>
+        <span class="font-medium text-gray-800">{{ profile.reg_no }}</span>
+    </div>
+    {% endif %}
+{% endif %}
+
+<!-- 📞 Phone -->
 <div class="flex justify-between">
 <span class="text-gray-500">📞 Phone</span>
 <span>{{ profile.phone }}</span>
