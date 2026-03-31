@@ -120,27 +120,54 @@ bg-green-50 border-l-4 border-green-500
 
 <!-- Actions -->
 <td class="px-6 py-4">
-<div class="flex items-center gap-2">
 
-{% if request.user.userprofile.role == "receptionist" %}
+<div class="flex items-center justify-between w-full">
 
-    {% if a.id in next_tokens and a.status == "Pending" %}
-        <a href="{% url 'send_to_doctor' a.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
-            ▶ Send
+    <!-- LEFT SIDE -->
+    <div>
+    {% if request.user.userprofile.role == "receptionist" %}
+
+        {% if a.id in next_tokens and a.status == "Pending" %}
+            <a href="{% url 'send_to_doctor' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+                ▶ Send
+            </a>
+
+        {% elif a.queue_status == "In Consultation" %}
+            <a href="{% url 'complete_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
+                Complete
+            </a>
+        {% endif %}
+
+    {% else %}
+
+        <a href="{% url 'add_prescription' a.patient.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white">
+            Prescription
         </a>
 
-    {% elif a.queue_status == "In Consultation" %}
-        <a href="{% url 'complete_appointment' a.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
-            Complete
-        </a>
+        {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+            <a href="{% url 'complete_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white ml-2">
+                Complete
+            </a>
+
+            <a href="{% url 'cancel_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white ml-2">
+                Cancel
+            </a>
+        {% endif %}
+
     {% endif %}
+    </div>
 
-    <!-- Dropdown -->
+    <!-- RIGHT SIDE -->
     <div class="relative">
         <button onclick="toggleMenu('menu{{ a.id }}')" 
-        class="px-2 py-1 text-gray-500 text-lg">⋮</button>
+        class="px-2 py-1 text-gray-500 text-lg">
+            ⋮
+        </button>
 
         <div id="menu{{ a.id }}" 
         class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border z-10">
@@ -155,28 +182,8 @@ bg-green-50 border-l-4 border-green-500
         </div>
     </div>
 
-{% else %}
-
-    <a href="{% url 'add_prescription' a.patient.id %}"
-    class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white">
-        Prescription
-    </a>
-
-    {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
-        <a href="{% url 'complete_appointment' a.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white">
-            Complete
-        </a>
-
-        <a href="{% url 'cancel_appointment' a.id %}"
-        class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white">
-            Cancel
-        </a>
-    {% endif %}
-
-{% endif %}
-
 </div>
+
 </td>
 
 </tr>
@@ -198,7 +205,7 @@ No appointments today
 
 </div>
 
-<!-- JS for dropdown -->
+<!-- JS -->
 <script>
 function toggleMenu(id) {
     document.querySelectorAll('[id^="menu"]').forEach(m => {
