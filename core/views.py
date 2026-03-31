@@ -10,6 +10,7 @@ from .models import Patient, Appointment, Prescription, UserProfile , ClinicSche
 from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
 from django.db.models import Sum
+from django.template.loader import render_to_string
 
 
 
@@ -471,13 +472,18 @@ def complete_appointment(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
+    html = render_to_string("partials/appointment_row.html", {
+        "a": appointment,
+        "request": request
+    })
+
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "status": "Completed"
+                "html": html
             }
         }
     )
@@ -509,8 +515,12 @@ def send_to_doctor(request, appointment_id):
     
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
-
     channel_layer = get_channel_layer()
+
+    html = render_to_string("partials/appointment_row.html", {
+        "a": appointment,
+        "request": request
+    })
 
     async_to_sync(channel_layer.group_send)(
         "dashboard",
@@ -518,11 +528,12 @@ def send_to_doctor(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "status": "In Consultation",
-                "queue_status": "In Consultation"# 👈 IMPORTANT
+                "html": html
             }
         }
     )
+
+
     
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
@@ -543,8 +554,12 @@ def cancel_appointment(request, appointment_id):
       # 🔥 WEBSOCKET EVENT
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
-
     channel_layer = get_channel_layer()
+
+    html = render_to_string("partials/appointment_row.html", {
+        "a": appointment,
+        "request": request
+    })
 
     async_to_sync(channel_layer.group_send)(
         "dashboard",
@@ -552,10 +567,11 @@ def cancel_appointment(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "status": "Cancelled"
+                "html": html
             }
         }
-     )
+    )
+
 
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
@@ -1234,17 +1250,21 @@ def mark_pending(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
+    html = render_to_string("partials/appointment_row.html", {
+        "a": appointment,
+        "request": request
+    })
+
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "status": "Pending"
+                "html": html
             }
         }
     )
-
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
