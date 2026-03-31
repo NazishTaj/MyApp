@@ -26,8 +26,8 @@ overflow-x:hidden;
 
 </head>
 
-<!-- ✅ PREMIUM GRADIENT BACKGROUND -->
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-gray-800">
+<!-- ✅ CLEAN PROFESSIONAL BACKGROUND -->
+<body class="bg-[#f1f5f9] text-gray-800">
 
 <div class="flex h-screen">
 
@@ -38,7 +38,7 @@ overflow-x:hidden;
 
   <!-- SIDEBAR -->
   <aside id="sidebar"
-  class="fixed md:static top-0 left-0 h-full w-64 shrink-0 bg-gradient-to-b from-[#0f172a] to-[#020617] text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
+  class="fixed md:static top-0 left-0 h-full w-64 shrink-0 bg-gradient-to-b from-[#0f172a] to-[#020617] shadow-xl text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
 
     <!-- Logo -->
     <div class="h-16 flex items-center px-5 gap-2 text-lg font-semibold border-b border-white/10">
@@ -54,7 +54,7 @@ overflow-x:hidden;
       <a href="/dashboard/"
       class="block px-3 py-2 rounded-lg transition-all duration-200
       {% if request.path == '/dashboard/' %}
-        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        bg-blue-500/20 text-blue-300 font-semibold
       {% else %}
         hover:bg-white/10 hover:pl-4 text-gray-300
       {% endif %}">
@@ -65,7 +65,7 @@ overflow-x:hidden;
       <a href="/appointments/"
       class="block px-3 py-2 rounded-lg transition-all duration-200
       {% if request.path == '/appointments/' %}
-        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        bg-blue-500/20 text-blue-300 font-semibold
       {% else %}
         hover:bg-white/10 hover:pl-4 text-gray-300
       {% endif %}">
@@ -76,7 +76,7 @@ overflow-x:hidden;
       <a href="/patients/"
       class="block px-3 py-2 rounded-lg transition-all duration-200
       {% if request.path == '/' %}
-        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        bg-blue-500/20 text-blue-300 font-semibold
       {% else %}
         hover:bg-white/10 hover:pl-4 text-gray-300
       {% endif %}">
@@ -87,7 +87,7 @@ overflow-x:hidden;
       <a href="/add-patient/"
       class="block px-3 py-2 rounded-lg transition-all duration-200
       {% if request.path == '/add-patient/' %}
-        bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+        bg-blue-500/20 text-blue-300 font-semibold
       {% else %}
         hover:bg-white/10 hover:pl-4 text-gray-300
       {% endif %}">
@@ -100,7 +100,7 @@ overflow-x:hidden;
       <a href="/staff/"
       class="block px-3 py-2 rounded-lg transition-all duration-200
       {% if '/staff' in request.path %}
-      bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+      bg-blue-500/20 text-blue-300 font-semibold
       {% else %}
       hover:bg-white/10 hover:pl-4 text-gray-300
       {% endif %}">
@@ -115,7 +115,7 @@ overflow-x:hidden;
         <a href="{% url 'create_bill' %}"
         class="block px-3 py-2 rounded-lg transition-all duration-200
         {% if request.path == '/create-bill/' %}
-          bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+          bg-blue-500/20 text-blue-300 font-semibold
         {% else %}
           hover:bg-white/10 hover:pl-4 text-gray-300
         {% endif %}">
@@ -125,7 +125,7 @@ overflow-x:hidden;
         <a href="{% url 'bill_history' %}"
         class="block px-3 py-2 rounded-lg transition-all duration-200
         {% if request.path == '/bill-history/' %}
-          bg-blue-500/20 text-blue-300 font-semibold shadow-inner
+          bg-blue-500/20 text-blue-300 font-semibold
         {% else %}
           hover:bg-white/10 hover:pl-4 text-gray-300
         {% endif %}">
@@ -142,7 +142,7 @@ overflow-x:hidden;
   <div class="flex-1 flex flex-col w-full">
 
     <!-- TOP BAR -->
-    <header class="h-16 bg-white/70 backdrop-blur-xl border-b border-white/30 flex items-center justify-between px-4 md:px-6">
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
 
       <!-- LEFT -->
       <div class="flex items-center gap-3">
@@ -164,7 +164,7 @@ overflow-x:hidden;
           <button onclick="toggleSettings()" class="text-xl">⚙</button>
 
           <div id="settingsMenu"
-          class="hidden absolute right-0 mt-3 w-56 bg-white/80 backdrop-blur-xl text-gray-800 border border-white/30 shadow-2xl rounded-xl z-50 overflow-hidden">
+          class="hidden absolute right-0 mt-3 w-56 bg-white text-gray-800 border border-gray-200 shadow-xl rounded-xl z-50 overflow-hidden">
 
             <div class="px-4 py-3 border-b border-gray-200">
               <p class="text-sm font-semibold">{{ request.user.username }}</p>
@@ -203,7 +203,7 @@ overflow-x:hidden;
     </header>
 
     <!-- CONTENT -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-transparent">
+    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-[#f8fafc]">
 
       <div class="max-w-6xl mx-auto">
 
