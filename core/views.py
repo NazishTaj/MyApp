@@ -465,6 +465,22 @@ def complete_appointment(request, appointment_id):
     appointment.status = "Completed"
     appointment.queue_status = "Done" 
     appointment.save()
+    # 🔥 WEBSOCKET EVENT
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        "dashboard",
+        {
+            "type": "send_update",
+            "data": {
+                "appointment_id": appointment.id,
+                "status": "Completed"
+            }
+        }
+    )
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
@@ -490,7 +506,7 @@ def send_to_doctor(request, appointment_id):
 
     appointment.queue_status = "In Consultation"
     appointment.save()
-
+    
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
@@ -507,6 +523,23 @@ def cancel_appointment(request, appointment_id):
     appointment.status = "Cancelled"
     appointment.queue_status = "Done"
     appointment.save()
+      # 🔥 WEBSOCKET EVENT
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        "dashboard",
+        {
+            "type": "send_update",
+            "data": {
+                "appointment_id": appointment.id,
+                "status": "Cancelled"
+            }
+        }
+     )
+
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
@@ -1178,6 +1211,23 @@ def mark_pending(request, appointment_id):
     appointment.status = "Pending"
     appointment.queue_status = "Waiting"
     appointment.save()
+      # 🔥 WEBSOCKET EVENT
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        "dashboard",
+        {
+            "type": "send_update",
+            "data": {
+                "appointment_id": appointment.id,
+                "status": "Pending"
+            }
+        }
+    )
+
 
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
