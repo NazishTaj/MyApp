@@ -26,11 +26,17 @@
 Dr. {{ prescription.doctor.name }}
 </p>
 {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
-    {% if prescription.doctor.degree %}
+
+    {% if prescription.doctor.degree or prescription.doctor.reg_no %}
     <p class="text-xs text-gray-500">
         {{ prescription.doctor.degree }}
+
+        {% if prescription.doctor.reg_no %}
+            • Reg No: {{ prescription.doctor.reg_no }}
+        {% endif %}
     </p>
     {% endif %}
+
 {% endif %}
 </div>
 
