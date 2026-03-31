@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<meta http-equiv="refresh" content="15">
 
 <div class="space-y-8">
 
@@ -40,15 +41,187 @@
 
 </div>
 
-<!-- 🔥 HTMX READY QUEUE -->
-<div id="queue-table"
-     hx-get="{% url 'queue_table' %}"
-     hx-trigger="every 5s"
-     hx-target="#queue-table"
-     hx-swap="outerHTML">
-     
-    {% include "dashboard_table.html" %}
+<!-- Queue Table -->
+<div class="bg-white/70 backdrop-blur rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
 
+<div class="px-6 py-4 border-b">
+    <h3 class="font-semibold text-gray-700 text-lg">
+        Today's Queue
+    </h3>
+</div>
+
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm">
+
+<thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+<tr>
+<th class="px-6 py-3 text-left">Token</th>
+<th class="px-6 py-3 text-left">Patient</th>
+
+{% if show_doctor_column %}
+<th class="px-6 py-3 text-left">Doctor</th>
+{% endif %}
+
+<th class="px-6 py-3 text-left">Problem</th>
+<th class="px-6 py-3 text-left">Status</th>
+<th class="px-6 py-3 text-left">Actions</th>
+</tr>
+</thead>
+
+<tbody class="divide-y">
+
+{% for a in appointments %}
+
+<tr class="hover:bg-gray-50
+{% if a.id in next_tokens %}
+bg-green-50 border-l-4 border-green-500 shadow-sm
+{% endif %}">
+
+<!-- Token -->
+<td class="px-6 py-4">
+    <div class="flex items-center gap-2">
+        <span class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
+            {{ a.token_number }}
+        </span>
+        {% if a.id in next_tokens %}
+        <span class="text-xs text-green-600 font-semibold animate-pulse">NEXT</span>
+        {% endif %}
+    </div>
+</td>
+
+<!-- Patient -->
+<td class="px-6 py-4 font-medium text-gray-800">
+    {{ a.patient.name }}
+</td>
+
+{% if show_doctor_column %}
+<td class="px-6 py-4 text-gray-700">
+    {{ a.doctor.name|default:"N/A" }}
+</td>
+{% endif %}
+
+<!-- Problem -->
+<td class="px-6 py-4 text-gray-500">
+    {{ a.problem }}
+</td>
+
+<!-- Status -->
+<td class="px-6 py-4">
+{% if a.queue_status == "In Consultation" %}
+<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
+{% elif a.status == "Pending" %}
+<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
+{% elif a.status == "Completed" %}
+<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
+{% elif a.status == "Cancelled" %}
+<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
+{% endif %}
+</td>
+
+<!-- Actions -->
+<td class="px-6 py-4">
+
+<div class="flex items-center justify-between w-full">
+
+    <!-- LEFT SIDE -->
+    <div>
+    {% if request.user.userprofile.role == "receptionist" %}
+
+        {% if a.id in next_tokens and a.status == "Pending" %}
+            <a href="{% url 'send_to_doctor' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
+                ▶ Send
+            </a>
+
+        {% elif a.queue_status == "In Consultation" %}
+            <a href="{% url 'complete_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
+                Complete
+            </a>
+        {% endif %}
+
+    {% else %}
+
+        <a href="{% url 'add_prescription' a.patient.id %}"
+        class="px-3 py-1.5 text-xs rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
+            Prescription
+        </a>
+
+        {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+            <a href="{% url 'complete_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-green-500 text-white ml-2 shadow hover:shadow-md transition">
+                Complete
+            </a>
+
+            <a href="{% url 'cancel_appointment' a.id %}"
+            class="px-3 py-1.5 text-xs rounded-lg bg-red-500 text-white ml-2 shadow hover:shadow-md transition">
+                Cancel
+            </a>
+        {% endif %}
+
+    {% endif %}
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="relative">
+        <button onclick="toggleMenu('menu{{ a.id }}')" 
+        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg transition">
+            ⋮
+        </button>
+        <div id="menu{{ a.id }}" 
+    class="hidden absolute right-0 mt-2 w-44 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden animate-dropdown">
+
+    <!-- History -->
+    <a href="{% url 'patient_history' a.patient.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition">
+        📄 <span>History</span>
+    </a>
+
+    <!-- Divider -->
+    <div class="h-px bg-gray-200 mx-2"></div>
+
+    <!-- Cancel -->
+    <a href="{% url 'cancel_appointment' a.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
+        ❌ <span>Cancel Appointment</span>
+    </a>
+
+    {% if a.status != "Pending" %}
+    <!-- Undo -->
+    <a href="{% url 'mark_pending' a.id %}" 
+    class="flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition">
+        ↩ <span>Undo Changes</span>
+    </a>
+    {% endif %}
+
+</div>
+        
+
+
+
+        </div>
+    </div>
+
+</div>
+
+</td>
+
+</tr>
+
+{% empty %}
+<tr>
+<td colspan="6" class="text-center py-12 text-gray-400">
+No appointments today
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
 </div>
 
 </div>
@@ -64,6 +237,7 @@ function toggleMenu(id) {
     el.classList.toggle("hidden");
 }
 
+// click outside close
 document.addEventListener("click", function(e) {
     if (!e.target.closest("[onclick^='toggleMenu']") && !e.target.closest("[id^='menu']")) {
         document.querySelectorAll('[id^="menu"]').forEach(m => m.classList.add("hidden"));
