@@ -511,7 +511,9 @@ def complete_appointment(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request
+        "request": request,
+        "next_tokens": {appointment.id: True}
+        
     })
 
     async_to_sync(channel_layer.group_send)(
@@ -556,7 +558,8 @@ def send_to_doctor(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request
+        "request": request,
+        "next_tokens": {appointment.id: True}
     })
 
     async_to_sync(channel_layer.group_send)(
@@ -595,7 +598,8 @@ def cancel_appointment(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request
+        "request": request,
+        "next_tokens": {appointment.id: True}
     })
 
     async_to_sync(channel_layer.group_send)(
@@ -1278,7 +1282,8 @@ def mark_pending(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request
+        "request": request,
+        "next_tokens": {appointment.id: True}
     })
 
     async_to_sync(channel_layer.group_send)(
