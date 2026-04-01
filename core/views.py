@@ -383,7 +383,11 @@ def book_appointment(request, patient_id):
             payment_status = "waived"
             payment_mode = None
         else:
-            payment_status = "paid" if fee > 0 else "unpaid"
+            if clinic.billing_enabled:
+                payment_status = "paid" if fee > 0 else "unpaid"
+            else:
+                payment_status = "unpaid"
+                payment_mode = None
 
         if payment_status in ["unpaid", "waived"]:
             payment_mode = None
@@ -415,22 +419,22 @@ def book_appointment(request, patient_id):
             status="pending",
             queue_status="waiting"
         )
+        if clinic.billing_enabled:
 
-        bill = Bill.objects.create(
-            clinic=clinic,
-            patient=patient,
-            doctor=doctor,
-            appointment=appointment,
-            total_amount=appointment.consultation_fee,
-            payment_mode=payment_mode
-        )
+            bill = Bill.objects.create(
+                clinic=clinic,
+                patient=patient,
+                doctor=doctor,
+                appointment=appointment,
+                total_amount=appointment.consultation_fee, 
+                payment_mode=payment_mode
+            )
 
-        BillItem.objects.create(
-            bill=bill,
-            item_name="Consultation",
-            amount=appointment.consultation_fee,
-    
-        )
+            BillItem.objects.create(
+                bill=bill,
+                item_name="Consultation",
+                amount=appointment.consultation_fee
+            )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
 
