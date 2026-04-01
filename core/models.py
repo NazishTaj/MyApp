@@ -317,6 +317,20 @@ class Bill(models.Model):
 
     def __str__(self):
         return f"{self.bill_number} - {self.patient.name}"
+    def save(self, *args, **kwargs):
+
+        if not self.bill_number:
+            last_bill = Bill.objects.filter(clinic=self.clinic).order_by('-id').first()
+
+            if last_bill and last_bill.bill_number:
+                last_num = int(last_bill.bill_number.split('-')[-1])
+                new_num = last_num + 1
+            else:
+                new_num = 1001
+
+            self.bill_number = f"FD-{new_num}"
+
+        super().save(*args, **kwargs)
     
 
 class BillItem(models.Model):
