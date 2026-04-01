@@ -11,6 +11,74 @@ from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
 from django.db.models import Sum
 from django.template.loader import render_to_string
+from django.http import JsonResponse
+
+
+
+@login_required
+def get_appointments_table(request):
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    from django.utils import timezone
+    today = timezone.localtime().date()
+
+    # 🔥 SAME LOGIC AS DASHBOARD
+    if profile.role in ["doctor", "owner"]:
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            doctor=profile
+        )
+
+    elif profile.role == "assistant":
+        if profile.assigned_doctor:
+            appointments = Appointment.objects.filter(
+                clinic=clinic,
+                appointment_date=today,
+                doctor=profile.assigned_doctor
+            )
+        else:
+            appointments = Appointment.objects.none()
+
+    else:
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today
+        )
+
+    appointments = appointments.order_by("doctor", "token_number")
+
+    # 🔥 NEXT TOKENS LOGIC (COPY SAME)
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    next_tokens = {}
+    seen_doctors = set()
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens[appt.id] = True
+            seen_doctors.add(appt.doctor_id)
+
+    html = render_to_string("partials/appointments_table.html", {
+        "appointments": appointments,
+        "user_role": profile.role,
+        "next_tokens": next_tokens
+    })
+
+    return JsonResponse({"html": html})
 
 
 
