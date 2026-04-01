@@ -224,7 +224,7 @@ socket.onmessage = function(e) {
         let row = document.getElementById("appointment-" + id);
 
         if (row) {
-            row.outerHTML = html;
+            location.reload();
         }
     }
 };
