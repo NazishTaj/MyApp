@@ -331,7 +331,6 @@ def book_appointment(request, patient_id):
         time = request.POST.get("time")
         problem = request.POST.get("problem")
         visit_type = request.POST.get("visit_type") or "new"
-        fee = request.POST.get("fee")
         payment_mode = request.POST.get("payment_mode")
         doctors = UserProfile.objects.filter(
             clinic=clinic,
@@ -361,7 +360,8 @@ def book_appointment(request, patient_id):
                     "patient": patient,
                     "doctors": doctors,
                     "error": "Invalid doctor selected"
-            })         
+                }) 
+        fee = doctor.consultation_fee or 0
 
         # ✅ DATE FIX (MAIN FIX)
         if date_val:
@@ -375,9 +375,7 @@ def book_appointment(request, patient_id):
         else:
             time = timezone.localtime().time()
 
-        fee = float(fee) if fee else None
-        if fee is None:
-            fee = clinic.consultation_fee
+
    
         # ✅ Payment logic
         if visit_type == "free":
@@ -386,6 +384,7 @@ def book_appointment(request, patient_id):
             payment_mode = None
         else:
             payment_status = "paid" if fee > 0 else "unpaid"
+
         if payment_status in ["unpaid", "waived"]:
             payment_mode = None
 
@@ -409,7 +408,7 @@ def book_appointment(request, patient_id):
             problem=problem,
             token_number=token,
             doctor=doctor,
-            consultation_fee=fee,
+           
             visit_type=visit_type,
             payment_status=payment_status,
             payment_mode=payment_mode,
@@ -422,14 +421,14 @@ def book_appointment(request, patient_id):
             patient=patient,
             doctor=doctor,
             appointment=appointment,
-            total_amount=fee,
+            total_amount=appointment.consultation_fee,
             payment_mode=payment_mode
         )
 
         BillItem.objects.create(
             bill=bill,
             item_name="Consultation",
-            amount=fee,
+            amount=appointment.consultation_fee,
     
         )
 
