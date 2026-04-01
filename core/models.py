@@ -11,11 +11,7 @@ class Clinic(models.Model):
     logo = models.ImageField(upload_to="clinic_logos/", blank=True, null=True)
     is_advanced = models.BooleanField(default=False)
     billing_enabled = models.BooleanField(default=False)
-    consultation_fee = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
+
 
     def __str__(self):
         return self.name
@@ -26,6 +22,13 @@ class Clinic(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
+    consultation_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    
 
     ROLE_CHOICES = (
         ('owner', 'Owner'),
@@ -50,6 +53,12 @@ class UserProfile(models.Model):
         limit_choices_to={"role__in": ["owner", "doctor"]},
         related_name="assistants"
     )
+    def save(self, *args, **kwargs):
+        # sirf doctor/owner ke liye fee allowed
+        if self.role not in ['owner', 'doctor']:
+            self.consultation_fee = None
+
+        super().save(*args, **kwargs)
 
 
     def __str__(self):
