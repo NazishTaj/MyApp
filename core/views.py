@@ -330,6 +330,9 @@ def book_appointment(request, patient_id):
         date_val = request.POST.get("date")
         time = request.POST.get("time")
         problem = request.POST.get("problem")
+        visit_type = request.POST.get("visit_type") or "new"
+        fee = request.POST.get("fee")
+        payment_mode = request.POST.get("payment_mode")
         doctors = UserProfile.objects.filter(
             clinic=clinic,
         role__in=["owner", "doctor"]
@@ -370,7 +373,21 @@ def book_appointment(request, patient_id):
         if time:
             time = datetime.strptime(time, "%H:%M").time()
         else:
-            time = datetime.now().time()
+            time = timezone.localtime().time()
+
+        fee = float(fee) if fee else None
+        if fee is None:
+            fee = clinic.consultation_fee
+   
+        # ✅ Payment logic
+        if visit_type == "free":
+            fee = 0
+            payment_status = "waived"
+            payment_mode = None
+        else:
+            payment_status = "paid" if fee > 0 else "unpaid"
+        if payment_status in ["unpaid", "waived"]:
+            payment_mode = None
 
         # 🔹 Token logic
         last_token = Appointment.objects.filter(
@@ -392,7 +409,12 @@ def book_appointment(request, patient_id):
             problem=problem,
             token_number=token,
             doctor=doctor,
-            queue_status="Waiting"
+            consultation_fee=fee,
+            visit_type=visit_type,
+            payment_status=payment_status,
+            payment_mode=payment_mode,
+            status="pending",
+            queue_status="waiting"
         )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
