@@ -204,6 +204,9 @@ if (doctorSelect) {
 visitType.addEventListener("change", updateFee);
 
 // 🔹 Initial load
+if (doctorSelect) {
+    doctorSelect.dispatchEvent(new Event("change"));
+}
 updateFee();
 </script>
 
