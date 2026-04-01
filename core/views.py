@@ -1038,12 +1038,12 @@ def edit_profile(request):
         if profile.role in ["doctor", "owner"]:
             profile.degree = request.POST.get("degree") or ""
             profile.reg_no = request.POST.get("reg_no") or ""
+            profile.consultation_fee = float(request.POST.get("consultation_fee") or 0)
 
         if profile.is_owner:
             clinic.name = request.POST.get("clinic_name")
             clinic.phone = request.POST.get("clinic_phone")
             clinic.address = request.POST.get("clinic_address")
-            clinic.consultation_fee = request.POST.get("consultation_fee")
 
             clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
             clinic.is_advanced = bool(request.POST.get("is_advanced"))
