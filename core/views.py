@@ -361,7 +361,8 @@ def book_appointment(request, patient_id):
                     "doctors": doctors,
                     "error": "Invalid doctor selected"
                 }) 
-        fee = doctor.consultation_fee or 0
+        posted_fee = request.POST.get("consultation_fee")
+        fee = float(posted_fee) if posted_fee else (doctor.consultation_fee or 0)
 
         # ✅ DATE FIX (MAIN FIX)
         if date_val:
@@ -412,8 +413,8 @@ def book_appointment(request, patient_id):
             problem=problem,
             token_number=token,
             doctor=doctor,
-           
             visit_type=visit_type,
+            consultation_fee=fee, 
             payment_status=payment_status,
             payment_mode=payment_mode,
             status="pending",
