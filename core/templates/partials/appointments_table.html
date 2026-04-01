@@ -1,0 +1,9 @@
+{% for a in appointments %}
+    {% include "partials/appointment_row.html" %}
+{% empty %}
+<tr>
+    <td colspan="6" class="text-center py-12 text-gray-400">
+        No appointments today
+    </td>
+</tr>
+{% endfor %}
