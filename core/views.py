@@ -401,7 +401,7 @@ def book_appointment(request, patient_id):
         else:
             token = 1
 
-        Appointment.objects.create(
+        appointment = Appointment.objects.create(
             clinic=clinic,
             patient=patient,
             appointment_date=date_val,
@@ -415,6 +415,22 @@ def book_appointment(request, patient_id):
             payment_mode=payment_mode,
             status="pending",
             queue_status="waiting"
+        )
+
+        bill = Bill.objects.create(
+            clinic=clinic,
+            patient=patient,
+            doctor=doctor,
+            appointment=appointment,
+            total_amount=fee,
+            payment_mode=payment_mode
+        )
+
+        BillItem.objects.create(
+            bill=bill,
+            name="Consultation",
+            price=fee,
+            quantity=1
         )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
