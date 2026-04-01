@@ -96,13 +96,37 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.name} ({self.phone})"
 
-
+#Appointment Model
 class Appointment(models.Model):
 
     STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    QUEUE_STATUS_CHOICES = [
+        ('waiting', 'Waiting'),
+        ('in_consultation', 'In Consultation'),
+        ('done', 'Done'),
+    ]
+
+    VISIT_TYPE_CHOICES = [
+        ('new', 'New'),
+        ('followup', 'Follow-up'),
+        ('free', 'Free'),
+    ]
+
+    PAYMENT_STATUS_CHOICES = [
+        ('paid', 'Paid'),
+        ('unpaid', 'Unpaid'),
+        ('waived', 'Waived'),
+    ]
+
+    PAYMENT_MODE_CHOICES = [
+        ('cash', 'Cash'),
+        ('upi', 'UPI'),
+        ('card', 'Card'),
     ]
 
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
@@ -110,13 +134,13 @@ class Appointment(models.Model):
 
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
+
     doctor = models.ForeignKey(
         UserProfile,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         limit_choices_to={"role__in": ["owner", "doctor"]}
-        
     )
 
     token_number = models.PositiveIntegerField(blank=True, null=True)
@@ -124,28 +148,59 @@ class Appointment(models.Model):
     problem = models.TextField(blank=True)
     notes = models.TextField(blank=True)
 
-    status = models.CharField(
+    # 💰 Consultation
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    visit_type = models.CharField(max_length=20, choices=VISIT_TYPE_CHOICES, default='new')
+
+    payment_status = models.CharField(
         max_length=20,
-        choices=STATUS_CHOICES,
-        default='Pending'
+        choices=PAYMENT_STATUS_CHOICES,
+        default='unpaid'   # ✅ safer default
     )
-    
-    QUEUE_STATUS_CHOICES = [
-        ('Waiting', 'Waiting'),
-        ('In Consultation', 'In Consultation'),
-        ('Done', 'Done'),
-    ]
+
+    payment_mode = models.CharField(
+        max_length=10,
+        choices=PAYMENT_MODE_CHOICES,
+        blank=True,
+        null=True
+    )
+
+    # 📊 Status
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     queue_status = models.CharField(
         max_length=20,
         choices=QUEUE_STATUS_CHOICES,
-        default='Waiting'
+        default='waiting'
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['appointment_date', 'token_number']
+
+    def save(self, *args, **kwargs):
+
+        # ✅ Auto token generation
+        if not self.token_number:
+            last = Appointment.objects.filter(
+                clinic=self.clinic,
+                appointment_date=self.appointment_date
+            ).order_by('-token_number').first()
+
+            self.token_number = (last.token_number + 1) if last else 1
+
+        # ✅ Free visit handling
+        if self.visit_type == 'free':
+            self.consultation_fee = 0
+            self.payment_status = 'waived'
+            self.payment_mode = None
+
+        # ✅ Payment validation
+        if self.payment_status in ['unpaid', 'waived']:
+            self.payment_mode = None
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.patient.name} - {self.appointment_date} {self.appointment_time}"
