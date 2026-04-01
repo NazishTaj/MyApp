@@ -204,6 +204,8 @@ class Appointment(models.Model):
             self.consultation_fee = 0
             self.payment_status = 'waived'
             self.payment_mode = None
+        elif self.visit_type != 'free' and self.doctor:
+            self.consultation_fee = self.doctor.consultation_fee or 0
 
         # ✅ Payment validation
         if self.payment_status in ['unpaid', 'waived']:
