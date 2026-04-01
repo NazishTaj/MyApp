@@ -500,7 +500,7 @@ def complete_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    appointment.status = "Completed"
+    appointment.status = "completed"
     appointment.queue_status = "Done" 
     appointment.save()
     # 🔥 WEBSOCKET EVENT
@@ -585,7 +585,7 @@ def cancel_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    appointment.status = "Cancelled"
+    appointment.status = "cancelled"
     appointment.queue_status = "Done"
     appointment.save()
       # 🔥 WEBSOCKET EVENT
@@ -1267,7 +1267,7 @@ def mark_pending(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    appointment.status = "Pending"
+    appointment.status = "pending"
     appointment.queue_status = "Waiting"
     appointment.save()
       # 🔥 WEBSOCKET EVENT
