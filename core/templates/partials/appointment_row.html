@@ -29,13 +29,13 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 </td>
 
 <td class="px-6 py-4 status">
-{% if a.queue_status == "In Consultation" %}
+{% if a.queue_status == "in_consultation" %}
 <span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
-{% elif a.status == "Pending" %}
+{% elif a.status == "pending" %}
 <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
-{% elif a.status == "Completed" %}
+{% elif a.status == "completed" %}
 <span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
-{% elif a.status == "Cancelled" %}
+{% elif a.status == "cancelled" %}
 <span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
 {% endif %}
 </td>
@@ -48,13 +48,13 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 
 {% if request.user.userprofile.role == "receptionist" %}
 
-    {% if a.id in next_tokens and a.status == "Pending" %}
+    {% if a.id in next_tokens and a.status == "pending" %}
         <a href="{% url 'send_to_doctor' a.id %}"
         class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white">
             ▶ Send
         </a>
 
-    {% elif a.queue_status == "In Consultation" %}
+    {% elif a.queue_status == "in_consultation" %}
         <a href="{% url 'complete_appointment' a.id %}"
         class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
             Complete
@@ -68,7 +68,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
         Prescription
     </a>
 
-    {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+    {% if a.status == "pending" or a.queue_status == "in_consultation" %}
     <a href="{% url 'complete_appointment' a.id %}"
     class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
         Complete
