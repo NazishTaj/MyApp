@@ -9,7 +9,7 @@
 
 <div class="mb-6">
 <h2 class="text-2xl font-semibold text-gray-800">
-Book Appointment
+Check-in / Book Appointment
 </h2>
 
 <p class="text-gray-500 text-sm mt-1">
@@ -17,13 +17,11 @@ Patient: <span class="font-medium text-gray-700">{{ patient.name }}</span>
 </p>
 </div>
 
-
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
 
 <!-- Patient Info -->
 
 <div class="md:col-span-4">
-
 <div class="bg-white rounded-xl shadow p-5">
 
 <h3 class="font-semibold mb-4 text-gray-700">
@@ -32,140 +30,118 @@ Patient Information
 
 <div class="space-y-2 text-sm">
 
-<p>
-<span class="text-gray-500">Name:</span>
-<span class="font-medium">{{ patient.name }}</span>
-</p>
-
-<p>
-<span class="text-gray-500">Phone:</span>
-{{ patient.phone }}
-</p>
-
-<p>
-<span class="text-gray-500">Age:</span>
-{{ patient.age }}
-</p>
-
-<p>
-<span class="text-gray-500">Address:</span>
-{{ patient.address }}
-</p>
-
-<p>
-<span class="text-gray-500">Gender:</span>
-{{ patient.gender }}
-</p>
+<p><span class="text-gray-500">Name:</span> {{ patient.name }}</p>
+<p><span class="text-gray-500">Phone:</span> {{ patient.phone }}</p>
+<p><span class="text-gray-500">Age:</span> {{ patient.age }}</p>
+<p><span class="text-gray-500">Address:</span> {{ patient.address }}</p>
+<p><span class="text-gray-500">Gender:</span> {{ patient.gender }}</p>
 
 </div>
 
 </div>
-
 </div>
-
-
 
 <!-- Appointment Form -->
 
 <div class="md:col-span-8">
-
-<div class="bg-white rounded-xl shadow p-5 md:p-6 overflow-hidden">
+<div class="bg-white rounded-xl shadow p-5 md:p-6">
 
 <form method="POST">
-
 {% csrf_token %}
 
 <!-- Date + Time -->
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
-<!-- Date -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+<input type="date" name="date"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-200">
+<p class="text-xs text-gray-400 mt-1">Leave empty for today</p>
+</div>
 
 <div>
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Date
-</label>
-
-<input 
-type="date"
-name="date"
-class="w-full max-w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-<p class="text-xs text-gray-400 mt-1">
-Leave empty for today
-</p>
+<label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+<input type="time" name="time"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-200">
+<p class="text-xs text-gray-400 mt-1">Leave empty for walk-in</p>
+</div>
 
 </div>
 
+<!-- Doctor -->
+{% if doctors|length > 1 %}
+<div class="mb-5">
+<label class="text-sm font-medium text-gray-700">Doctor</label>
+<select name="doctor_id"
+class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+{% for doc in doctors %}
+<option value="{{ doc.id }}">{{ doc.name }}</option>
+{% endfor %}
+</select>
+</div>
+{% endif %}
 
-<!-- Time -->
+<!-- Visit Type -->
+
+<div class="mb-5">
+<label class="block text-sm font-medium text-gray-700 mb-1">Visit Type</label>
+
+<select name="visit_type" id="visitType"
+class="w-full border rounded-lg px-3 py-2 text-sm">
+<option value="new">New</option>
+<option value="followup">Follow-up</option>
+<option value="free">Free</option>
+</select>
+</div>
+
+<!-- Fee + Payment -->
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
 <div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Consultation Fee</label>
+<input type="number" name="fee" id="feeInput"
+placeholder="Auto or manual"
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-200">
+</div>
 
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Time
-</label>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
 
-<input 
-type="time"
-name="time"
-class="w-full max-w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-<p class="text-xs text-gray-400 mt-1">
-Leave empty for walk-in (auto time)
-</p>
-
+<select name="payment_mode" id="paymentMode"
+class="w-full border rounded-lg px-3 py-2 text-sm">
+<option value="">Select</option>
+<option value="cash">Cash</option>
+<option value="upi">UPI</option>
+<option value="card">Card</option>
+</select>
 </div>
 
 </div>
-
 
 <!-- Problem -->
 
 <div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-1">Problem</label>
 
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Problem
-</label>
-
-<textarea
-name="problem"
-rows="3"
+<textarea name="problem" rows="3"
 placeholder="Describe the patient's issue"
-class="w-full max-w-full box-border border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
-
+class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-200"></textarea>
 </div>
-{% if doctors|length > 1 %}
-<div class="mb-4">
-  <label class="text-sm font-medium text-gray-700">
-    Select Doctor
-  </label>
-
-  <select name="doctor_id"
-    class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
-
-    {% for doc in doctors %}
-      <option value="{{ doc.id }}">{{ doc.name }}</option>
-    {% endfor %}
-
-  </select>
-</div>
-{% endif %}
-
 
 <!-- Buttons -->
 
 <div class="flex flex-wrap gap-3">
 
-<button 
-type="submit"
-class="px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
-Book Appointment
+<button type="submit"
+class="px-5 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
+
+Collect Fee & Check-in
+
 </button>
 
-<a 
-href="/"
+<a href="/"
 class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
 Cancel
 </a>
@@ -175,11 +151,30 @@ Cancel
 </form>
 
 </div>
-
 </div>
 
 </div>
 
 </div>
+
+<!-- 🔥 Smart JS (important UX) -->
+
+<script>
+const visitType = document.getElementById("visitType");
+const feeInput = document.getElementById("feeInput");
+const paymentMode = document.getElementById("paymentMode");
+
+visitType.addEventListener("change", function() {
+    if (this.value === "free") {
+        feeInput.value = 0;
+        feeInput.disabled = true;
+        paymentMode.value = "";
+        paymentMode.disabled = true;
+    } else {
+        feeInput.disabled = false;
+        paymentMode.disabled = false;
+    }
+});
+</script>
 
 {% endblock %}
