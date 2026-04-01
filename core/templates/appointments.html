@@ -139,13 +139,13 @@ Download All Data
 
 <td class="px-6 py-3">
 
-{% if a.status == "Pending" %}
+{% if a.status == "pending" %}
 <span class="px-2 py-1 text-xs bg-yellow-50 text-yellow-600 rounded-lg">Pending</span>
 
-{% elif a.status == "Completed" %}
+{% elif a.status == "completed" %}
 <span class="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg">Completed</span>
 
-{% elif a.status == "Cancelled" %}
+{% elif a.status == "cancelled" %}
 <span class="px-2 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg">Cancelled</span>
 {% endif %}
 
@@ -153,7 +153,7 @@ Download All Data
 
 <td class="px-6 py-3">
 
-{% if a.status == "Pending" %}
+{% if a.status == "pending" %}
 
 <div class="flex gap-2">
 
