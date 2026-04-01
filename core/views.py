@@ -123,8 +123,8 @@ def dashboard(request):
     ).aggregate(total=Sum("total_amount"))["total"] or 0
 
     today_appointments = appointments_today.count()
-    pending_appointments = appointments_today.filter(status="Pending").count()
-    completed_appointments = appointments_today.filter(status="Completed").count()
+    pending_appointments = appointments_today.filter(status="pending").count()
+    completed_appointments = appointments_today.filter(status="completed").count()
 
     total_patients = Patient.objects.filter(clinic=clinic).count()
     total_appointments = Appointment.objects.filter(clinic=clinic).count()
@@ -135,7 +135,7 @@ def dashboard(request):
         Appointment.objects.filter(
             clinic=clinic,
             appointment_date=today,
-            queue_status="In Consultation"
+            queue_status="in_consultation"
         ).values_list("doctor_id", flat=True)
     )
 
@@ -144,7 +144,7 @@ def dashboard(request):
     all_waiting = Appointment.objects.filter(
         clinic=clinic,
         appointment_date=today,
-        queue_status="Waiting"
+        queue_status="waiting"
     ).order_by("doctor", "token_number")
 
     seen_doctors = set()
@@ -501,7 +501,7 @@ def complete_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "completed"
-    appointment.queue_status = "Done" 
+    appointment.queue_status = "done" 
     appointment.save()
     # 🔥 WEBSOCKET EVENT
     from channels.layers import get_channel_layer
@@ -544,10 +544,10 @@ def send_to_doctor(request, appointment_id):
     Appointment.objects.filter(
         clinic=clinic,
         doctor=appointment.doctor,
-        queue_status="In Consultation"
-    ).update(queue_status="Waiting")
+        queue_status="in_consultation"
+    ).update(queue_status="waiting")
 
-    appointment.queue_status = "In Consultation"
+    appointment.queue_status = "in_consultation"
     appointment.save()
     
     from channels.layers import get_channel_layer
@@ -586,7 +586,7 @@ def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "cancelled"
-    appointment.queue_status = "Done"
+    appointment.queue_status = "done"
     appointment.save()
       # 🔥 WEBSOCKET EVENT
     from channels.layers import get_channel_layer
@@ -991,7 +991,7 @@ def online_booking(request):
             problem=problem,
             token_number=token,
             doctor=doctor,
-            queue_status="Waiting"
+            queue_status="waiting"
         )
 
         return render(request, "booking_success.html", {
@@ -1268,7 +1268,7 @@ def mark_pending(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "pending"
-    appointment.queue_status = "Waiting"
+    appointment.queue_status = "waiting"
     appointment.save()
       # 🔥 WEBSOCKET EVENT
     from channels.layers import get_channel_layer
