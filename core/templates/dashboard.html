@@ -69,7 +69,7 @@
 </thead>
 
 <tbody class="divide-y">
-
+{% with user_role=request.user.userprofile.role %}
 {% for a in appointments %}
 
 <tr id="appointment-{{ a.id }}" class="hover:bg-gray-50
@@ -124,7 +124,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
 
 <div class="flex flex-col gap-2 w-full sm:w-auto">
-{% if request.user.userprofile.role == "receptionist" %}
+{% if user_role == "receptionist" %}
 
     {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
         <a href="{% url 'send_to_doctor' a.id %}"
@@ -191,6 +191,7 @@ No appointments today
 </td>
 </tr>
 {% endfor %}
+{% endwith %}
 
 </tbody>
 </table>
