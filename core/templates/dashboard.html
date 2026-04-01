@@ -73,7 +73,7 @@
 {% for a in appointments %}
 
 <tr id="appointment-{{ a.id }}" class="hover:bg-gray-50
-{% if a.id in next_tokens %}
+{% if next_tokens and a.id in next_tokens %}
 bg-green-50 border-l-4 border-green-500 shadow-sm
 {% endif %}">
 
@@ -83,7 +83,7 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
         <span class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold text-xs">
             {{ a.token_number }}
         </span>
-        {% if a.id in next_tokens %}
+        {% if next_tokens and a.id in next_tokens %}
         <span class="text-xs text-green-600 font-semibold animate-pulse">NEXT</span>
         {% endif %}
     </div>
@@ -107,13 +107,13 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 
 <!-- Status -->
 <td class="px-6 py-4 status">
-{% if a.queue_status == "In Consultation" %}
+{% if a.queue_status == "in_consultation" %}
 <span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
-{% elif a.status == "Pending" %}
+{% elif a.status == "pending" %}
 <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
-{% elif a.status == "Completed" %}
+{% elif a.status == "completed" %}
 <span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
-{% elif a.status == "Cancelled" %}
+{% elif a.status == "cancelled" %}
 <span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
 {% endif %}
 </td>
@@ -123,89 +123,65 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 w-full">
 
-    <!-- LEFT SIDE -->
-    <div class="flex flex-col gap-2 w-full sm:w-auto">
-    {% if request.user.userprofile.role == "receptionist" %}
+<div class="flex flex-col gap-2 w-full sm:w-auto">
+{% if request.user.userprofile.role == "receptionist" %}
 
-        {% if a.id in next_tokens and a.status == "Pending" %}
-            <a href="{% url 'send_to_doctor' a.id %}"
-            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white shadow hover:shadow-md transition">
-                ▶ Send
-            </a>
-
-        {% elif a.queue_status == "In Consultation" %}
-            <a href="{% url 'complete_appointment' a.id %}"
-            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white shadow hover:shadow-md transition">
-                Complete
-            </a>
-        {% endif %}
-
-    {% else %}
-
-        <a href="{% url 'add_prescription' a.patient.id %}"
-        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white shadow hover:shadow-md transition">
-            Prescription
+    {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
+        <a href="{% url 'send_to_doctor' a.id %}"
+        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white">
+            ▶ Send
         </a>
 
-        {% if a.status == "Pending" or a.queue_status == "In Consultation" %}
+    {% elif a.queue_status == "in_consultation" %}
         <a href="{% url 'complete_appointment' a.id %}"
         class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
             Complete
         </a>
-
-        <a href="{% url 'cancel_appointment' a.id %}"
-        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white">
-            Cancel
-        </a>
-        {% endif %}
-
     {% endif %}
-    </div>
 
-    <!-- RIGHT SIDE -->
-    <div class="relative self-end sm:self-auto">
-        <button onclick="toggleMenu('menu{{ a.id }}')" 
-        class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg transition">
-            ⋮
-        </button>
-        <div id="menu{{ a.id }}" 
-    class="hidden absolute right-0 mt-2 w-44 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden animate-dropdown">
+{% else %}
 
-    <!-- History -->
-    <a href="{% url 'patient_history' a.patient.id %}" 
-    class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition">
-        📄 <span>History</span>
+    <a href="{% url 'add_prescription' a.patient.id %}"
+    class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white">
+        Prescription
     </a>
 
-    <!-- Divider -->
-    <div class="h-px bg-gray-200 mx-2"></div>
-
-    <!-- Cancel -->
-    <a href="{% url 'cancel_appointment' a.id %}" 
-    class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
-        ❌ <span>Cancel Appointment</span>
+    {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+    <a href="{% url 'complete_appointment' a.id %}"
+    class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
+        Complete
     </a>
 
-    {% if a.status != "Pending" %}
-    <!-- Undo -->
-    <a href="{% url 'mark_pending' a.id %}" 
-    class="flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition">
-        ↩ <span>Undo Changes</span>
+    <a href="{% url 'cancel_appointment' a.id %}"
+    class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white">
+        Cancel
     </a>
     {% endif %}
 
+{% endif %}
 </div>
-        
 
+<div class="relative self-end sm:self-auto">
+    <button onclick="toggleMenu('menu{{ a.id }}')" 
+    class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg">
+        ⋮
+    </button>
 
+    <div id="menu{{ a.id }}" 
+    class="hidden absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow z-50">
 
-        </div>
+        <a href="{% url 'patient_history' a.patient.id %}" class="block px-4 py-2 text-sm">History</a>
+        <a href="{% url 'cancel_appointment' a.id %}" class="block px-4 py-2 text-sm text-red-600">Cancel</a>
+
+        {% if a.status != "pending" %}
+        <a href="{% url 'mark_pending' a.id %}" class="block px-4 py-2 text-sm text-blue-600">Undo</a>
+        {% endif %}
     </div>
+</div>
 
 </div>
 
 </td>
-
 </tr>
 
 {% empty %}
@@ -217,7 +193,6 @@ No appointments today
 {% endfor %}
 
 </tbody>
-
 </table>
 
 </div>
@@ -225,34 +200,23 @@ No appointments today
 
 </div>
 
-<!-- JS -->
 <script>
 function toggleMenu(id) {
     document.querySelectorAll('[id^="menu"]').forEach(m => {
         if (m.id !== id) m.classList.add("hidden");
     });
-
-    const el = document.getElementById(id);
-    el.classList.toggle("hidden");
+    document.getElementById(id).classList.toggle("hidden");
 }
-
-// click outside close
-document.addEventListener("click", function(e) {
-    if (!e.target.closest("[onclick^='toggleMenu']") && !e.target.closest("[id^='menu']")) {
-        document.querySelectorAll('[id^="menu"]').forEach(m => m.classList.add("hidden"));
-    }
-});
 </script>
+
 <script>
 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-
 const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/");
 
 socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
 
     if (data.type === "update") {
-
         const id = data.data.appointment_id;
         const html = data.data.html;
 
