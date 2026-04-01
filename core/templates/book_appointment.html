@@ -70,7 +70,7 @@ class="w-full mt-1 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-b
 class="w-full mt-1 border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-200">
 
 {% for doc in doctors %}
-<option value="{{ doc.id }}" data-fee="{{ doc.consultation_fee }}">
+<option value="{{ doc.id }}" data-fee="{{ doc.consultation_fee|default:0 }}">
 {{ doc.name }}
 </option>
 {% endfor %}
@@ -159,7 +159,9 @@ const visitType = document.getElementById("visitType");
 const feeInput = document.getElementById("feeInput");
 const paymentMode = document.getElementById("paymentMode");
 
-if (!feeInput) return;
+if (!feeInput) {
+    console.log("Billing disabled");
+} else {
 
 // 🔹 Set doctor fee directly (FIX)
 function setDoctorFee() {
@@ -200,6 +202,7 @@ visitType.addEventListener("change", function () {
         paymentMode.disabled = false;
     }
 });
+}
 </script>
 
 {% endblock %}
