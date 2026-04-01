@@ -511,7 +511,7 @@ def complete_appointment(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request,
+        "user_role": request.user.userprofile.role,
         "next_tokens": {appointment.id: True}
         
     })
@@ -558,7 +558,7 @@ def send_to_doctor(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request,
+        "user_role": request.user.userprofile.role,
         "next_tokens": {appointment.id: True}
     })
 
@@ -598,7 +598,7 @@ def cancel_appointment(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request,
+        "user_role": request.user.userprofile.role,
         "next_tokens": {appointment.id: True}
     })
 
@@ -1282,7 +1282,7 @@ def mark_pending(request, appointment_id):
 
     html = render_to_string("partials/appointment_row.html", {
         "a": appointment,
-        "request": request,
+        "user_role": request.user.userprofile.role,
         "next_tokens": {appointment.id: True}
     })
 
