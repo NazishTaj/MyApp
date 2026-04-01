@@ -42,6 +42,7 @@ path("staff/", views.staff_list, name="staff_list"),
 path("staff/<int:staff_id>/permissions/", views.edit_staff_permissions, name="edit_staff_permissions"),
 path('staff-blocked/', views.staff_blocked, name='staff_blocked'),
 path("send-to-doctor/<int:appointment_id>/", views.send_to_doctor, name="send_to_doctor"),
+path("get-appointments-table/", views.get_appointments_table, name="get_appointments_table"),
 
 
 
