@@ -428,9 +428,9 @@ def book_appointment(request, patient_id):
 
         BillItem.objects.create(
             bill=bill,
-            name="Consultation",
-            price=fee,
-            quantity=1
+            item_name="Consultation",
+            amount=fee,
+    
         )
 
         return redirect("dashboard")   # 🔥 IMPORTANT
