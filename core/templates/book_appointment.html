@@ -158,56 +158,48 @@ const doctorSelect = document.getElementById("doctorSelect");
 const visitType = document.getElementById("visitType");
 const feeInput = document.getElementById("feeInput");
 const paymentMode = document.getElementById("paymentMode");
+
 if (!feeInput) return;
 
-// 🔹 Get doctor fee
-function getDoctorFee() {
-    if (doctorSelect) {
-        return doctorSelect.options[doctorSelect.selectedIndex].getAttribute("data-fee") || "";
-    } else {
-        return "{{ doctors.0.consultation_fee|default:'' }}";
+// 🔹 Set doctor fee directly (FIX)
+function setDoctorFee() {
+    if (doctorSelect && doctorSelect.selectedOptions.length > 0) {
+        const fee = doctorSelect.selectedOptions[0].dataset.fee || "";
+        feeInput.value = fee;
     }
 }
 
-// 🔹 Main logic
-function updateFee() {
-    const type = visitType.value;
-    const doctorFee = getDoctorFee();
+// 🔹 Initial load fix
+setDoctorFee();
 
-    if (type === "free") {
+// 🔹 Doctor change fix
+if (doctorSelect) {
+    doctorSelect.addEventListener("change", function () {
+        setDoctorFee();
+    });
+}
+
+// 🔹 Visit type logic (UNCHANGED BEHAVIOUR)
+visitType.addEventListener("change", function () {
+    if (this.value === "free") {
         feeInput.value = 0;
         feeInput.disabled = true;
         paymentMode.value = "";
         paymentMode.disabled = true;
     }
-    else if (type === "new") {
-        feeInput.value = doctorFee;
+    else if (this.value === "new") {
+        setDoctorFee(); // 🔥 ensure correct fee
         feeInput.disabled = false;
         paymentMode.disabled = false;
     }
-    else if (type === "followup") {
-        // 🔥 IMPORTANT: user control (no override)
+    else if (this.value === "followup") {
         if (!feeInput.value) {
-            feeInput.value = doctorFee;
+            setDoctorFee();
         }
         feeInput.disabled = false;
         paymentMode.disabled = false;
     }
-}
-
-// 🔹 Doctor change
-if (doctorSelect) {
-    doctorSelect.addEventListener("change", updateFee);
-}
-
-// 🔹 Visit type change
-visitType.addEventListener("change", updateFee);
-
-// 🔹 Initial load
-if (doctorSelect) {
-    doctorSelect.dispatchEvent(new Event("change"));
-}
-updateFee();
+});
 </script>
 
 {% endblock %}
