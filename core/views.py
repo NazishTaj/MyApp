@@ -835,23 +835,12 @@ def create_bill_for_patient(request, patient_id):
         payment_mode = request.POST.get("payment_mode")
         discount_percent = float(request.POST.get("discount")or 0)
 
-        # Generate bill number
-        last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
-
-        if last_bill:
-            last_number = int(last_bill.bill_number.split("-")[1])
-            new_number = last_number + 1
-        else:
-            new_number = 1001
-
-        bill_number = f"FD-{new_number}"
         doctor = None
         # Create bill
         bill = Bill.objects.create(
             clinic=clinic,
             patient=patient,   # 🔥 FIXED PATIENT
             doctor=doctor,
-            bill_number=bill_number,
             payment_mode=payment_mode,
         )
 
