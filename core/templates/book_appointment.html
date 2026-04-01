@@ -99,8 +99,9 @@ class="w-full mt-1 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-b
 
 <div>
 <label class="text-xs text-gray-500">Consultation Fee</label>
-<input type="number" id="feeInput" readonly
-class="w-full mt-1 border rounded-lg px-3 py-2 text-sm bg-gray-100">
+<input type="number" id="feeInput" name="consultation_fee"
+value="{% if doctors|length == 1 %}{{ doctors.0.consultation_fee }}{% endif %}"
+class="w-full mt-1 border rounded-lg px-3 py-2 text-sm">
 </div>
 
 <div>
@@ -151,31 +152,51 @@ const visitType = document.getElementById("visitType");
 const feeInput = document.getElementById("feeInput");
 const paymentMode = document.getElementById("paymentMode");
 
-// Doctor → fee auto
-if (doctorSelect) {
-doctorSelect.addEventListener("change", function() {
-let fee = this.options[this.selectedIndex].getAttribute("data-fee");
-if (fee) feeInput.value = fee;
-});
-doctorSelect.dispatchEvent(new Event("change"));
+// 🔹 Get doctor fee
+function getDoctorFee() {
+    if (doctorSelect) {
+        return doctorSelect.options[doctorSelect.selectedIndex].getAttribute("data-fee") || "";
+    } else {
+        return "{{ doctors.0.consultation_fee|default:'' }}";
+    }
 }
 
-// Visit type logic
-visitType.addEventListener("change", function() {
-if (this.value === "free") {
-feeInput.value = 0;
-feeInput.disabled = true;
-paymentMode.value = "";
-paymentMode.disabled = true;
-} else {
-feeInput.disabled = false;
-paymentMode.disabled = false;
+// 🔹 Main logic
+function updateFee() {
+    const type = visitType.value;
+    const doctorFee = getDoctorFee();
 
+    if (type === "free") {
+        feeInput.value = 0;
+        feeInput.disabled = true;
+        paymentMode.value = "";
+        paymentMode.disabled = true;
+    }
+    else if (type === "new") {
+        feeInput.value = doctorFee;
+        feeInput.disabled = false;
+        paymentMode.disabled = false;
+    }
+    else if (type === "followup") {
+        // 🔥 IMPORTANT: user control (no override)
+        if (!feeInput.value) {
+            feeInput.value = doctorFee;
+        }
+        feeInput.disabled = false;
+        paymentMode.disabled = false;
+    }
+}
+
+// 🔹 Doctor change
 if (doctorSelect) {
-doctorSelect.dispatchEvent(new Event("change"));
+    doctorSelect.addEventListener("change", updateFee);
 }
-}
-});
+
+// 🔹 Visit type change
+visitType.addEventListener("change", updateFee);
+
+// 🔹 Initial load
+updateFee();
 </script>
 
 {% endblock %}
