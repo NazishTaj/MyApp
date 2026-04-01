@@ -177,7 +177,7 @@ class Appointment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['appointment_date', 'token_number']
+        ordering = ['-appointment_date', '-token_number']
 
     def save(self, *args, **kwargs):
 
