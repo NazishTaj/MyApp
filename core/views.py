@@ -346,7 +346,8 @@ def book_appointment(request, patient_id):
                 return render(request, "book_appointment.html", {
                 "patient": patient,
                 "doctors": doctors,
-                "error": "Please select doctor"
+                "error": "Please select doctor",
+                "billing_enabled": clinic.billing_enabled
                 })
 
             doctor = UserProfile.objects.filter(
@@ -359,10 +360,11 @@ def book_appointment(request, patient_id):
                 return render(request, "book_appointment.html", {
                     "patient": patient,
                     "doctors": doctors,
-                    "error": "Invalid doctor selected"
+                    "error": "Invalid doctor selected",
+                    "billing_enabled": clinic.billing_enabled
                 }) 
         posted_fee = request.POST.get("consultation_fee")
-        fee = float(posted_fee) if posted_fee else (doctor.consultation_fee or 0)
+        fee = float(posted_fee) if posted_fee not in [None, ""] else (doctor.consultation_fee or 0)
 
         # ✅ DATE FIX (MAIN FIX)
         if date_val:
@@ -446,7 +448,8 @@ def book_appointment(request, patient_id):
 
     return render(request, "book_appointment.html", {
         "patient": patient,
-        "doctors": doctors
+        "doctors": doctors,
+        "billing_enabled": clinic.billing_enabled
     })
 
 
