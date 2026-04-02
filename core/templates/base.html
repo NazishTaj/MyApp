@@ -15,12 +15,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-body{
-font-family:'Inter',sans-serif;
-color:#1f2937;
+body {
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
 }
-html, body{
-overflow-x:hidden;
+
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>
 
@@ -29,7 +36,7 @@ overflow-x:hidden;
 <!-- ✅ CLEAN PROFESSIONAL BACKGROUND -->
 <body class="bg-gray-50 text-gray-800">
 
-<div class="flex min-h-[100dvh]">
+<div class="flex min-h-[100dvh] overflow-x-hidden">
 
   <!-- OVERLAY -->
   <div id="overlay"
@@ -38,7 +45,7 @@ overflow-x:hidden;
 
   <!-- SIDEBAR -->
   <aside id="sidebar"
-  class="fixed md:static top-0 left-0 h-full w-64 shrink-0 bg-gradient-to-b from-[#0f172a] to-[#020617] shadow-xl text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
+  class="fixed md:static top-0 left-0 h-[100dvh] w-64 shrink-0 bg-gradient-to-b from-[#0f172a] to-[#020617] shadow-xl text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
 
     <!-- Logo -->
     <div class="h-16 flex items-center px-5 gap-2 text-lg font-semibold border-b border-white/10">
@@ -141,7 +148,7 @@ overflow-x:hidden;
   <div class="flex-1 flex flex-col w-full">
 
     <!-- TOP BAR -->
-    <header class="h-16 bg-[#111827] border-b border-gray-800 flex items-center justify-between px-4 md:px-6 text-white">
+    <header class="sticky top-0 z-50 h-16 bg-[#111827] border-b border-gray-800 flex items-center justify-between px-4 md:px-6 text-white">
 
       <!-- LEFT -->
       <div class="flex items-center gap-3">
