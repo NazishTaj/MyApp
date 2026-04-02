@@ -20,10 +20,8 @@ body {
   color: #1f2937;
 }
 
-
 html, body {
   overflow-x: hidden;
-  touch-action: pan-y;
 
 }
 
@@ -35,7 +33,9 @@ body {
 html {
   height: 100%;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -46,7 +46,7 @@ html {
 <!-- ✅ CLEAN PROFESSIONAL BACKGROUND -->
 <body class="bg-gray-50 text-gray-800">
 
-<div class="flex overflow-x-hidden relative">
+<div class="flex min-h-[100dvh] overflow-x-hidden relative">
 
   <!-- OVERLAY -->
   <div id="overlay"
@@ -221,7 +221,7 @@ html {
     <!-- CONTENT -->
     <main class="flex-1 p-4 md:p-6 bg-gray-50">
 
-      <div class="w-full max-w-[1600px] mx-auto px-4 md:px-6">
+      <div class="max-w-6xl mx-auto">
 
         {% block content %}
         {% endblock %}
