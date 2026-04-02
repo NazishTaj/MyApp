@@ -12,7 +12,7 @@
 </div>
 
 <a href="{% url 'add_patient' %}"
-class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700">
+class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
 + Add Patient
 </a>
 
@@ -87,7 +87,7 @@ Search
 
 <div class="flex items-center gap-2">
 
-<!-- PRIMARY ACTION -->
+<!-- PRIMARY -->
 <a href="{% url 'book_appointment' patient.id %}"
 class="px-3 py-1 text-xs bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
 Book
@@ -101,26 +101,30 @@ Profile
 
 <!-- DROPDOWN -->
 <div class="relative">
-  <button onclick="toggleDropdown({{ patient.id }})"
-  class="p-1 rounded-full hover:bg-gray-200 text-lg">
-    ⋮
-  </button>
 
-  <div id="dropdown-{{ patient.id }}"
-  class="hidden absolute right-0 mt-2 w-32 bg-white border rounded-xl shadow-lg z-10">
+<button onclick="toggleDropdown(event, {{ patient.id }})"
+class="p-2 rounded-full hover:bg-gray-200 transition">
+  <span class="text-lg leading-none">⋮</span>
+</button>
 
-    <a href="{% url 'edit_patient' patient.id %}"
-    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-      Edit
-    </a>
+<div id="dropdown-{{ patient.id }}"
+class="hidden absolute right-0 bottom-full mb-2 w-40 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
 
-    <a href="{% url 'delete_patient' patient.id %}"
-    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-    onclick="return confirm('Are you sure you want to delete this patient?');">
-      Delete
-    </a>
+<a href="{% url 'edit_patient' patient.id %}"
+class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition">
+✏️ Edit
+</a>
 
-  </div>
+<div class="border-t"></div>
+
+<a href="{% url 'delete_patient' patient.id %}"
+class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition"
+onclick="return confirm('Are you sure you want to delete this patient?');">
+🗑 Delete
+</a>
+
+</div>
+
 </div>
 
 </div>
@@ -169,7 +173,6 @@ Add New Patient
 // Restrict phone input
 function handleSearchInput(input){
 let value = input.value
-
 if (/^\d*$/.test(value)) {
     if (value.length > 10) {
         input.value = value.slice(0, 10)
@@ -177,18 +180,24 @@ if (/^\d*$/.test(value)) {
 }
 }
 
-// Dropdown toggle
-function toggleDropdown(id) {
+// Toggle dropdown (only one open)
+function toggleDropdown(event, id) {
+  event.stopPropagation()
+
+  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+    if (d.id !== `dropdown-${id}`) {
+      d.classList.add("hidden")
+    }
+  })
+
   const el = document.getElementById(`dropdown-${id}`)
   el.classList.toggle("hidden")
 }
 
 // Close dropdown on outside click
-document.addEventListener("click", function(e){
+document.addEventListener("click", function(){
   document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    if (!d.parentElement.contains(e.target)) {
-      d.classList.add("hidden")
-    }
+    d.classList.add("hidden")
   })
 })
 
