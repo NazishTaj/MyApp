@@ -5,52 +5,44 @@
 
 <!-- Page Header -->
 <div class="mb-6 flex justify-between items-start">
+  <div>
+    <h2 class="text-2xl font-semibold text-gray-800">Book Appointment</h2>
+    <p class="text-gray-500 text-sm">Search patient and create appointment</p>
+  </div>
 
-<div>
-  <h2 class="text-2xl font-semibold text-gray-800">Book Appointment</h2>
-  <p class="text-gray-500 text-sm">Search patient and create appointment</p>
+  <a href="{% url 'add_patient' %}"
+  class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
+  + Add Patient
+  </a>
 </div>
 
-<a href="{% url 'add_patient' %}"
-class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
-+ Add Patient
-</a>
-
-</div>
-
-<!-- Search Card -->
+<!-- Search -->
 <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+  <form method="GET" class="flex items-center gap-3 flex-wrap">
 
-<form method="GET" autocomplete="off" class="flex items-center gap-3 flex-wrap">
+    <input 
+    type="text" 
+    name="q"
+    value="{{ query }}"
+    placeholder="Search patient by name or phone..."
+    inputmode="numeric"
+    class="flex-1 min-w-[220px] border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 transition"
+    oninput="handleSearchInput(this)">
 
-<input 
-type="text" 
-name="q"
-id="searchInput"
-value="{{ query }}"
-placeholder="Search patient by name or phone..."
-inputmode="numeric"
-class="flex-1 min-w-[220px] border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 transition"
-oninput="handleSearchInput(this)">
+    <button type="submit"
+    class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm hover:bg-black transition">
+    Search
+    </button>
 
-<button 
-type="submit"
-class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-black transition shadow-sm">
-Search
-</button>
-
-</form>
-
+  </form>
 </div>
 
-<!-- Patient Table -->
+<!-- Table -->
 <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
 <div class="overflow-x-auto">
 
 <table class="w-full text-sm">
-
-<thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+<thead class="bg-gray-50 text-gray-500 text-xs uppercase">
 <tr>
 <th class="px-6 py-3 text-left">ID</th>
 <th class="px-6 py-3 text-left">Name</th>
@@ -63,57 +55,53 @@ Search
 <tbody class="divide-y">
 
 {% for patient in patients %}
-<tr class="hover:bg-gray-50 transition">
+<tr class="hover:bg-gray-50">
 
 <td class="px-6 py-3">
-<span class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full text-xs font-medium">
+<span class="bg-gray-100 px-2 py-1 rounded-full text-xs">
 {{ patient.patient_id }}
 </span>
 </td>
 
-<td class="px-6 py-3 font-medium text-gray-800">
-{{ patient.name }}
-</td>
-
-<td class="px-6 py-3 text-gray-600">
-{{ patient.phone }}
-</td>
-
-<td class="px-6 py-3 text-gray-600">
-{{ patient.age }}
-</td>
+<td class="px-6 py-3 font-medium">{{ patient.name }}</td>
+<td class="px-6 py-3 text-gray-600">{{ patient.phone }}</td>
+<td class="px-6 py-3 text-gray-600">{{ patient.age }}</td>
 
 <td class="px-6 py-3">
-
 <div class="flex items-center gap-2">
 
-<!-- PRIMARY -->
+<!-- Book -->
 <a href="{% url 'book_appointment' patient.id %}"
 class="px-3 py-1 text-xs bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
 Book
 </a>
 
-<!-- SECONDARY -->
+<!-- Profile -->
 <a href="/patient-history/{{ patient.id }}/"
-class="px-3 py-1 text-xs border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100 transition">
+class="px-3 py-1 text-xs border border-gray-300 rounded-full hover:bg-gray-100">
 Profile
 </a>
 
-<!-- DropDown -->
+<!-- Dropdown -->
+<div class="relative">
+
+<button onclick="toggleDropdown(event, {{ patient.id }})"
+class="p-2 rounded-full hover:bg-gray-200">
+⋮
+</button>
+
 <div id="dropdown-{{ patient.id }}"
-class="hidden absolute right-0 mt-2 w-40 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
+class="hidden absolute right-0 mt-2 w-40 bg-white border rounded-xl shadow-lg z-50">
 
 <a href="{% url 'edit_patient' patient.id %}"
-class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition">
-✏️ Edit
+class="block px-4 py-2 text-sm hover:bg-gray-100">
+Edit
 </a>
-
-<div class="border-t"></div>
 
 <a href="{% url 'delete_patient' patient.id %}"
-class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition"
+class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
 onclick="return confirm('Are you sure?');">
-🗑 Delete
+Delete
 </a>
 
 </div>
@@ -121,77 +109,76 @@ onclick="return confirm('Are you sure?');">
 </div>
 
 </div>
-
 </td>
 
 </tr>
 
 {% empty %}
-
 <tr>
 <td colspan="5" class="text-center py-10">
 
 <p class="text-gray-500 mb-4">
-No patient found. Try searching by phone or add a new patient.
+No patient found. Try searching or add new.
 </p>
 
-{% if query and query|length == 10 %}
-<a href="{% url 'add_patient' %}?phone={{ query }}"
-class="inline-block px-5 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow">
-Add New Patient
-</a>
-{% else %}
 <a href="{% url 'add_patient' %}"
-class="inline-block px-5 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow">
-Add New Patient
+class="px-5 py-2 bg-blue-600 text-white rounded-xl">
+Add Patient
 </a>
-{% endif %}
 
 </td>
 </tr>
-
 {% endfor %}
 
 </tbody>
-
 </table>
 
 </div>
-
 </div>
 
-<!-- Script -->
 <script>
 
-// Restrict phone input
+// phone limit
 function handleSearchInput(input){
-let value = input.value
-if (/^\d*$/.test(value)) {
-    if (value.length > 10) {
-        input.value = value.slice(0, 10)
-    }
+let v = input.value
+if (/^\d*$/.test(v) && v.length > 10){
+input.value = v.slice(0,10)
 }
 }
 
-// Toggle dropdown (only one open)
-function toggleDropdown(event, id) {
-  event.stopPropagation()
+// dropdown logic
+function toggleDropdown(e, id){
+e.stopPropagation()
 
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    if (d.id !== `dropdown-${id}`) {
-      d.classList.add("hidden")
-    }
-  })
+const el = document.getElementById(`dropdown-${id}`)
 
-  const el = document.getElementById(`dropdown-${id}`)
-  el.classList.toggle("hidden")
+// close others
+document.querySelectorAll("[id^='dropdown-']").forEach(d=>{
+if(d!==el) d.classList.add("hidden")
+})
+
+el.classList.toggle("hidden")
+
+// smart position
+if(!el.classList.contains("hidden")){
+el.style.top = ""
+el.style.bottom = ""
+
+const rect = el.getBoundingClientRect()
+
+if(window.innerHeight - rect.bottom < 120){
+el.style.bottom = "100%"
+} else {
+el.style.top = "100%"
+}
+}
 }
 
-// Close dropdown on outside click
-document.addEventListener("click", function(){
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    d.classList.add("hidden")
-  })
+// outside click close
+document.addEventListener("click", ()=>{
+document.querySelectorAll("[id^='dropdown-']").forEach(d=>{
+d.classList.add("hidden")
+})
 })
 
 </script>
