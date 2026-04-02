@@ -162,16 +162,16 @@ bg-green-50 border-l-4 border-green-500 shadow-sm
 </div>
 
 <div class="relative self-end sm:self-auto">
-    <button onclick="toggleMenu('menu{{ a.id }}')" 
+    <button onclick="toggleMenu(event, 'menu{{ a.id }}')"  
     class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 text-lg">
         ⋮
     </button>
 
     <div id="menu{{ a.id }}" 
-    class="hidden absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow z-50">
+class="hidden absolute right-0 w-44 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
 
-        <a href="{% url 'patient_history' a.patient.id %}" class="block px-4 py-2 text-sm">History</a>
-        <a href="{% url 'cancel_appointment' a.id %}" class="block px-4 py-2 text-sm text-red-600">Cancel</a>
+        <a href="{% url 'patient_history' a.patient.id %}"  class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50 transition"> 📜 History </a>
+        <a href="{% url 'cancel_appointment' a.id %}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">❌ Cancel</a>
 
         {% if a.status != "pending" %}
         <a href="{% url 'mark_pending' a.id %}" class="block px-4 py-2 text-sm text-blue-600">Undo</a>
@@ -202,12 +202,44 @@ No appointments today
 </div>
 
 <script>
-function toggleMenu(id) {
+function toggleMenu(event, id) {
+
+    event.stopPropagation();   // 🔥 important fix
+
+    const menu = document.getElementById(id);
+
+    // close others
     document.querySelectorAll('[id^="menu"]').forEach(m => {
-        if (m.id !== id) m.classList.add("hidden");
+        if (m !== menu) m.classList.add("hidden");
     });
-    document.getElementById(id).classList.toggle("hidden");
+
+    menu.classList.toggle("hidden");
+
+    if (!menu.classList.contains("hidden")) {
+
+        // reset
+        menu.style.top = "";
+        menu.style.bottom = "";
+        menu.style.marginTop = "";
+        menu.style.marginBottom = "";
+
+        const rect = menu.getBoundingClientRect();
+
+        // smart positioning
+        if (window.innerHeight - rect.bottom < 120) {
+            menu.style.bottom = "100%";
+            menu.style.marginBottom = "8px";
+        } else {
+            menu.style.top = "100%";
+            menu.style.marginTop = "8px";
+        }
+    }
 }
+document.addEventListener("click", function(){
+    document.querySelectorAll('[id^="menu"]').forEach(m => {
+        m.classList.add("hidden");
+    });
+});
 </script>
 
 <script>
