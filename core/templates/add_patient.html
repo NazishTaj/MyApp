@@ -96,7 +96,7 @@
       <!-- Buttons -->
       <div class="flex justify-between items-center pt-3">
 
-        <a href="/" class="text-gray-500 text-sm hover:underline">Cancel</a>
+        <a href="javascript:window.history.length > 1 ? history.back() : '/dashboard/'" class="text-gray-500 text-sm hover:underline"> Cancel </a>
 
         {% if show_continue %}
 <!-- hidden inputs to preserve data -->
