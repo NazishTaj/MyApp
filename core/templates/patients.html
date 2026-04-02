@@ -1,12 +1,21 @@
 {% extends "base.html" %}
-{% block page_title %}Patients{% endblock %}
+{% block page_title %}Book Appointment{% endblock %}
 
 {% block content %}
 
 <!-- Page Header -->
-<div class="mb-6">
-  <h2 class="text-2xl font-semibold text-gray-800">Patients</h2>
-  <p class="text-gray-500 text-sm">Manage your clinic patients</p>
+<div class="mb-6 flex justify-between items-start">
+
+<div>
+  <h2 class="text-2xl font-semibold text-gray-800">Book Appointment</h2>
+  <p class="text-gray-500 text-sm">Search patient and create appointment</p>
+</div>
+
+<a href="{% url 'add_patient' %}"
+class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700">
++ Add Patient
+</a>
+
 </div>
 
 <!-- Search Card -->
@@ -76,28 +85,43 @@ Search
 
 <td class="px-6 py-3">
 
-<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-2">
 
-<a href="/book-appointment/{{ patient.id }}/"
-class="px-3 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition">
+<!-- PRIMARY ACTION -->
+<a href="{% url 'book_appointment' patient.id %}"
+class="px-3 py-1 text-xs bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
 Book
 </a>
 
+<!-- SECONDARY -->
 <a href="/patient-history/{{ patient.id }}/"
-class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition">
-History
+class="px-3 py-1 text-xs border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100 transition">
+Profile
 </a>
 
-<a href="{% url 'edit_patient' patient.id %}"
-class="px-3 py-1 text-xs bg-amber-100 text-amber-700 rounded-full hover:bg-amber-200 transition">
-Edit
-</a>
+<!-- DROPDOWN -->
+<div class="relative">
+  <button onclick="toggleDropdown({{ patient.id }})"
+  class="p-1 rounded-full hover:bg-gray-200 text-lg">
+    ⋮
+  </button>
 
-<a href="{% url 'delete_patient' patient.id %}"
-class="px-3 py-1 text-xs bg-rose-100 text-rose-700 rounded-full hover:bg-rose-200 transition"
-onclick="return confirm('Are you sure you want to delete this patient?');">
-Delete
-</a>
+  <div id="dropdown-{{ patient.id }}"
+  class="hidden absolute right-0 mt-2 w-32 bg-white border rounded-xl shadow-lg z-10">
+
+    <a href="{% url 'edit_patient' patient.id %}"
+    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      Edit
+    </a>
+
+    <a href="{% url 'delete_patient' patient.id %}"
+    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+    onclick="return confirm('Are you sure you want to delete this patient?');">
+      Delete
+    </a>
+
+  </div>
+</div>
 
 </div>
 
@@ -111,18 +135,17 @@ Delete
 <td colspan="5" class="text-center py-10">
 
 <p class="text-gray-500 mb-4">
-No patients found
+No patient found. Try searching by phone or add a new patient.
 </p>
 
-<!-- 🔥 FIXED BUTTON -->
 {% if query and query|length == 10 %}
 <a href="{% url 'add_patient' %}?phone={{ query }}"
-class="inline-block px-5 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-black transition shadow">
+class="inline-block px-5 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow">
 Add New Patient
 </a>
 {% else %}
 <a href="{% url 'add_patient' %}"
-class="inline-block px-5 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-black transition shadow">
+class="inline-block px-5 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow">
 Add New Patient
 </a>
 {% endif %}
@@ -143,17 +166,31 @@ Add New Patient
 <!-- Script -->
 <script>
 
+// Restrict phone input
 function handleSearchInput(input){
 let value = input.value
 
-// Agar sirf number hai → max 10 digit
 if (/^\d*$/.test(value)) {
     if (value.length > 10) {
         input.value = value.slice(0, 10)
     }
 }
-
 }
+
+// Dropdown toggle
+function toggleDropdown(id) {
+  const el = document.getElementById(`dropdown-${id}`)
+  el.classList.toggle("hidden")
+}
+
+// Close dropdown on outside click
+document.addEventListener("click", function(e){
+  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+    if (!d.parentElement.contains(e.target)) {
+      d.classList.add("hidden")
+    }
+  })
+})
 
 </script>
 
