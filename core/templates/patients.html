@@ -4,7 +4,7 @@
 {% block content %}
 
 <!-- Page Header -->
-<div class="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+<div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
   <div>
     <h2 class="text-2xl font-bold text-gray-900">Book Appointment</h2>
     <p class="text-gray-500 text-sm mt-1">Search patient and create appointment</p>
@@ -16,7 +16,7 @@
 </div>
 
 <!-- Search -->
-<div class="card-premium mb-6 p-6">
+<div class="card-premium mb-4 p-6">
   <form method="GET" class="flex gap-3 flex-wrap">
     <input 
       type="text" 
@@ -31,16 +31,19 @@
   </form>
 </div>
 
-<!-- Table -->
-<div class="card-premium !p-0 overflow-visible">
+<!-- 🔥 TABLE -->
+<div class="card-premium !p-0">
 
+  <!-- Title -->
   <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
     <h3 class="font-semibold text-gray-900">Patient List</h3>
   </div>
 
-  <div class="overflow-x-auto">
+  <!-- 🔥 ONLY THIS SCROLL -->
+  <div class="max-h-[400px] overflow-y-auto">
+
     <table class="table-premium">
-      <thead>
+      <thead class="sticky top-0 bg-gray-50 z-10">
         <tr>
           <th>ID</th>
           <th>Name</th>
@@ -69,34 +72,25 @@
                 Profile
               </a>
 
-              <!-- DROPDOWN -->
               <div class="relative">
-
-                <!-- BUTTON -->
                 <button type="button"
                   onclick="toggleDropdown(event, {{ patient.id }})"
-                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100 transition">
-                  
-                  <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <circle cx="10" cy="4" r="1.5"/>
-                    <circle cx="10" cy="10" r="1.5"/>
-                    <circle cx="10" cy="16" r="1.5"/>
-                  </svg>
+                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
+                  ⋮
                 </button>
 
-                <!-- DROPDOWN MENU -->
                 <div id="dropdown-{{ patient.id }}"
                   class="absolute right-0 hidden bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-50">
 
                   <a href="{% url 'edit_patient' patient.id %}"
-                    class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                    ✏️ <span>Edit</span>
+                    class="block px-4 py-2 hover:bg-gray-100">
+                    Edit
                   </a>
 
                   <a href="{% url 'delete_patient' patient.id %}"
                     onclick="return confirm('Delete this patient?')"
-                    class="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50">
-                    🗑️ <span>Delete</span>
+                    class="block px-4 py-2 text-red-500 hover:bg-red-50">
+                    Delete
                   </a>
 
                 </div>
@@ -109,11 +103,11 @@
         {% endfor %}
       </tbody>
     </table>
+
   </div>
 
 </div>
 
-<!-- SCRIPT -->
 <script>
 function toggleDropdown(e, id) {
   e.stopPropagation();
