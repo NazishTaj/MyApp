@@ -5,10 +5,9 @@
 
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-  <div>
-    <h2 class="text-2xl font-bold text-gray-900">Book Appointment</h2>
-    <p class="text-gray-500 text-sm mt-1">Search patient and create appointment</p>
-  </div>
+<p class="text-sm text-gray-800">
+  Search or add patients to quickly schedule appointments
+</p>
 
   <a href="{% url 'add_patient' %}" class="btn-premium btn-primary">
     + Add Patient
@@ -49,7 +48,7 @@
           <th>Name</th>
           <th>Phone</th>
           <th>Age</th>
-          <th>Actions</th>
+          <th class="text-right pr-6">Actions</th>
         </tr>
       </thead>
 
