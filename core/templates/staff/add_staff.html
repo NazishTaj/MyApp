@@ -5,22 +5,19 @@
 
 <div class="px-4 md:px-8 py-6">
 
+    <!-- Back Navigation -->
+
     <!-- Header -->
     <div class="mb-6">
-        
-        <div class="mb-2 flex items-center gap-2 text-xs text-blue-600 font-medium">
-            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
-            Team Management
-        </div>
+ 
 
         <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">
             Add Team Member
         </h2>
 
         <p class="text-sm text-gray-500 mt-1">
-            Invite a new staff member and assign their role & responsibilities
+            and assign their role & responsibilities
         </p>
-
     </div>
 
     <!-- GRID -->
@@ -29,115 +26,171 @@
         <!-- LEFT FORM -->
         <div class="lg:col-span-2">
 
-            <form method="POST" autocomplete="off"
-            class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6 hover:shadow-xl transition duration-300">
+            <form method="POST" autocomplete="off" class="card-premium p-0 overflow-hidden">
                 {% csrf_token %}
 
-                {% if error %}
-                <div class="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">
-                    {{ error }}
-                </div>
-                {% endif %}
-
-                <!-- Section -->
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-800 tracking-wide">
-                        Basic Information
-                    </h3>
-                    <span class="text-xs text-gray-400">Step 1</span>
-                </div>
-
-                <!-- Inputs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <!-- Name -->
-                    <div class="md:col-span-2">
-                        <label class="text-xs text-gray-500">Full Name</label>
-                        <input type="text" name="name" required autocomplete="off"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
-                        focus:bg-white focus:ring-2 focus:ring-blue-500 focus:shadow-sm transition">
+                <!-- Card Header -->
+                <div class="bg-gradient-to-r from-brand-50 via-white to-indigo-50 px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-800">Basic Information</h3>
+                                <p class="text-xs text-gray-500">Enter staff member details</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-info">Step 1</span>
                     </div>
-
-                    <!-- Username -->
-                    <div>
-                        <label class="text-xs text-gray-500">Username</label>
-                        <input type="text" name="username" required autocomplete="off"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
-                        focus:bg-white focus:ring-2 focus:ring-blue-500 focus:shadow-sm transition">
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label class="text-xs text-gray-500">Email</label>
-                        <input type="email" name="email" autocomplete="off"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
-                        focus:bg-white focus:ring-2 focus:ring-blue-500 focus:shadow-sm transition">
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label class="text-xs text-gray-500">Password</label>
-                        <input type="password" name="password" required minlength="6"
-                        autocomplete="new-password"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
-                        focus:bg-white focus:ring-2 focus:ring-blue-500 focus:shadow-sm transition">
-                    </div>
-
-                    <!-- Role -->
-                    <div>
-                        <label class="text-xs text-gray-500">Role</label>
-                        <select name="role" id="roleSelect" required autocomplete="off"
-                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 
-                        focus:bg-white focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="">Select Role</option>
-                            <option value="doctor">Doctor 👨‍⚕️</option>
-                            <option value="receptionist">Receptionist 🧑‍💼</option>
-                            <option value="assistant">Assistant</option>
-                        </select>
-                    </div>
-
                 </div>
 
-                <!-- Doctor Assign -->
-                <div id="doctorSelectBox" class="hidden">
-                    <label class="text-xs text-gray-500">Assign Doctor</label>
-                    <select name="assigned_doctor" autocomplete="off"
-                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50">
-                        <option value="">Select Doctor</option>
-                        {% for doc in doctors %}
-                            <option value="{{ doc.id }}">{{ doc.name }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="p-6 space-y-6">
+
+                    {% if error %}
+                    <div class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Inputs -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- Name -->
+                        <div class="md:col-span-2">
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Full Name
+                            </label>
+                            <input type="text" name="name" required autocomplete="off" placeholder="Enter full name"
+                            class="input-premium">
+                        </div>
+
+                        <!-- Username -->
+                        <div>
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                                Username
+                            </label>
+                            <input type="text" name="username" required autocomplete="off" placeholder="Enter username"
+                            class="input-premium">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Email
+                            </label>
+                            <input type="email" name="email" autocomplete="off" placeholder="Enter email (optional)"
+                            class="input-premium">
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Password
+                            </label>
+                            <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Min 6 characters"
+                            class="input-premium">
+                        </div>
+
+                        <!-- Role -->
+                        <div>
+                            <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                                Role
+                            </label>
+                            <div class="relative">
+    <select name="role" id="roleSelect" required autocomplete="off"
+        class="input-premium appearance-none pr-10 bg-white hover:border-brand-300 focus:ring-2 focus:ring-brand-200 transition">
+
+        <option value="">Select Role</option>
+        <option value="doctor">Doctor</option>
+        <option value="receptionist">Receptionist</option>
+        <option value="assistant">Assistant</option>
+    </select>
+
+    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </div>
+</div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Doctor Assign -->
+                    <div id="doctorSelectBox" class="hidden">
+                        <label class="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            Assign to Doctor
+                        </label>
+                        <div class="relative">
+    <select name="assigned_doctor" autocomplete="off"
+        class="input-premium appearance-none pr-10 bg-white hover:border-brand-300 focus:ring-2 focus:ring-brand-200 transition">
+
+        <option value="">Select Doctor</option>
+        {% for doc in doctors %}
+            <option value="{{ doc.id }}">{{ doc.name }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </div>
+</div>
+                        
+                        <p class="text-xs text-gray-400 mt-1.5">Link this assistant to a doctor for scheduling</p>
+                    </div>
+
                 </div>
 
                 <!-- Footer -->
-                <div class="pt-4 border-t space-y-3 md:space-y-0 md:flex md:justify-between md:items-center">
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            You can update permissions after creating the account
+                        </p>
 
-    <!-- Hint -->
-    <p class="text-xs text-gray-400">
-        You can update permissions after creating the account
-    </p>
-
-    <!-- Buttons -->
-    <div class="flex flex-col sm:flex-row gap-2">
-
-        <a href="/staff/" 
-        class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
-            Cancel
-        </a>
-
-        <button type="submit"
-        class="w-full sm:w-auto px-6 py-2 text-sm text-white rounded-lg 
-        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
-        hover:from-blue-700 hover:to-indigo-700 
-        shadow-md hover:shadow-lg active:scale-95 transition">
-            🚀 Create Staff
-        </button>
-
-    </div>
-
-</div>
-
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <a href="/staff/" class="btn-premium btn-ghost text-center">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn-premium btn-primary inline-flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                </svg>
+                                Create Staff
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
             </form>
 
@@ -146,42 +199,64 @@
         <!-- RIGHT PANEL -->
         <div class="hidden lg:block">
 
-            <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 
-            text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
+            <div class="card-premium p-0 overflow-hidden bg-gradient-to-br from-brand-600 via-indigo-600 to-violet-600 text-white relative">
 
-                <!-- Glow -->
+                <!-- Glow Effects -->
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
 
-                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    🚀 Tips
-                </h3>
+                <div class="p-6 relative z-10">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        Quick Tips
+                    </h3>
 
-                <ul class="space-y-3 text-sm opacity-90">
+                    <ul class="space-y-3 text-sm opacity-90">
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span>Assign correct role to control access</span>
+                        </li>
 
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Assign correct role to control access</span>
-                    </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span>Assistants can be linked to doctors</span>
+                        </li>
 
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Assistants can be linked to doctors</span>
-                    </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span>Username should be unique</span>
+                        </li>
 
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Username should be unique</span>
-                    </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span>Permissions can be managed later</span>
+                        </li>
+                    </ul>
 
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Permissions can be managed later</span>
-                    </li>
-
-                </ul>
-
-                <div class="mt-6 text-xs opacity-70 border-t border-white/20 pt-3">
-                    FlowDesk helps you manage your clinic staff efficiently 🚀
+                    <div class="mt-6 text-xs opacity-70 border-t border-white/20 pt-4 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        FlowDesk helps you manage your clinic staff efficiently
+                    </div>
                 </div>
 
             </div>
@@ -192,7 +267,7 @@
 
 </div>
 
-<!-- JS SAME -->
+<!-- JS -->
 <script>
 const roleSelect = document.getElementById("roleSelect");
 const doctorBox = document.getElementById("doctorSelectBox");
@@ -205,5 +280,6 @@ roleSelect.addEventListener("change", function() {
     }
 });
 </script>
+
 
 {% endblock %}
