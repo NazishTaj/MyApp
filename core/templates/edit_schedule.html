@@ -3,42 +3,116 @@
 
 {% block content %}
 
-<h2 class="page-title">Edit Clinic Timing</h2>
+<div class="max-w-lg mx-auto">
+    <!-- Page Header -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'edit_profile' %}" class="btn-premium btn-ghost !p-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">Edit Clinic Timing</h2>
+            <p class="text-sm text-gray-500">Update your schedule for this day</p>
+        </div>
+    </div>
 
-<form method="POST" class="card max-w-md">
+    <!-- Edit Form Card -->
+    <form method="POST" class="card-premium p-5 sm:p-6">
+        {% csrf_token %}
+        
+        <!-- Card Header -->
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-900">Schedule Details</h3>
+                <p class="text-xs text-gray-500">Set the day and working hours</p>
+            </div>
+        </div>
 
-{% csrf_token %}
+        <!-- Day Selection -->
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                <span class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Day of Week
+                </span>
+            </label>
+            <select name="day" class="input-premium">
+                <option value="Monday" {% if schedule.day == "Monday" %}selected{% endif %}>Monday</option>
+                <option value="Tuesday" {% if schedule.day == "Tuesday" %}selected{% endif %}>Tuesday</option>
+                <option value="Wednesday" {% if schedule.day == "Wednesday" %}selected{% endif %}>Wednesday</option>
+                <option value="Thursday" {% if schedule.day == "Thursday" %}selected{% endif %}>Thursday</option>
+                <option value="Friday" {% if schedule.day == "Friday" %}selected{% endif %}>Friday</option>
+                <option value="Saturday" {% if schedule.day == "Saturday" %}selected{% endif %}>Saturday</option>
+                <option value="Sunday" {% if schedule.day == "Sunday" %}selected{% endif %}>Sunday</option>
+            </select>
+        </div>
 
-<label>Day</label>
-<select name="day" class="border rounded p-2 w-full">
+        <!-- Time Selection Grid -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <!-- Start Time -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Start Time
+                    </span>
+                </label>
+                <input type="time" name="start_time"
+                    value="{{ schedule.start_time|time:'H:i' }}"
+                    class="input-premium">
+            </div>
 
-<option value="Monday" {% if schedule.day == "Monday" %}selected{% endif %}>Monday</option>
-<option value="Tuesday" {% if schedule.day == "Tuesday" %}selected{% endif %}>Tuesday</option>
-<option value="Wednesday" {% if schedule.day == "Wednesday" %}selected{% endif %}>Wednesday</option>
-<option value="Thursday" {% if schedule.day == "Thursday" %}selected{% endif %}>Thursday</option>
-<option value="Friday" {% if schedule.day == "Friday" %}selected{% endif %}>Friday</option>
-<option value="Saturday" {% if schedule.day == "Saturday" %}selected{% endif %}>Saturday</option>
-<option value="Sunday" {% if schedule.day == "Sunday" %}selected{% endif %}>Sunday</option>
+            <!-- End Time -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        End Time
+                    </span>
+                </label>
+                <input type="time" name="end_time"
+                    value="{{ schedule.end_time|time:'H:i' }}"
+                    class="input-premium">
+            </div>
+        </div>
 
-</select>
+        <!-- Info Box 
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <div class="flex gap-3">
+                <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-sm text-amber-700">
+                    Patients will be able to book appointments only during your available hours.
+                </p>
+            </div>
+        </div> -->
 
-
-<label class="mt-3 block">Start Time</label>
-<input type="time" name="start_time"
-value="{{ schedule.start_time|time:'H:i' }}"
-class="border rounded p-2 w-full">
-
-<label class="mt-3 block">End Time</label>
-<input type="time" name="end_time"
-value="{{ schedule.end_time|time:'H:i' }}"
-class="border rounded p-2 w-full">
-
-<br><br>
-
-<button class="btn btn-primary">
-Update Timing
-</button>
-
-</form>
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <a href="{% url 'edit_profile' %}" class="btn-premium btn-ghost flex-1 justify-center">
+                Cancel
+            </a>
+            <button type="submit" class="btn-premium btn-primary flex-1 justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Update Timing
+            </button>
+        </div>
+    </form>
+</div>
 
 {% endblock %}
