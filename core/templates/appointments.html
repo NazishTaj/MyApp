@@ -3,210 +3,156 @@
 
 {% block content %}
 
-<div class="mb-6 flex justify-between items-center">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Appointments</h1>
+      <p class="text-sm text-gray-500">Manage all clinic appointments</p>
+    </div>
+  </div>
 
-<div>
-<h2 class="text-2xl font-semibold">Appointments</h2>
-<p class="text-gray-500 text-sm">
-Manage all clinic appointments
-</p>
+  <!-- ✅ Export Button -->
+  <div class="relative">
+    <button onclick="toggleExport()" class="btn-premium btn-success">
+      Export
+    </button>
+
+    <!-- ✅ FIXED DROPDOWN -->
+    <div id="exportMenu"
+         class="absolute right-0 mt-3 hidden bg-white border border-gray-200 rounded-xl shadow-xl p-4 z-50 w-[280px]">
+
+      <form method="get" action="{% url 'export_month' %}" class="space-y-4">
+
+        <div>
+          <label class="text-xs font-semibold text-gray-500 mb-1 block">Month</label>
+          <select name="month" class="input-premium w-full text-sm">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-500 mb-1 block">Year</label>
+          <select name="year" class="input-premium w-full text-sm">
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-premium btn-success w-full">
+          Download Monthly
+        </button>
+      </form>
+
+      <div class="border-t my-3"></div>
+
+      <a href="{% url 'export_all' %}" class="btn-premium btn-secondary w-full text-center">
+        Download All Data
+      </a>
+    </div>
+  </div>
 </div>
 
-<!-- Export Button -->
+<!-- ✅ IMPORTANT FIX: overflow-hidden hata diya -->
+<div class="card-premium p-0">
 
-<div class="relative">
+  <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+    <h3 class="font-semibold text-gray-900">All Appointments</h3>
+  </div>
 
-<button onclick="toggleExport()" 
-class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
-Export
-</button>
+  <div class="overflow-x-auto">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Patient</th>
+          {% if show_doctor_column %}
+          <th>Doctor</th>
+          {% endif %}
+          <th>Time</th>
+          <th>Problem</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
 
-<!-- Dropdown -->
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>{{ a.appointment_date }}</td>
 
-<div id="exportMenu" class="hidden absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 border">
+          <td>
+            <a href="/patient-history/{{ a.patient.id }}/" class="text-blue-600">
+              {{ a.patient.name }}
+            </a>
+          </td>
 
-<form method="get" action="{% url 'export_month' %}" class="space-y-3">
+          {% if show_doctor_column %}
+          <td>{{ a.doctor.name }}</td>
+          {% endif %}
 
-<div>
+          <td>{{ a.appointment_time }}</td>
+          <td>{{ a.problem }}</td>
 
-<label class="text-xs text-gray-500">Month</label>
+          <td>
+            {% if a.status == "pending" %}
+              <span class="badge-warning">Pending</span>
+            {% elif a.status == "completed" %}
+              <span class="badge-success">Completed</span>
+            {% else %}
+              <span class="badge-danger">Cancelled</span>
+            {% endif %}
+          </td>
 
-<select name="month" class="w-full border rounded px-3 py-2 text-sm">
-
-<option value="1">Jan</option>
-<option value="2">Feb</option>
-<option value="3">Mar</option>
-<option value="4">Apr</option>
-<option value="5">May</option>
-<option value="6">Jun</option>
-<option value="7">Jul</option>
-<option value="8">Aug</option>
-<option value="9">Sep</option>
-<option value="10">Oct</option>
-<option value="11">Nov</option>
-<option value="12">Dec</option>
-
-</select>
-
+          <td>
+            {% if a.status == "pending" %}
+              <a href="/complete-appointment/{{ a.id }}/" class="btn-premium btn-success btn-sm">Complete</a>
+              <a href="/cancel-appointment/{{ a.id }}/" class="btn-premium btn-danger btn-sm">Cancel</a>
+            {% else %}
+              <span class="text-xs text-gray-400">No actions</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<div>
-
-<label class="text-xs text-gray-500">Year</label>
-
-<select name="year" class="w-full border rounded px-3 py-2 text-sm">
-
-
-<option value="2026" selected>2026</option>
-<option value="2027">2027</option>
-<option value="2028">2028</option>
-
-</select>
-
-</div>
-
-<button type="submit"
-class="w-full bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">
-
-Download Monthly
-
-</button>
-
-</form>
-
-<hr class="my-3">
-
-<a href="{% url 'export_all' %}"
-class="block text-center bg-gray-700 text-white px-4 py-2 rounded text-sm hover:bg-gray-800">
-
-Download All Data
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="bg-white rounded-xl shadow overflow-hidden">
-
-<div class="overflow-x-auto">
-
-<table class="w-full text-sm">
-
-<thead class="bg-gray-50 text-gray-600">
-
-<tr>
-<th class="px-6 py-3 text-left">Date</th>
-<th class="px-6 py-3 text-left">Patient</th>
-
-{% if show_doctor_column %}
-<th class="px-6 py-3 text-left">Doctor</th>
-{% endif %}
-
-<th class="px-6 py-3 text-left">Time</th>
-<th class="px-6 py-3 text-left">Problem</th>
-<th class="px-6 py-3 text-left">Status</th>
-<th class="px-6 py-3 text-left">Actions</th>
-</tr>
-
-</thead>
-
-<tbody class="divide-y">
-
-{% for a in appointments %}
-
-<tr class="hover:bg-gray-50">
-
-<td class="px-6 py-3">{{ a.appointment_date }}</td>
-
-<td class="px-6 py-3">
-<a href="/patient-history/{{ a.patient.id }}/" class="text-blue-600 hover:underline">
-{{ a.patient.name }}
-</a>
-</td>
-
-{% if show_doctor_column %}
-<td class="px-6 py-3">{{ a.doctor.name }}</td>
-{% endif %}
-
-<td class="px-6 py-3">{{ a.appointment_time }}</td>
-
-<td class="px-6 py-3">{{ a.problem }}</td>
-
-<td class="px-6 py-3">
-
-{% if a.status == "pending" %}
-<span class="px-2 py-1 text-xs bg-yellow-50 text-yellow-600 rounded-lg">Pending</span>
-
-{% elif a.status == "completed" %}
-<span class="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg">Completed</span>
-
-{% elif a.status == "cancelled" %}
-<span class="px-2 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg">Cancelled</span>
-{% endif %}
-
-</td>
-
-<td class="px-6 py-3">
-
-{% if a.status == "pending" %}
-
-<div class="flex gap-2">
-
-<a href="/complete-appointment/{{ a.id }}/"
-class="px-3 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100">
-Complete
-</a>
-
-<a href="/cancel-appointment/{{ a.id }}/"
-class="px-3 py-1 text-xs bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100">
-Cancel
-</a>
-
-</div>
-
-{% else %}
-
-<span class="text-gray-400 text-xs">
-No actions
-</span>
-
-{% endif %}
-
-</td>
-
-</tr>
-
-{% empty %}
-
-<tr>
-<td colspan="{% if show_doctor_column %}7{% else %}6{% endif %}" class="text-center py-6 text-gray-500 text-sm">
-No appointments found
-</td>
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-
+<!-- ✅ SCRIPT FIXED -->
 <script>
-
-function toggleExport(){
-document.getElementById("exportMenu").classList.toggle("hidden");
+function toggleExport() {
+  const menu = document.getElementById("exportMenu");
+  menu.classList.toggle("hidden");
 }
 
+document.addEventListener("click", function(e) {
+  const menu = document.getElementById("exportMenu");
+  const button = e.target.closest("button");
+
+  if (!button || button.innerText.trim() !== "Export") {
+    if (!menu.contains(e.target)) {
+      menu.classList.add("hidden");
+    }
+  }
+});
 </script>
 
 {% endblock %}
