@@ -64,7 +64,7 @@
 
     html, body {
       height: 100%;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     /* Premium Scrollbar */
@@ -424,7 +424,7 @@
 
 <body class="bg-surface-100 text-surface-900 antialiased">
 
-  <div class="flex h-screen overflow-hidden relative">
+  <div class="flex min-h-screen relative">
 
     <!-- OVERLAY -->
     <div id="overlay"
@@ -624,7 +624,7 @@ class="fixed top-0 left-0 h-screen w-72 shrink-0 bg-gradient-to-b from-surface-9
       </header>
 
       <!-- CONTENT -->
-      <main class="flex-1 overflow-y-auto h-[calc(100vh-4.5rem)] p-4 md:p-8 bg-surface-100 main-scroll">
+      <main class="flex-1 overflow-y-auto min-h-[calc(100dvh-4.5rem)] p-4 md:p-8 pb-24 bg-surface-100 main-scroll">
 
         <div class="max-w-6xl mx-auto animate-fade-in">
 
