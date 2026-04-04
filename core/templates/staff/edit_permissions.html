@@ -1,18 +1,25 @@
 {% extends "base.html" %}
-{% block page_title %}Team{% endblock %}
+{% block page_title %}Manage Access{% endblock %}
 {% block content %}
 
 <div class="px-4 md:px-8 py-6">
 
+    <!-- Back Navigation -->
+    <a href="/staff/" class="btn-premium btn-ghost inline-flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Team
+    </a>
+
     <!-- Header -->
     <div class="mb-6">
-        
-        <div class="mb-2 flex items-center gap-2 text-xs text-blue-600 font-medium">
-            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+        <div class="section-label">
+            <span class="w-2 h-2 bg-brand-500 rounded-full"></span>
             Team Management
         </div>
 
-        <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">
+        <h2 class="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight">
             Manage Access
         </h2>
 
@@ -20,76 +27,110 @@
             Configure permissions for 
             <span class="font-medium text-gray-700">{{ staff.name }}</span>
         </p>
-
     </div>
 
     <!-- GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- LEFT -->
+        <!-- LEFT - Permissions Form -->
         <div class="lg:col-span-2">
 
-            <form method="POST"
-            class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6 hover:shadow-xl transition duration-300">
+            <form method="POST" class="card-premium p-0 overflow-hidden">
                 {% csrf_token %}
 
-                <!-- Section Header -->
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-800">
-                        Permissions
-                    </h3>
-                    <span class="text-xs text-gray-400">Step 2</span>
+                <!-- Card Header -->
+                <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-800">Permissions</h3>
+                            <p class="text-xs text-gray-500">Select access levels</p>
+                        </div>
+                    </div>
+                    <span class="badge badge-info">Step 2</span>
                 </div>
 
-                <!-- Permissions -->
-                <div class="space-y-3">
+                <!-- Permissions List -->
+                <div class="p-6 space-y-3">
 
                     {% for perm in permissions %}
-                    <label class="block border border-gray-200 rounded-xl px-4 py-3 
-                    hover:bg-blue-50 hover:border-blue-200 transition cursor-pointer group">
+                    <label class="block border border-gray-200 rounded-xl px-4 py-4 
+                    hover:bg-brand-50 hover:border-brand-200 transition-all duration-200 cursor-pointer group">
 
-                        <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start justify-between gap-4">
 
-                            <!-- Left -->
-                            <div>
-                                <p class="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition">
-                                    {{ perm.label }}
-                                </p>
-
-                                <!-- Description -->
-                                <p class="text-xs text-gray-500 mt-1 leading-relaxed">
-
+                            <!-- Left Content -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-brand-100 flex items-center justify-center transition-colors mt-0.5">
                                     {% if perm.code == "manage_patients" %}
-                                        Can add, edit, and delete patient records.
-                                    
+                                    <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
                                     {% elif perm.code == "manage_appointments" %}
-                                        Can book, update, and manage appointments.
-                                    
+                                    <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
                                     {% elif perm.code == "create_prescription" %}
-                                        Can create and view prescriptions for patients. 
-                                        <span class="text-red-500 font-medium">
-                                            If disabled, user cannot create or view prescriptions.
-                                        </span>
-                                    
+                                    <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
                                     {% elif perm.code == "manage_billing" %}
-                                        Can create bills and access billing history.
-                                    
+                                    <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
                                     {% else %}
-                                        Control access for this module.
+                                    <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                    </svg>
                                     {% endif %}
+                                </div>
 
-                                </p>
-
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800 group-hover:text-brand-700 transition-colors">
+                                        {{ perm.label }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                                        {% if perm.code == "manage_patients" %}
+                                            Can add, edit, and delete patient records.
+                                        {% elif perm.code == "manage_appointments" %}
+                                            Can book, update, and manage appointments.
+                                        {% elif perm.code == "create_prescription" %}
+                                            Can create and view prescriptions for patients. 
+                                            <span class="text-rose-500 font-medium">
+                                                If disabled, user cannot create or view prescriptions.
+                                            </span>
+                                        {% elif perm.code == "manage_billing" %}
+                                            Can create bills and access billing history.
+                                        {% else %}
+                                            Control access for this module.
+                                        {% endif %}
+                                    </p>
+                                </div>
                             </div>
 
-                            <!-- Checkbox -->
-                            <input 
-                                type="checkbox" 
-                                name="permissions" 
-                                value="{{ perm.code }}"
-                                class="w-5 h-5 mt-1 accent-blue-600 cursor-pointer"
-                                {% if perm.code in user_perm_codes %}checked{% endif %}
-                            >
+                            <!-- Toggle Switch -->
+                            <div class="relative mt-1">
+                                <input 
+                                    type="checkbox" 
+                                    name="permissions" 
+                                    value="{{ perm.code }}"
+                                    class="peer sr-only"
+                                    id="perm_{{ perm.code }}"
+                                    {% if perm.code in user_perm_codes %}checked{% endif %}
+                                >
+                                <label for="perm_{{ perm.code }}" 
+                                    class="block w-11 h-6 bg-gray-200 rounded-full cursor-pointer 
+                                    peer-checked:bg-brand-500 peer-focus:ring-2 peer-focus:ring-brand-300 
+                                    transition-colors duration-200">
+                                </label>
+                                <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm 
+                                    peer-checked:translate-x-5 transition-transform duration-200 pointer-events-none">
+                                </div>
+                            </div>
 
                         </div>
 
@@ -99,27 +140,25 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="pt-4 border-t space-y-3 md:space-y-0 md:flex md:justify-between md:items-center">
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-                    <p class="text-xs text-gray-400">
+                    <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                         You can update permissions anytime later
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-2">
-
-                        <a href="/staff/" 
-                        class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                        <a href="/staff/" class="btn-premium btn-ghost text-center">
                             Cancel
                         </a>
-
-                        <button 
-                        class="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white rounded-lg 
-                        bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
-                        hover:from-blue-700 hover:to-indigo-700 
-                        shadow-md hover:shadow-lg active:scale-95 transition">
-                            🔐 Save Permissions
+                        <button type="submit" class="btn-premium btn-primary inline-flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            Save Permissions
                         </button>
-
                     </div>
 
                 </div>
@@ -128,45 +167,58 @@
 
         </div>
 
-        <!-- RIGHT PANEL -->
+        <!-- RIGHT PANEL - Permission Guide -->
         <div class="hidden lg:block">
 
-            <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 
-            text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
+            <div class="card-premium p-0 overflow-hidden bg-gradient-to-br from-brand-600 via-indigo-600 to-violet-600 text-white border-0">
 
-                <!-- Glow -->
+                <!-- Glow Effect -->
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
 
-                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    🔐 Permission Guide
-                </h3>
+                <div class="relative p-6">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold">Permission Guide</h3>
+                    </div>
 
-                <ul class="space-y-3 text-sm opacity-90">
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-3 bg-white/10 rounded-lg px-3 py-2.5">
+                            <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="opacity-95">Manage Patients - Add, edit & delete patient records</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white/10 rounded-lg px-3 py-2.5">
+                            <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="opacity-95">Manage Appointments - Book & manage appointments</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white/10 rounded-lg px-3 py-2.5">
+                            <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="opacity-95">Create Prescription - Create & view prescriptions</span>
+                        </li>
+                        <li class="flex items-start gap-3 bg-white/10 rounded-lg px-3 py-2.5">
+                            <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="opacity-95">Manage Billing - Handle bills & payment history</span>
+                        </li>
+                    </ul>
 
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Manage Patients → Add, edit & delete patient records</span>
-                    </li>
-
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Manage Appointments → Book & manage appointments</span>
-                    </li>
-
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Create Prescription → Create & view prescriptions</span>
-                    </li>
-
-                    <li class="flex items-start gap-2">
-                        <span>✔</span>
-                        <span>Manage Billing → Handle bills & payment history</span>
-                    </li>
-
-                </ul>
-
-                <div class="mt-6 text-xs opacity-80 border-t border-white/20 pt-3">
-                    ⚠️ Disabling permissions will restrict access completely for that feature
+                    <div class="mt-5 text-xs opacity-80 border-t border-white/20 pt-4 flex items-start gap-2">
+                        <svg class="w-4 h-4 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span>Disabling permissions will restrict access completely for that feature</span>
+                    </div>
                 </div>
 
             </div>
