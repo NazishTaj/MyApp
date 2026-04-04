@@ -1,32 +1,131 @@
-<h2>Add Clinic Timing</h2>
+{% extends 'base.html' %}
 
-<form method="POST">
-{% csrf_token %}
+{% block title %}Add Clinic Timing{% endblock %}
 
-<!-- Form Errors -->
-{{ form.errors }}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Back Navigation -->
+    <div class="mb-6">
+        <a href="{% url 'edit_profile' %}" class="btn-premium btn-ghost inline-flex items-center gap-2 text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to Profile
+        </a>
+        
+    </div>
 
-<p>
-Day<br>
-{{ form.day }}
-</p>
+    <!-- Add Schedule Card -->
+    <div class="card-premium">
+        <!-- Card Header -->
+        <div class="flex items-center gap-3 p-5 border-b border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Add New Timing</h2>
+                <p class="text-sm text-gray-500">Set your clinic availability</p>
+            </div>
+        </div>
 
-<p>
-Start Time<br>
-{{ form.start_time }}
-</p>
+        <!-- Form Content -->
+        <form method="POST" class="p-5 space-y-5">
+            {% csrf_token %}
 
-<p>
-End Time<br>
-{{ form.end_time }}
-</p>
+            <!-- Form Errors -->
+            {% if form.errors %}
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 text-red-700 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium">Please fix the following errors:</span>
+                </div>
+                <ul class="mt-2 ml-7 text-sm text-red-600 list-disc">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
 
-<br>
+            <!-- Day Selection -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Day of Week
+                    </span>
+                </label>
+                {{ form.day }}
+            </div>
 
-<button type="submit">Save Timing</button>
+            <!-- Time Selection Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Start Time -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
+                            </svg>
+                            Start Time
+                        </span>
+                    </label>
+                    {{ form.start_time }}
+                </div>
 
-</form>
+                <!-- End Time -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
+                            </svg>
+                            End Time
+                        </span>
+                    </label>
+                    {{ form.end_time }}
+                </div>
+            </div>
 
+            <!-- Info Box -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-amber-800">Appointment Booking</p>
+                        <p class="text-sm text-amber-700 mt-0.5">Patients can only book appointments during your clinic timings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <a href="{% url 'edit_profile' %}" class="btn-premium btn-ghost">Cancel</a>
+                <button type="submit" class="btn-premium btn-primary inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Add Timing
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -48,4 +147,18 @@ flatpickr("#id_end_time", {
     dateFormat: "h:i K",
     time_24hr: false
 });
+
+// Add premium styling to form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const daySelect = document.getElementById('id_day');
+    if (daySelect) {
+        daySelect.classList.add('input-premium', 'w-full');
+    }
+    
+    const timeInputs = document.querySelectorAll('#id_start_time, #id_end_time');
+    timeInputs.forEach(input => {
+        input.classList.add('input-premium', 'w-full');
+    });
+});
 </script>
+{% endblock %}
