@@ -3,124 +3,135 @@
 
 {% block content %}
 
-
-<div id="print-area" class="max-w-2xl mx-auto">
-
-<div class="bg-white rounded-xl shadow p-6">
-
-<!-- Clinic Header -->
-<div class="text-center mb-6">
-
-{% if clinic.logo %}
-<img src="{{ clinic.logo.url }}" class="h-14 mx-auto mb-2">
-{% endif %}
-
-<h2 class="text-xl font-semibold">
-{{ clinic.name }}
-</h2>
-
-<p class="text-sm text-gray-500">
-{{ clinic.address }}
-</p>
-
-<p class="text-sm text-gray-500">
-Phone: {{ clinic.phone }}
-</p>
-
-</div>
-
-<hr class="mb-6">
-
-<!-- Title + Print -->
-<div class="flex justify-between items-center mb-6">
-
-<h2 class="text-lg font-semibold">
-Receipt
-</h2>
-
-<button onclick="printBill({{ bill.id }})"
-class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
-bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 
-active:scale-95 transition-all duration-150">
-
-    🖨 <span>Print Receipt</span>
-
-</button>
-
-<script>
-function printBill(id){
-    window.open(`/bill/${id}/print/`, '_blank');
+<style>
+@media print {
+    body {
+        background: white !important;
+    }
+    .no-print {
+        display: none !important;
+    }
+    .card-clean {
+        box-shadow: none !important;
+        border: none !important;
+    }
 }
-</script>
+</style>
 
-</div>
+<div class="max-w-2xl mx-auto">
 
-<!-- Bill Details -->
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
+    <!-- Action Bar -->
+    <div class="flex items-center justify-between mb-6 no-print">
+         <a href="{% url 'bill_history' %}"
+       class="btn-premium btn-ghost text-sm flex items-center gap-2">
 
-<div>
-<p><span class="font-medium">Bill No:</span> {{ bill.bill_number }}</p>
-<p><span class="font-medium">Patient:</span> {{ bill.patient.name }}</p>
-<p><span class="font-medium">Mobile:</span> 
-<span class="text-gray-500">{{ bill.patient.phone }}</span></p>
-</div>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
 
-<div class="sm:text-right">
-<p><span class="font-medium">Date:</span> {{ bill.created_at|date:"d M Y" }}</p>
-<p><span class="font-medium">Time:</span> {{ bill.created_at|time:"h:i A" }}</p>
-<!--<p><span class="font-medium">Doctor:</span> {{ bill.doctor.doctor_name }}</p>-->
-</div>
+        <span>Back</span>
+    </a>
 
-</div>
+        <button onclick="printBill({{ bill.id }})"
+            class="btn-premium btn-primary text-sm flex items-center gap-2">
+    
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+    </svg>
 
-<!-- Items Table -->
-<div class="overflow-x-auto">
+    <span>Print Receipt</span>
+</button>
+    </div>
 
-<table class="w-full text-sm">
+    <script>
+    function printBill(id){
+        window.open(`/bill/${id}/print/`, '_blank');
+    }
+    </script>
 
-<thead class="bg-gray-50 text-gray-600">
-<tr>
-<th class="px-4 py-2 text-left">Item</th>
-<th class="px-4 py-2 text-right">Amount</th>
-</tr>
-</thead>
+    <!-- Receipt Card -->
+    <div id="print-area" class="bg-white rounded-xl shadow p-6 card-clean">
 
-<tbody class="divide-y">
+        <!-- Clinic Header -->
+        <div class="text-center mb-6">
+            {% if clinic.logo %}
+            <img src="{{ clinic.logo.url }}" class="h-14 mx-auto mb-2">
+            {% endif %}
 
-{% for item in items %}
-<tr>
-<td class="px-4 py-2">{{ item.item_name }}</td>
-<td class="px-4 py-2 text-right font-medium">₹{{ item.amount }}</td>
-</tr>
-{% endfor %}
+            <h2 class="text-xl font-semibold">{{ clinic.name }}</h2>
 
-</tbody>
+            <p class="text-sm text-gray-500">{{ clinic.address }}</p>
+            <p class="text-sm text-gray-500">Phone: {{ clinic.phone }}</p>
+        </div>
 
-</table>
+        <hr class="mb-6">
 
-</div>
+        <!-- Title -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-semibold">Receipt</h2>
+            <span class="text-sm text-gray-500">{{ bill.bill_number }}</span>
+        </div>
 
-<!-- Total -->
-<div class="mt-6 text-right">
+        <!-- Details -->
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+            <div>
+                <p><span class="font-medium">Patient:</span> {{ bill.patient.name }}</p>
+                <p><span class="font-medium">Mobile:</span> {{ bill.patient.phone }}</p>
+            </div>
 
-<p class="text-lg font-semibold">
-Total : ₹{{ bill.total_amount }}
-</p>
+            <div class="text-right">
+                <p><span class="font-medium">Date:</span> {{ bill.created_at|date:"d M Y" }}</p>
+                <p><span class="font-medium">Time:</span> {{ bill.created_at|time:"h:i A" }}</p>
+            </div>
+        </div>
 
-<p class="text-sm text-gray-500">
-Payment Mode : {{ bill.payment_mode }}
-</p>
+        <!-- Table -->
+        <table class="w-full text-sm mb-6">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left">Item</th>
+                    <th class="px-4 py-2 text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for item in items %}
+                <tr>
+                    <td class="px-4 py-2">{{ item.item_name }}</td>
+                    <td class="px-4 py-2 text-right font-medium">₹{{ item.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-</div>
+        <!-- Total -->
+        <div class="text-right mb-4">
+            {% if bill.discount_percent > 0 %}
+            <p class="text-sm text-gray-500">
+                Subtotal: ₹{{ bill.subtotal_amount }}
+            </p>
+            <p class="text-sm text-green-600">
+                Discount ({{ bill.discount_percent }}%): -₹{{ bill.discount_amount }}
+            </p>
+            {% endif %}
 
-<!-- Footer -->
-<div class="text-center mt-8 text-xs text-gray-400">
+            <p class="text-xl font-bold mt-2">
+                Total: ₹{{ bill.total_amount }}
+            </p>
 
-<p>Thank you for visiting</p>
+            <p class="text-sm text-gray-500 mt-1">
+                Payment Mode: {{ bill.payment_mode }}
+            </p>
+        </div>
 
-</div>
+        <!-- Footer -->
+        <div class="text-center mt-6 text-xs text-gray-400">
+            <p>Thank you for visiting {{ clinic.name }}</p>
+            <p>This is a computer generated receipt</p>
+        </div>
 
-</div>
+    </div>
 
 </div>
 
