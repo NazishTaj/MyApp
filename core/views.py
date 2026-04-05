@@ -380,20 +380,25 @@ def book_appointment(request, patient_id):
 
 
    
-        # ✅ Payment logic
+        # ✅ Payment logic (FIXED)
         if visit_type == "free":
             fee = 0
             payment_status = "waived"
-            payment_mode = None
+            payment_mode = "free"   # ✅ FIX
+
         else:
             if clinic.billing_enabled:
                 payment_status = "paid" if fee > 0 else "unpaid"
             else:
                 payment_status = "unpaid"
-                payment_mode = None
 
-        if payment_status in ["unpaid", "waived"]:
-            payment_mode = None
+    # ✅ IMPORTANT FIX
+            if fee == 0:
+                payment_mode = "free"
+            else:
+                payment_mode = request.POST.get("payment_mode") or "cash"
+
+  
 
         # 🔹 Token logic
         last_token = Appointment.objects.filter(
@@ -1675,3 +1680,108 @@ def edit_staff_permissions(request, staff_id):
 
 def staff_blocked(request):
     return render(request, 'staff_blocked.html')
+
+@login_required
+def export_all_bills(request):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
+
+    bills = Bill.objects.filter(clinic=clinic).select_related("patient")
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Bills"
+
+    headers = [
+        "Bill No",
+        "Patient Name",
+        "Phone",
+        "Date",
+        "Amount",
+        "Payment Mode"
+    ]
+
+    sheet.append(headers)
+
+    for bill in bills:
+        sheet.append([
+            bill.bill_number,
+            bill.patient.name,
+            bill.patient.phone,
+            bill.created_at.strftime("%d-%m-%Y"),
+            bill.total_amount,
+            bill.payment_mode
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    response["Content-Disposition"] = 'attachment; filename="all_bills.xlsx"'
+
+    workbook.save(response)
+
+    return response
+
+@login_required
+def export_month_bills(request):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    if not profile.is_owner:
+        return render(request, "403.html", status=403)
+
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+
+    if not month or not year:
+        today = date.today()
+        month = today.month
+        year = today.year
+
+    bills = Bill.objects.filter(
+        clinic=clinic,
+        created_at__month=int(month),
+        created_at__year=int(year)
+    ).select_related("patient")
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Bills"
+
+    headers = [
+        "Bill No",
+        "Patient Name",
+        "Phone",
+        "Date",
+        "Amount",
+        "Payment Mode"
+    ]
+
+    sheet.append(headers)
+
+    for bill in bills:
+        sheet.append([
+            bill.bill_number,
+            bill.patient.name,
+            bill.patient.phone,
+            bill.created_at.strftime("%d-%m-%Y"),
+            bill.total_amount,
+            bill.payment_mode
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    filename = f"bills_{month}_{year}.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    workbook.save(response)
+
+    return response
