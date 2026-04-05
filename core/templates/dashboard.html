@@ -128,75 +128,84 @@
                 </td>
 
                 <!-- 🔥 UPDATED ACTIONS -->
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-2 flex-wrap">
-                    {% if user_role == "receptionist" %}
+                 <td class="px-6 py-4">
+    <div class="flex items-center justify-between">
 
-                        {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
-                                <a href="{% url 'send_to_doctor' a.id %}"
-                                class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white">
-                                    ▶ Send
-                                </a>
+        <!-- LEFT: Buttons -->
+        <div class="flex items-center gap-2">
 
-                        {% elif a.queue_status == "in_consultation" %}
-                            <a href="{% url 'complete_appointment' a.id %}"
-                            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
-                            Complete
-                            </a>
-                        {% endif %}
+        {% if user_role == "receptionist" %}
 
-                    {% else %}
+            {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
+                <a href="{% url 'send_to_doctor' a.id %}" 
+                class="btn-premium btn-primary btn-sm">
+                    ▶ Send
+                </a>
+            {% endif %}
 
-                        <a href="{% url 'add_prescription' a.patient.id %}"
-                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white">
-                        Prescription
-                        </a>
+            {% if a.queue_status == "in_consultation" %}
+                <a href="{% url 'complete_appointment' a.id %}" 
+                class="btn-premium btn-success btn-sm">
+                    Complete
+                </a>
+            {% endif %}
 
-                        {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                        <a href="{% url 'complete_appointment' a.id %}"
-                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
-                        Complete
-                        </a>
+        {% else %}
 
-                        <a href="{% url 'cancel_appointment' a.id %}"
-                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white">
-                        Cancel
-                        </a>
-                        {% endif %}
+            <a href="{% url 'add_prescription' a.patient.id %}" 
+            class="btn-premium btn-primary btn-sm">
+                Prescription
+            </a>
 
-                    {% endif %}
+            {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+            
+            <a href="{% url 'complete_appointment' a.id %}" 
+            class="btn-premium btn-success btn-sm">
+                Complete
+            </a>
 
+            <a href="{% url 'cancel_appointment' a.id %}" 
+            class="btn-premium btn-danger btn-sm">
+                Cancel
+            </a>
 
-                        <!-- Dropdown -->
-                        <div class="relative">
-                            <button onclick="toggleMenu(event, 'menu{{ a.id }}')"
-                            class="btn-premium btn-ghost btn-icon btn-sm">
-                                ⋮
-                            </button>
+            {% endif %}
 
-                            <div id="menu{{ a.id }}"
-                            class="hidden absolute right-0 mt-2 w-44 bg-white border border-surface-200 rounded-xl shadow-xl z-50 overflow-hidden">
+        {% endif %}
 
-                                <a href="{% url 'patient_history' a.patient.id %}"
-                                class="block px-4 py-2 text-sm hover:bg-gray-50">
-                                    📜 History
-                                </a>
+        </div>
 
-                                <a href="{% url 'cancel_appointment' a.id %}"
-                                class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                    ❌ Cancel
-                                </a>
+        <!-- RIGHT: Dropdown -->
+        <div class="relative">
+            <button onclick="toggleMenu(event, 'menu{{ a.id }}')"
+            class="btn-premium btn-ghost btn-icon btn-sm">
+                ⋮
+            </button>
 
-                                <a href="{% url 'mark_pending' a.id %}"
-                                class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
-                                    ↩️ Undo
-                                </a>
+            <div id="menu{{ a.id }}"
+            class="hidden absolute right-0 mt-2 w-44 bg-white border border-surface-200 rounded-xl shadow-xl z-50 overflow-hidden">
 
-                            </div>
-                        </div>
+                <a href="{% url 'patient_history' a.patient.id %}"
+                class="block px-4 py-2 text-sm hover:bg-gray-50">
+                    📜 History
+                </a>
 
-                    </div>
-                </td>
+                <a href="{% url 'cancel_appointment' a.id %}"
+                class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    ❌ Cancel
+                </a>
+
+                <a href="{% url 'mark_pending' a.id %}"
+                class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
+                    ↩️ Undo
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</td>
+                
 
             </tr>
 
