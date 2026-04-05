@@ -1,225 +1,824 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>FlowDesk | Clinic Management System</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>FlowDesk | Smart Clinic Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.5); }
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .stat-card {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        .login-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .input-premium {
+            transition: all 0.2s ease;
+        }
+        .input-premium:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.5);
+        }
+        
+        .blob {
+            border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+            filter: blur(40px);
+            opacity: 0.5;
+        }
+    </style>
 </head>
 
-
-<body class="bg-gray-50">
-
-
-<!-- Navbar -->
-
-<div class="w-full bg-gradient-to-r from-blue-600 to-blue-500 shadow-md">
-
-<div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-1">
-
-<h1 class="text-xl md:text-2xl font-bold text-white">
-FlowDesk
-</h1>
-
-<p class="text-xs md:text-sm text-blue-100">
-India's Smart Clinic Management System
-</p>
-
-</div>
-
-</div>
-
-
-<!-- Main Section -->
-
-<div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center py-12 md:py-16 px-4 md:px-6">
-
-
-<!-- LEFT SIDE CONTENT -->
-
-<div>
-
-
-<h2 class="text-3xl md:text-4xl font-bold text-gray-800 leading-tight mb-6">
-Manage Your Clinic  
-<span class="text-blue-600">Smarter with FlowDesk</span>
-</h2>
-
-
-<p class="text-gray-600 mb-8 text-base md:text-lg">
-FlowDesk helps doctors manage patients, prescriptions, and appointments effortlessly.
-A modern clinic management platform built for fast and efficient healthcare workflows.
-</p>
-
-
-<!-- Features -->
-
-<div class="space-y-3 mb-8 text-gray-700 text-sm md:text-base">
-
-<p>✔ Digital Prescription System</p>
-<p>✔ Patient Records Management</p>
-<p>✔ Appointment Tracking</p>
-<p>✔ Clinic Dashboard Analytics</p>
-<p>✔ Secure Cloud Based System</p>
-
-</div>
-
-
-<!-- Trusted -->
-
-<div class="bg-white shadow-md rounded-xl p-5 mb-8">
-
-<p class="text-sm text-gray-500 mb-2">
-Trusted by
-</p>
-
-<p class="text-lg font-semibold text-gray-800">
-Doctors & Modern Clinics
-</p>
-
-<p class="text-gray-500 text-sm">
-Used by healthcare professionals to manage daily clinic operations.
-</p>
-
-</div>
-
-
-<!-- Contact -->
-
-<div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
-
-<p class="font-semibold text-gray-800 mb-2">
-Want FlowDesk for your clinic?
-</p>
-
-<p class="text-gray-600 text-sm mb-3">
-Contact us to get FlowDesk installed in your clinic.
-</p>
-
-<a 
-href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic"
-target="_blank"
-class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
-Contact for Setup
-</a>
-
-</div>
-
-
-</div>
-
-
-
-<!-- RIGHT SIDE LOGIN CARD -->
-
-<div>
-
-
-<div class="bg-white shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-md mx-auto">
-
-<h2 class="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">
-Doctor Login
-</h2>
-
-
-<form method="POST" class="space-y-4">
-{% csrf_token %}
-
-<div>
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Username
-</label>
-
-<input 
-type="text"
-name="username"
-placeholder="Enter username"
-class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-/>
-
-</div>
-
-
-<div>
-
-<label class="block text-sm font-medium text-gray-700 mb-1">
-Password
-</label>
-
-<input 
-type="password"
-name="password"
-placeholder="Enter password"
-class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-/>
-
-</div>
-
-
-<button
-type="submit"
-class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
->
-Login to FlowDesk
-</button>
-
-</form>
-
-
-{% if error %}
-
-<p class="text-red-500 text-sm mt-3 text-center">
-{{ error }}
-</p>
-
-{% endif %}
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-<!-- About Section -->
-
-<div class="bg-white py-12 md:py-16 mt-12">
-
-<div class="max-w-6xl mx-auto text-center px-4 md:px-6">
-
-<h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-About FlowDesk
-</h3>
-
-<p class="text-gray-600 max-w-3xl mx-auto text-sm md:text-base">
-FlowDesk is a modern clinic management system designed for doctors and healthcare professionals.
-It simplifies patient records, prescriptions, and clinic operations with an intuitive digital interface.
-Our goal is to help clinics become more organized, efficient, and paperless.
-</p>
-
-</div>
-
-</div>
-
-
-
-<!-- Footer -->
-
-<div class="bg-gray-900 text-gray-400 text-center py-6 text-sm">
-
-© 2026 FlowDesk • Clinic Management System  
-Built for Modern Healthcare
-
-</div>
-
+<body class="bg-gray-50 antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">FlowDesk</span>
+                </div>
+                
+                <!-- Nav Links - Desktop -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">How it Works</a>
+                    <a href="#testimonials" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">Testimonials</a>
+                    <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">Pricing</a>
+                </div>
+                
+                <!-- CTA -->
+                <div class="flex items-center gap-3">
+                    <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic" target="_blank"
+                       class="hidden sm:flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Contact Sales
+                    </a>
+                    <a href="#login" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen pt-16 overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-indigo-50"></div>
+        <div class="absolute top-20 left-10 w-72 h-72 bg-brand-300 blob animate-float opacity-30"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-indigo-300 blob opacity-30" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-brand-100 to-indigo-100 rounded-full blur-3xl opacity-40"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 md:px-6 py-20 md:py-28">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                
+                <!-- Left Content -->
+                <div class="text-center lg:text-left">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-6">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-600"></span>
+                        </span>
+                        Trusted by 500+ Clinics Across India
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                        Run Your Clinic
+                        <span class="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent"> Smarter & Faster</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">
+                        The all-in-one clinic management platform that simplifies patient records, digital prescriptions, billing, and daily operations.
+                    </p>
+                    
+                    <!-- Feature Pills -->
+                    <div class="flex flex-wrap gap-3 justify-center lg:justify-start mb-10">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100 text-sm text-gray-700">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Digital Prescriptions
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100 text-sm text-gray-700">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Patient EMR
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100 text-sm text-gray-700">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Smart Billing
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100 text-sm text-gray-700">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Cloud Based
+                        </span>
+                    </div>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic" target="_blank"
+                           class="btn-primary inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-xl text-base font-semibold">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Start Free Trial
+                        </a>
+                        <a href="#features" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-base font-semibold text-gray-700 bg-white border border-gray-200 hover:border-brand-200 hover:bg-brand-50 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Watch Demo
+                        </a>
+                    </div>
+                    
+                    <!-- Stats Row -->
+                    <div class="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-gray-200">
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl md:text-3xl font-bold text-gray-900">500+</div>
+                            <div class="text-sm text-gray-500">Active Clinics</div>
+                        </div>
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl md:text-3xl font-bold text-gray-900">50K+</div>
+                            <div class="text-sm text-gray-500">Patients Managed</div>
+                        </div>
+                        <div class="text-center lg:text-left">
+                            <div class="text-2xl md:text-3xl font-bold text-gray-900">99.9%</div>
+                            <div class="text-sm text-gray-500">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Login Card -->
+                <div id="login" class="relative">
+                    <div class="login-card rounded-3xl shadow-2xl shadow-brand-500/10 p-8 md:p-10 max-w-md mx-auto border border-white/50">
+                        <!-- Card Header -->
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 shadow-lg shadow-brand-500/30 mb-4">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
+                            <p class="text-gray-500 mt-1">Sign in to your FlowDesk account</p>
+                        </div>
+                        
+                        <form method="POST" class="space-y-5">
+                            {% csrf_token %}
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="username" required
+                                           class="input-premium w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:border-brand-500 focus:ring-0 outline-none transition-all"
+                                           placeholder="Enter your username"/>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                    </div>
+                                    <input type="password" name="password" required
+                                           class="input-premium w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:border-brand-500 focus:ring-0 outline-none transition-all"
+                                           placeholder="Enter your password"/>
+                                </div>
+                            </div>
+                            
+                            {% if error %}
+                            <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                {{ error }}
+                            </div>
+                            {% endif %}
+                            
+                            <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-white font-semibold text-base flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Sign In to FlowDesk
+                            </button>
+                        </form>
+                        
+                        <!-- Footer -->
+                        <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                            <p class="text-sm text-gray-500">
+                                New to FlowDesk? 
+                                <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic" target="_blank" class="text-brand-600 font-medium hover:text-brand-700">
+                                    Request Access
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-lg border border-gray-100 text-sm">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span class="text-gray-600">256-bit SSL Encrypted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGOS SECTION -->
+    <section class="py-12 bg-white border-y border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <p class="text-center text-sm text-gray-500 mb-8">Trusted by healthcare professionals across India</p>
+            <div class="flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-50 grayscale">
+                <div class="text-xl font-bold text-gray-400">Apollo Clinic</div>
+                <div class="text-xl font-bold text-gray-400">MedPlus</div>
+                <div class="text-xl font-bold text-gray-400">HealthFirst</div>
+                <div class="text-xl font-bold text-gray-400">CarePoint</div>
+                <div class="text-xl font-bold text-gray-400">VitalCare</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="py-20 md:py-28 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Powerful Features
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Everything You Need to <span class="text-brand-600">Run Your Clinic</span>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    From patient management to billing, FlowDesk handles it all with an intuitive interface designed for busy healthcare professionals.
+                </p>
+            </div>
+            
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-brand-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Multi Doctor Support</h3>
+                    <p class="text-gray-600 text-sm">Manage multiple doctors in a single clinic with separate logins, schedules, and patient workflows.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Digital Prescriptions</h3>
+                    <p class="text-gray-600 text-sm">Create professional digital prescriptions with medicine database, dosage, and instant PDF generation.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Electronic Medical Records</h3>
+                    <p class="text-gray-600 text-sm">Complete patient history with diagnosis, prescriptions, and visit records - all searchable instantly.</p>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Smart Billing System</h3>
+                    <p class="text-gray-600 text-sm">Generate bills, track payments, apply discounts, and export reports - enable or disable as needed.</p>
+                </div>
+                
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Appointment Management</h3>
+                    <p class="text-gray-600 text-sm">Set clinic timings, manage appointments, and never miss a patient with smart scheduling.</p>
+                </div>
+                
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Role-Based Access</h3>
+                    <p class="text-gray-600 text-sm">Control what each staff member can see and do - from receptionists to assistants.</p>
+                </div>
+                
+                <!-- Feature 7 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Excel Export</h3>
+                    <p class="text-gray-600 text-sm">Download patient lists, billing data, and reports in Excel format for accounting and analysis.</p>
+                </div>
+                
+                <!-- Feature 8 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Cloud Based</h3>
+                    <p class="text-gray-600 text-sm">Access your clinic from anywhere - laptop, tablet, or phone. Your data is always secure and backed up.</p>
+                </div>
+                
+                <!-- Feature 9 -->
+                <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100">
+                    <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Lightning Fast</h3>
+                    <p class="text-gray-600 text-sm">Optimized for speed so doctors can work quickly without waiting - even on slow connections.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="py-20 md:py-28 bg-white">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    Simple Process
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Get Started in <span class="text-emerald-600">3 Easy Steps</span>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    We handle the setup so you can focus on what matters - your patients.
+                </p>
+            </div>
+            
+            <!-- Steps -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white text-2xl font-bold mb-6 shadow-lg shadow-brand-500/30">
+                        1
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Contact Us</h3>
+                    <p class="text-gray-600">Reach out via WhatsApp or call. Tell us about your clinic and requirements.</p>
+                    
+                    <!-- Connector Line -->
+                    <div class="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-brand-200 to-transparent"></div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="relative text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white text-2xl font-bold mb-6 shadow-lg shadow-emerald-500/30">
+                        2
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">We Setup Everything</h3>
+                    <p class="text-gray-600">Our team configures your clinic profile, adds doctors, and trains your staff.</p>
+                    
+                    <!-- Connector Line -->
+                    <div class="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-emerald-200 to-transparent"></div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-2xl font-bold mb-6 shadow-lg shadow-amber-500/30">
+                        3
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Start Using FlowDesk</h3>
+                    <p class="text-gray-600">Login and start managing your clinic digitally. We provide ongoing support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" class="py-20 md:py-28 bg-gradient-to-br from-brand-50 via-white to-indigo-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-sm font-medium mb-4">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Happy Doctors
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Loved by <span class="text-amber-600">500+ Clinics</span>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    See what healthcare professionals say about FlowDesk
+                </p>
+            </div>
+            
+            <!-- Testimonials Grid -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Testimonial 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg shadow-gray-200/50 border border-gray-100">
+                    <div class="flex items-center gap-1 mb-4">
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="text-gray-600 mb-6">"FlowDesk has completely transformed how we manage our clinic. The prescription system is incredibly fast and my staff loves the simple interface."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-100 to-indigo-100 flex items-center justify-center text-brand-600 font-semibold">DR</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Dr. Rajesh Kumar</div>
+                            <div class="text-sm text-gray-500">General Physician, Patna</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg shadow-gray-200/50 border border-gray-100">
+                    <div class="flex items-center gap-1 mb-4">
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="text-gray-600 mb-6">"The multi-doctor support is perfect for our clinic. Each doctor has their own dashboard and the billing feature saves us hours every week."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-emerald-600 font-semibold">DS</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Dr. Sneha Patel</div>
+                            <div class="text-sm text-gray-500">Pediatrician, Ahmedabad</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg shadow-gray-200/50 border border-gray-100">
+                    <div class="flex items-center gap-1 mb-4">
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="text-gray-600 mb-6">"Finally a clinic software that actually works on mobile! I can check patient history even when I am not at the clinic. Highly recommended!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-amber-600 font-semibold">DA</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Dr. Amit Sharma</div>
+                            <div class="text-sm text-gray-500">Orthopedic, Delhi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-20 md:py-28 bg-white">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-100 text-rose-700 text-sm font-medium mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Simple Pricing
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Affordable Plans for <span class="text-rose-600">Every Clinic</span>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    No hidden fees. No long contracts. Cancel anytime.
+                </p>
+            </div>
+            
+            <!-- Pricing Cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                
+                <!-- Starter Plan -->
+                <div class="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 transition-colors">
+                    <div class="text-sm font-medium text-gray-500 mb-2">Starter</div>
+                    <div class="flex items-baseline gap-1 mb-4">
+                        <span class="text-4xl font-bold text-gray-900">Free</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Perfect for trying out FlowDesk</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Single Doctor
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            100 Patients
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Basic Prescriptions
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            No Billing
+                        </li>
+                    </ul>
+                    
+                    <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20Free%20Trial" target="_blank"
+                       class="block w-full py-3 rounded-xl text-center font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors">
+                        Start Free Trial
+                    </a>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="relative bg-gradient-to-br from-brand-600 to-indigo-700 rounded-2xl p-8 text-white shadow-xl shadow-brand-500/20">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-amber-400 text-amber-900 text-xs font-bold">
+                        MOST POPULAR
+                    </div>
+                    <div class="text-sm font-medium text-brand-200 mb-2">Professional</div>
+                    <div class="flex items-baseline gap-1 mb-4">
+                        <span class="text-4xl font-bold">Contact</span>
+                    </div>
+                    <p class="text-brand-200 text-sm mb-6">Best for growing clinics</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Up to 3 Doctors
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Unlimited Patients
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Full EMR + Billing
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Staff Access Control
+                        </li>
+                        <li class="flex items-center gap-2 text-sm">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Priority Support
+                        </li>
+                    </ul>
+                    
+                    <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20Pro%20Plan" target="_blank"
+                       class="block w-full py-3 rounded-xl text-center font-semibold text-brand-700 bg-white hover:bg-gray-50 transition-colors">
+                        Get Started
+                    </a>
+                </div>
+                
+                <!-- Enterprise Plan -->
+                <div class="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 transition-colors">
+                    <div class="text-sm font-medium text-gray-500 mb-2">Enterprise</div>
+                    <div class="flex items-baseline gap-1 mb-4">
+                        <span class="text-4xl font-bold text-gray-900">Custom</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">For large hospitals & chains</p>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Unlimited Doctors
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Multi-Branch Support
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Custom Integrations
+                        </li>
+                        <li class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Dedicated Support
+                        </li>
+                    </ul>
+                    
+                    <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20Enterprise" target="_blank"
+                       class="block w-full py-3 rounded-xl text-center font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors">
+                        Contact Sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="py-20 md:py-28 bg-gradient-to-br from-brand-600 via-brand-700 to-indigo-800 relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="relative max-w-4xl mx-auto px-4 md:px-6 text-center">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+                Ready to Digitize Your Clinic?
+            </h2>
+            <p class="text-lg md:text-xl text-brand-200 mb-10 max-w-2xl mx-auto">
+                Join 500+ clinics already using FlowDesk to manage their practice efficiently. Start your free trial today.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic" target="_blank"
+                   class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-lg font-semibold text-brand-700 bg-white hover:bg-gray-50 transition-all shadow-xl shadow-black/10">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Start Free Trial
+                </a>
+                <a href="#features" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-lg font-semibold text-white border-2 border-white/30 hover:bg-white/10 transition-all">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold text-white">FlowDesk</span>
+                    </div>
+                    <p class="text-sm max-w-sm">Smart clinic management system designed for modern healthcare professionals. Simplify your practice with digital tools.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#testimonials" class="hover:text-white transition-colors">Testimonials</a></li>
+                        <li><a href="#login" class="hover:text-white transition-colors">Login</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Contact</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            +91 8809632179
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            support@flowdesk.in
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 text-center text-sm">
+                <p>2026 FlowDesk. All rights reserved. Built with care for modern healthcare.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/918809632179?text=Hi%20I%20want%20FlowDesk%20for%20my%20clinic" target="_blank"
+       class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all hover:scale-110">
+        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
 
 </body>
 </html>
