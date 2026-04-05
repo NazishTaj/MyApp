@@ -164,10 +164,11 @@
                 Complete
             </a>
 
-            <a href="{% url 'cancel_appointment' a.id %}" 
+        <!--    <a href="{% url 'cancel_appointment' a.id %}" 
             class="btn-premium btn-danger btn-sm">
                 Cancel
             </a>
+        -->
 
             {% endif %}
 
@@ -190,10 +191,12 @@
                     📜 History
                 </a>
 
+                {% if a.status == "pending" or a.queue_status == "in_consultation" %}
                 <a href="{% url 'cancel_appointment' a.id %}"
                 class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                     ❌ Cancel
                 </a>
+                {% endif %}
 
                 <a href="{% url 'mark_pending' a.id %}"
                 class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
