@@ -6,91 +6,120 @@
 <div class="max-w-3xl mx-auto px-2 sm:px-0">
 
 <!-- Header -->
-<div class="mb-6 flex items-center justify-between">
-<div>
-<h2 class="text-2xl font-semibold text-gray-800">
-{% if old %}Revise Prescription{% else %}Add Prescription{% endif %}
-</h2>
+ 
+    <div class="flex items-center justify-between mb-6">
+        
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-indigo-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+                    <p class="text-gray-500 text-sm mt-1 ml-1">
+            {% if old %}Revising prescription{% else %}Creating new prescription{% endif %} for <span class="font-medium text-gray-700">{{ patient.name }}</span>
+        </p>
+            <div>
+                <h2 class="section-label mb-0">
+                    {% if old %}Revise Prescription{% else %}Add Prescription{% endif %}
+                </h2>
+                {% if old %}
+                <p class="text-xs text-amber-600 mt-0.5 flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Editing copy - Original will remain unchanged
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <span class="badge badge-info">Patient Record</span>
+    </div>
 
-{% if old %}
-<p class="text-xs text-yellow-600 mt-1">
-Editing copy • Original will remain unchanged
-</p>
-{% endif %}
-
-<p class="text-sm text-gray-500 mt-1">
-for <span class="font-medium text-gray-700">{{ patient.name }}</span>
-</p>
-</div>
-
-<div class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-Patient Record
-</div>
-</div>
 
 <!-- Form -->
-<div class="bg-white rounded-xl shadow p-5 sm:p-6">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
 
 <form method="POST" onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
 {% csrf_token %}
 
-{% if profile.role == "receptionist" %}
-<div class="mb-4">
-<label class="block text-sm font-medium mb-1">Select Doctor</label>
-<select name="doctor_id" required class="w-full border rounded-lg px-3 py-2 text-sm">
-<option value="">Select Doctor</option>
-{% for doc in doctors %}
-<option value="{{ doc.id }}">{{ doc.name }}</option>
-{% endfor %}
-</select>
-</div>
-{% endif %}
+                {% if profile.role == "receptionist" %}
+                <!-- Doctor Selection -->
+                <div class="card-premium p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-gray-700">Select Doctor</span>
+                    </div>
+                    <select name="doctor_id" required class="input-premium w-full">
+                        <option value="">Choose a doctor...</option>
+                        {% for doc in doctors %}
+                        <option value="{{ doc.id }}">{{ doc.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
 
 <!-- Basic Info -->
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-
-<div>
-<label class="text-sm font-medium">Weight</label>
-<input type="number" name="weight" id="weight"
-value="{{ old.weight|default:'' }}"
-placeholder="e.g. 70"
-class="w-full border rounded-lg px-3 py-2 text-sm">
-</div>
-
-<div>
-<label class="text-sm font-medium">Blood Group</label>
-<input type="text" name="blood_group"
-value="{{ old.blood_group|default:'' }}"
-placeholder="e.g. B+"
-class="w-full border rounded-lg px-3 py-2 text-sm">
-</div>
-
+ <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1.5 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                </svg>
+                                Weight (kg)
+                            </label>
+                            <input type="number" name="weight" id="weight"
+                                   value="{{ old.weight|default:'' }}"
+                                   placeholder="e.g. 70"
+                                   class="input-premium w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1.5 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                Blood Group
+                            </label>
+                            <input type="text" name="blood_group"
+                                   value="{{ old.blood_group|default:'' }}"
+                                   placeholder="e.g. B+"
+                                   class="input-premium w-full">
+                        </div>
 </div>
 
 <!-- Diagnosis -->
-<div class="mb-5">
-<label class="block text-sm font-medium mb-1">Diagnosis</label>
-<textarea name="diagnosis" rows="2"
-placeholder="Enter diagnosis (Shift + Enter for new line)"
-class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.diagnosis|default:'' }}</textarea>
-</div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1.5">Diagnosis</label>
+                            <textarea name="diagnosis" rows="2"
+                                      placeholder="Enter diagnosis       (Shift + Enter for new line)"
+                                      class="input-premium w-full resize-none">{{ old.diagnosis|default:'' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1.5">Symptoms</label>
+                            <textarea name="symptoms" rows="2"
+                                      placeholder="Enter symptoms       (Shift + Enter for new line)"
+                                      class="input-premium w-full resize-none">{{ old.symptoms|default:'' }}</textarea>
+                        </div>
+                    </div>
 
-<!-- Symptoms -->
-<div class="mb-5">
-<label class="block text-sm font-medium mb-1">Symptoms</label>
-<textarea name="symptoms" rows="2"
-placeholder="Enter symptoms (Shift + Enter for new line)"
-class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.symptoms|default:'' }}</textarea>
-</div>
 
 <!-- MEDICINES -->
-<div class="mb-5">
+<div class="mb-5 p-4 bg-gray-50 rounded-xl border border-gray-100">
 
-<div class="flex justify-between items-center mb-2">
-<label class="text-sm font-medium">Medicines</label>
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477"/>
+</svg>
+<label class="text-sm font-semibold text-gray-700">Medicines</label>
+</div>
 
 <button type="button" onclick="addRow()"
-class="text-xs bg-blue-600 text-white px-2 py-1 rounded"
+class="btn-premium btn-primary text-xs px-3 py-1.5"
 tabindex="-1">
 + Add
 </button>
@@ -109,7 +138,7 @@ tabindex="-1">
 {% if old and med_lines %}
 
 {% for m in med_lines %}
-<div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-2 p-2 bg-white rounded-lg border border-gray-100">
 
 <div>
 <label class="text-xs text-gray-500 sm:hidden">Medicine</label>
@@ -181,7 +210,7 @@ class="border rounded px-2 py-2 text-sm w-full">
 <div class="mb-5">
 <label class="block text-sm font-medium mb-1">Tests</label>
 <textarea name="tests" rows="2"
-placeholder="Enter tests (Shift + Enter for new line)"
+placeholder="Enter tests       (Shift + Enter for new line)"
 class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.tests|default:'' }}</textarea>
 </div>
 
@@ -189,21 +218,26 @@ class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.tests|default:'' }}</t
 <div class="mb-6">
 <label class="block text-sm font-medium mb-1">Advice</label>
 <textarea name="notes" rows="2"
-placeholder="Enter advice (Shift + Enter for new line)"
+placeholder="Enter advice       (Shift + Enter for new line)"
 class="w-full border rounded-lg px-3 py-2 text-sm">{{ old.notes|default:'' }}</textarea>
 </div>
 
 <!-- Buttons -->
-<div class="flex gap-3 flex-wrap">
+<div class="flex gap-3 flex-wrap mt-4">
+
 <button type="submit"
-class="px-4 py-2 text-sm bg-black text-white rounded-lg">
-{% if old %}Save Revised{% else %}Save Prescription{% endif %}
+class="btn-premium btn-primary px-5 py-2">
+<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+</svg>
+Save Prescription
 </button>
 
 <a href="/patient-history/{{ patient.id }}/"
-class="px-4 py-2 text-sm bg-gray-100 rounded-lg">
+class="btn-premium btn-ghost px-5 py-2">
 Cancel
 </a>
+
 </div>
 
 </form>
@@ -248,29 +282,40 @@ let row = `
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 
 <div>
-<label class="text-xs text-gray-500 sm:hidden">Medicine</label>
-<input name="medicine_name[]" placeholder="Medicine" class="border rounded px-2 py-2 text-sm w-full">
+<input name="medicine_name[]" placeholder="Medicine"
+class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
 <div>
-<label class="text-xs text-gray-500 sm:hidden">Dosage</label>
-<input name="dosage[]" placeholder="1-0-1" class="border rounded px-2 py-2 text-sm w-full">
+<input name="dosage[]" placeholder="1-0-1"
+class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
 <div>
-<label class="text-xs text-gray-500 sm:hidden">Duration</label>
-<input name="duration[]" placeholder="5 days" class="border rounded px-2 py-2 text-sm w-full">
+<input name="duration[]" placeholder="5 days"
+class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
-<div>
-<label class="text-xs text-gray-500 sm:hidden">Remark</label>
-<input name="remark[]" placeholder="After food" class="border rounded px-2 py-2 text-sm w-full">
+<div class="relative">
+<input name="remark[]" placeholder="After food"
+class="border rounded px-2 py-2 text-sm w-full pr-8">
+
+<button type="button" onclick="removeRow(this)"
+class="absolute right-2 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-600 text-lg font-bold px-1">
+×
+</button>
 </div>
+
+
 
 </div>
 `
 
 container.insertAdjacentHTML('beforeend', row)
+}
+function removeRow(btn){
+    let row = btn.closest('.grid')
+    row.remove()
 }
 </script>
 
