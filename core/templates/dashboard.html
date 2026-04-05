@@ -64,24 +64,38 @@
         <table class="w-full text-sm">
 
             <thead class="text-xs uppercase tracking-wider text-gray-400 bg-gray-50">
-                <tr>
-                    <th class="px-6 py-4 text-left">Token</th>
-                    <th class="px-6 py-4 text-left">Patient</th>
-                    <th class="px-6 py-4 text-left">Problem</th>
-                    <th class="px-6 py-4 text-left">Status</th>
-                    <th class="px-6 py-4 text-left">Actions</th>
-                </tr>
+             <tr>
+                <th class="px-6 py-3 text-left">Token</th>
+                <th class="px-6 py-3 text-left">Patient</th>
+
+            {% if show_doctor_column %}
+                <th class="px-6 py-3 text-left">Doctor</th>
+            {% endif %}
+
+                <th class="px-6 py-3 text-left">Problem</th>
+                <th class="px-6 py-3 text-left">Status</th>
+                <th class="px-6 py-3 text-left">Actions</th>
+            </tr>
             </thead>
 
             <tbody>
+            
+            {% with user_role=request.user.userprofile.role %}
             {% for a in appointments %}
 
-            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+            
+            <tr id="appointment-{{ a.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
+            {% if next_tokens and a.id in next_tokens %}
+            bg-green-50 border-l-4 border-green-500 shadow-sm
+            {% endif %}">
 
                 <td class="px-6 py-4">
                     <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 font-semibold text-sm border border-indigo-200">
                         {{ a.token_number }}
                     </span>
+                    {% if next_tokens and a.id in next_tokens %}
+                     <span class="text-xs text-green-600 font-semibold animate-pulse">NEXT</span>
+                    {% endif %}
                 </td>
 
                 <td class="px-6 py-4">
@@ -116,28 +130,42 @@
                 <!-- 🔥 UPDATED ACTIONS -->
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-2 flex-wrap">
+                    {% if user_role == "receptionist" %}
 
-                        <!-- Prescription -->
-                        <a href="{% url 'add_prescription' a.patient.id %}" 
-                        class="btn-premium btn-primary btn-sm">
-                            Prescription
-                        </a>
+                        {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
+                                <a href="{% url 'send_to_doctor' a.id %}"
+                                class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-blue-500 text-white">
+                                    ▶ Send
+                                </a>
 
-                        <!-- Complete -->
-                        {% if a.status == "pending" %}
-                        <a href="{% url 'complete_appointment' a.id %}" 
-                        class="btn-premium btn-success btn-sm">
+                        {% elif a.queue_status == "in_consultation" %}
+                            <a href="{% url 'complete_appointment' a.id %}"
+                            class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
                             Complete
+                            </a>
+                        {% endif %}
+
+                    {% else %}
+
+                        <a href="{% url 'add_prescription' a.patient.id %}"
+                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-indigo-500 text-white">
+                        Prescription
+                        </a>
+
+                        {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+                        <a href="{% url 'complete_appointment' a.id %}"
+                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-green-500 text-white">
+                        Complete
+                        </a>
+
+                        <a href="{% url 'cancel_appointment' a.id %}"
+                        class="w-full text-center px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 rounded-lg bg-red-500 text-white">
+                        Cancel
                         </a>
                         {% endif %}
 
-                        <!-- Cancel -->
-                        {% if a.status != "completed" %}
-                        <a href="{% url 'cancel_appointment' a.id %}" 
-                        class="btn-premium btn-danger btn-sm">
-                            Cancel
-                        </a>
-                        {% endif %}
+                    {% endif %}
+
 
                         <!-- Dropdown -->
                         <div class="relative">
@@ -179,6 +207,7 @@
                 </td>
             </tr>
             {% endfor %}
+            {% endwith %}
             </tbody>
 
         </table>
@@ -190,22 +219,63 @@
 
 <script>
 function toggleMenu(event, id) {
-    event.stopPropagation();
+
+    event.stopPropagation();   // 🔥 important fix
 
     const menu = document.getElementById(id);
 
+    
     document.querySelectorAll('[id^="menu"]').forEach(m => {
         if (m !== menu) m.classList.add("hidden");
     });
 
     menu.classList.toggle("hidden");
-}
 
+    if (!menu.classList.contains("hidden")) {
+
+        // reset
+        menu.style.top = "";
+        menu.style.bottom = "";
+        menu.style.marginTop = "";
+        menu.style.marginBottom = "";
+
+        const rect = menu.getBoundingClientRect();
+
+        // smart positioning
+        if (window.innerHeight - rect.bottom < 120) {
+            menu.style.bottom = "100%";
+            menu.style.marginBottom = "8px";
+        } else {
+            menu.style.top = "100%";
+            menu.style.marginTop = "8px";
+        }
+    }
+}
 document.addEventListener("click", function(){
     document.querySelectorAll('[id^="menu"]').forEach(m => {
         m.classList.add("hidden");
     });
 });
+</script>
+
+<script>
+const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/");
+
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+
+    if (data.type === "update") {
+        const id = data.data.appointment_id;
+        const html = data.data.html;
+
+        let row = document.getElementById("appointment-" + id);
+
+        if (row) {
+            location.reload();
+        }
+    }
+};
 </script>
 
 {% endblock %}
