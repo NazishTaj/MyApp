@@ -528,6 +528,9 @@ def complete_appointment(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status,
             }
         }
     )
@@ -567,6 +570,9 @@ def send_to_doctor(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status,
             }
         }
     )
@@ -600,6 +606,9 @@ def cancel_appointment(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status,
             }
         }
     )
@@ -1277,6 +1286,9 @@ def mark_pending(request, appointment_id):
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status,
             }
         }
     )
