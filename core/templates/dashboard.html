@@ -337,8 +337,45 @@ socket.onmessage = function(e) {
 
         // 🔥 UPDATE ACTION COLUMN
         row.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+
+        // ===============================
+        // 🔥🔥 NEW CODE (NEXT TOKEN FIX)
+        // ===============================
+
+        const nextTokens = appt.next_tokens || [];
+
+        document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+
+            const id = parseInt(tr.id.replace("appointment-", ""));
+
+            if (nextTokens.includes(id)) {
+
+                // highlight
+                tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
+
+                // NEXT label add
+                if (!tr.querySelector(".next-label")) {
+                    const tokenCell = tr.querySelector("td:first-child");
+
+                    const label = document.createElement("span");
+                    label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
+                    label.innerText = "NEXT";
+
+                    tokenCell.appendChild(label);
+                }
+
+            } else {
+
+                // remove highlight
+                tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+
+                // remove NEXT label
+                const label = tr.querySelector(".next-label");
+                if (label) label.remove();
+            }
+        });
+
     }
 };
 </script>
-
 {% endblock %}
