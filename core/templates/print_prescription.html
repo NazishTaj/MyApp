@@ -20,6 +20,9 @@
         size: A4;
         margin: 10mm;
     }
+        .watermark {
+        opacity: 0.03;
+    }
 
     body {
         margin: 0;
@@ -34,13 +37,40 @@
         page-break-inside: avoid;
     }
 }
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.05;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.watermark img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* content upar rahe */
+.print-container {
+    position: relative;
+    z-index: 1;
+}
 
 </style>
 </head>
 
 <body onload="window.print()">
 
-<div class="max-w-3xl mx-auto bg-white p-6">
+
+<div class="max-w-3xl mx-auto bg-white p-6 relative print-container min-h-screen">
+    {% if clinic.logo %}
+        <div class="watermark">
+        <img src="{{ clinic.logo.url }}">
+        </div>
+    {% endif %}
 
 <!-- ================= HEADER ================= -->
 <div class="flex justify-between items-center border-b pb-4 mb-6 no-break">
