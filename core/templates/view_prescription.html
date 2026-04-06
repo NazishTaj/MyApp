@@ -2,10 +2,49 @@
 {% block page_title %}Prescription{% endblock %}
 
 {% block content %}
+<style>
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.05; /* 👈 light watermark */
+    z-index: 0;
+    pointer-events: none;
+}
+
+.watermark img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* Ensure content is above watermark */
+#print-area {
+    position: relative;
+}
+
+.bg-white {
+    position: relative;
+    z-index: 1;
+}
+@media print {
+    .watermark {
+        opacity: 0.03;
+    }
+}
+
+</style>
 
 <div id="print-area" class="max-w-3xl mx-auto px-3 sm:px-0">
 
-<div class="bg-white rounded-xl shadow p-5 sm:p-8">
+
+<div class="bg-white rounded-xl shadow p-5 sm:p-8 relative">
+    {% if clinic.logo %}
+        <div class="watermark">
+        <img src="{{ clinic.logo.url }}">
+        </div>
+{% endif %}
 
 <!-- Clinic Header -->
 
