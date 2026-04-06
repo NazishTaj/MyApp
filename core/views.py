@@ -508,15 +508,42 @@ def complete_appointment(request, appointment_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not has_permission(request.user, "manage_appointments"):
         return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     appointment.status = "completed"
-    appointment.queue_status = "done" 
+    appointment.queue_status = "done"
     appointment.save()
-    # 🔥 WEBSOCKET EVENT
+
+    # 🔥 NEXT TOKENS
+    today = appointment.appointment_date
+
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    next_tokens = []
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
+    # 🔥 WEBSOCKET
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
 
@@ -531,6 +558,7 @@ def complete_appointment(request, appointment_id):
                 "patient_id": appointment.patient.id,
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
+                "next_tokens": next_tokens,
             }
         }
     )
@@ -546,11 +574,9 @@ def send_to_doctor(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    # 🔥 Only for multi doctor + receptionist
     if profile.role != "receptionist" or not clinic.is_advanced:
         return redirect("dashboard")
 
-    # 🔥 Ensure only one In Consultation per doctor
     Appointment.objects.filter(
         clinic=clinic,
         doctor=appointment.doctor,
@@ -559,9 +585,36 @@ def send_to_doctor(request, appointment_id):
 
     appointment.queue_status = "in_consultation"
     appointment.save()
-    
+
+    # 🔥 NEXT TOKENS
+    today = appointment.appointment_date
+
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    next_tokens = []
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
+    # 🔥 WEBSOCKET
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
+
     channel_layer = get_channel_layer()
 
     async_to_sync(channel_layer.group_send)(
@@ -573,12 +626,11 @@ def send_to_doctor(request, appointment_id):
                 "patient_id": appointment.patient.id,
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
+                "next_tokens": next_tokens,
             }
         }
     )
 
-
-    
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
 
 
@@ -587,6 +639,7 @@ def cancel_appointment(request, appointment_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not has_permission(request.user, "manage_appointments"):
         return render(request, "403.html", status=403)
 
@@ -595,9 +648,36 @@ def cancel_appointment(request, appointment_id):
     appointment.status = "cancelled"
     appointment.queue_status = "done"
     appointment.save()
-      # 🔥 WEBSOCKET EVENT
+
+    # 🔥 NEXT TOKENS
+    today = appointment.appointment_date
+
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    next_tokens = []
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
+    # 🔥 WEBSOCKET
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
+
     channel_layer = get_channel_layer()
 
     async_to_sync(channel_layer.group_send)(
@@ -609,14 +689,12 @@ def cancel_appointment(request, appointment_id):
                 "patient_id": appointment.patient.id,
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
+                "next_tokens": next_tokens,
             }
         }
     )
 
-
-
     return redirect(request.META.get("HTTP_REFERER", "dashboard"))
-
 
 # ---------------- PRESCRIPTIONS ---------------- #
 
@@ -1262,10 +1340,10 @@ def export_all_appointments(request):
 
 @login_required
 def mark_pending(request, appointment_id):
-    
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not has_permission(request.user, "manage_appointments"):
         return render(request, "403.html", status=403)
 
@@ -1274,7 +1352,33 @@ def mark_pending(request, appointment_id):
     appointment.status = "pending"
     appointment.queue_status = "waiting"
     appointment.save()
-      # 🔥 WEBSOCKET EVENT
+
+    # 🔥 NEXT TOKENS
+    today = appointment.appointment_date
+
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    next_tokens = []
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
+    # 🔥 WEBSOCKET
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
 
@@ -1289,6 +1393,7 @@ def mark_pending(request, appointment_id):
                 "patient_id": appointment.patient.id,
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
+                "next_tokens": next_tokens,
             }
         }
     )
