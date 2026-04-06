@@ -180,39 +180,39 @@
         {% endif %}
 
         </div>
-
         <!-- RIGHT: Dropdown -->
+
         <div class="relative">
-            <button onclick="toggleMenu(event, 'menu{{ a.id }}')"
-            class="btn-premium btn-ghost btn-icon btn-sm">
-                ⋮
-            </button>
+                <button type="button"
+                  onclick="toggleDropdown(event, '{{ a.id }}')"
+                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
+                  ⋮
+                </button>
 
-            <div id="menu{{ a.id }}"
-            class="hidden absolute right-0 mt-2 w-44 bg-white border border-surface-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                <div id="dropdown-{{ a.id }}"
+                  class="absolute hidden right-0 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
 
-                <a href="{% url 'patient_history' a.patient.id %}"
-                class="block px-4 py-2 text-sm hover:bg-gray-50">
-                    📜 History
-                </a>
-
+                 <a href="{% url 'patient_history' a.patient.id %}"
+                    class="block px-4 py-2 hover:bg-gray-100">
+                     📜 History
+                  </a>
                 {% if a.status == "pending" or a.queue_status == "in_consultation" %}
                 <a href="{% url 'cancel_appointment' a.id %}"
-                class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                     ❌ Cancel
                 </a>
                 {% endif %}
 
-                <a href="{% url 'mark_pending' a.id %}"
-                class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
-                    ↩️ Undo
-                </a>
 
-            </div>
+                  <a href="{% url 'mark_pending' a.id %}"
+                    class="block px-4 py-2 text-red-500 hover:bg-red-50">
+                     ↩️ Undo
+                  </a>
+
+                </div>
         </div>
 
     </div>
-</td>
                 
 
             </tr>
@@ -235,43 +235,24 @@
 </div>
 
 <script>
-function toggleMenu(event, id) {
+function toggleDropdown(e, id) {
+  e.stopPropagation();
 
-    event.stopPropagation();   // 🔥 important fix
+  const el = document.getElementById("dropdown-" + id);
 
-    const menu = document.getElementById(id);
+  // close others
+  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+    if (d !== el) d.classList.add("hidden");
+  });
 
-    
-    document.querySelectorAll('[id^="menu"]').forEach(m => {
-        if (m !== menu) m.classList.add("hidden");
-    });
-
-    menu.classList.toggle("hidden");
-
-    if (!menu.classList.contains("hidden")) {
-
-        // reset
-        menu.style.top = "";
-        menu.style.bottom = "";
-        menu.style.marginTop = "";
-        menu.style.marginBottom = "";
-
-        const rect = menu.getBoundingClientRect();
-
-        // smart positioning
-        if (window.innerHeight - rect.bottom < 120) {
-            menu.style.bottom = "100%";
-            menu.style.marginBottom = "8px";
-        } else {
-            menu.style.top = "100%";
-            menu.style.marginTop = "8px";
-        }
-    }
+  el.classList.toggle("hidden");
 }
-document.addEventListener("click", function(){
-    document.querySelectorAll('[id^="menu"]').forEach(m => {
-        m.classList.add("hidden");
-    });
+
+// close outside
+document.addEventListener("click", () => {
+  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+    d.classList.add("hidden");
+  });
 });
 </script>
 
@@ -377,5 +358,6 @@ socket.onmessage = function(e) {
 
     }
 };
+    
 </script>
 {% endblock %}
