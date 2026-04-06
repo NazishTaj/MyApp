@@ -324,13 +324,13 @@ socket.onmessage = function(e) {
 
             // 🔥 SEND BUTTON (NEXT ONLY)
                 if (nextTokens.includes(id)) {
-                    actionsHTML = `<a href="/send_to_doctor/${id}/" 
+                    actionsHTML = `<a href="/send-to-doctor/${id}/" 
                     class="btn-premium btn-primary btn-sm">▶ Send</a>`;
                 }
 
     // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
                 if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
-                    actionsHTML = `<a href="/complete_appointment/${id}/" 
+                    actionsHTML = `<a href="/complete-appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>`;
                 }
             }
