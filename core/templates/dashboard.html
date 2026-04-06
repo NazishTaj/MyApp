@@ -322,19 +322,21 @@ socket.onmessage = function(e) {
 
             if (USER_ROLE === "receptionist") {
 
-                // ✅ SEND BUTTON (NEXT ONLY)
-                if (nextTokens.includes(id) && tr.querySelector(".status").innerText.includes("Pending")) {
+            // 🔥 SEND BUTTON (NEXT ONLY)
+                if (nextTokens.includes(id)) {
                     actionsHTML = `<a href="/send_to_doctor/${id}/" 
                     class="btn-premium btn-primary btn-sm">▶ Send</a>`;
                 }
 
-                // ✅ COMPLETE BUTTON
-                if (tr.querySelector(".status").innerText.includes("In Room")) {
+    // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
+                if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
                     actionsHTML = `<a href="/complete_appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>`;
                 }
+            }
 
-            } else {
+                    
+             else {
 
                 actionsHTML = `
                     <a href="/add-prescription/${id}/" 
