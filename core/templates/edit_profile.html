@@ -115,14 +115,19 @@
               </svg>
               Choose Photo
               <input type="file" id="photoInput" name="photo" class="hidden" accept="image/*">
+            </label>
+
+              
+            <div class="flex items-center gap-2 min-w-0">
               <!-- Preview Image -->
-              <img id="photoPreview" class="w-16 h-16 rounded-xl object-cover border-2 border-surface-200 shadow-sm hidden">
+              <img id="photoPreview" class="w-12 h-12 rounded-xl object-cover border-2 border-surface-200 shadow-sm hidden">
 
               <!-- File Name -->
               <p id="fileName"
               class="text-xs text-green-500 mt-1 hidden max-w-xs truncate">
               </p>
-            </label>
+            </div>
+            
             <p class="text-xs text-surface-400 mt-1.5">JPG, PNG up to 2MB</p>
           </div>
         </div>
@@ -337,7 +342,8 @@
 
     if (file) {
       // Show file name
-      fileName.textContent = "Selected: " + file.name;
+      fileName.textContent = "Selected: " + shortenName(file.name);
+      fileName.title = file.name;
       fileName.classList.remove('hidden');
 
       // Show preview
@@ -349,6 +355,12 @@
       reader.readAsDataURL(file);
     }
   });
+  function shortenName(name) {
+  if (name.length <= 25) return name;
+
+  const ext = name.split('.').pop();
+  return name.slice(0, 15) + "..." + ext;
+  }
 </script>
 <script>
   const advancedToggle = document.getElementById('advancedToggle');
