@@ -109,6 +109,11 @@
                         <span class="font-medium text-gray-900">{{ a.patient.name }}</span>
                     </div>
                 </td>
+                {% if show_doctor_column %}
+                <td class="px-6 py-4 text-gray-700">
+                    {{ a.doctor.name|default:"N/A" }}
+                </td>
+                {% endif %}
 
                 <td class="px-6 py-4 text-gray-500">
                     {{ a.problem }}
