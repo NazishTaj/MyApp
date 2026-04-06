@@ -10,7 +10,7 @@ from .models import Patient, Appointment, Prescription, UserProfile , ClinicSche
 from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
 from django.db.models import Sum
-from django.template.loader import render_to_string
+
 
 
 
@@ -522,20 +522,12 @@ def complete_appointment(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
-    html = render_to_string("partials/appointment_row.html", {
-        "a": appointment,
-        "user_role": request.user.userprofile.role,
-        "next_tokens": {appointment.id: True}
-        
-    })
-
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "html": html
             }
         }
     )
@@ -569,19 +561,12 @@ def send_to_doctor(request, appointment_id):
     from asgiref.sync import async_to_sync
     channel_layer = get_channel_layer()
 
-    html = render_to_string("partials/appointment_row.html", {
-        "a": appointment,
-        "user_role": request.user.userprofile.role,
-        "next_tokens": {appointment.id: True}
-    })
-
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "html": html
             }
         }
     )
@@ -609,19 +594,12 @@ def cancel_appointment(request, appointment_id):
     from asgiref.sync import async_to_sync
     channel_layer = get_channel_layer()
 
-    html = render_to_string("partials/appointment_row.html", {
-        "a": appointment,
-        "user_role": request.user.userprofile.role,
-        "next_tokens": {appointment.id: True}
-    })
-
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "html": html
             }
         }
     )
@@ -1293,19 +1271,12 @@ def mark_pending(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
-    html = render_to_string("partials/appointment_row.html", {
-        "a": appointment,
-        "user_role": request.user.userprofile.role,
-        "next_tokens": {appointment.id: True}
-    })
-
     async_to_sync(channel_layer.group_send)(
         "dashboard",
         {
             "type": "send_update",
             "data": {
                 "appointment_id": appointment.id,
-                "html": html
             }
         }
     )
