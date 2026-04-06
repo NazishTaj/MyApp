@@ -279,7 +279,7 @@ socket.onmessage = function(e) {
 
     if (data.type === "update") {
         const id = data.data.appointment_id;
-        const html = data.data.html;
+        
 
         let row = document.getElementById("appointment-" + id);
 
