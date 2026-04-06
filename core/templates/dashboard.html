@@ -289,7 +289,7 @@ socket.onmessage = function(e) {
 
         if (!row) return;
 
-        // 🔥 STATUS UPDATE
+        // 🔥 STATUS UPDATE (only changed row)
         let statusHTML = "";
 
         if (appt.queue_status === "in_consultation") {
@@ -307,58 +307,52 @@ socket.onmessage = function(e) {
 
         row.querySelector(".status").innerHTML = statusHTML;
 
-        // 🔥 ACTION UPDATE
+        // ===============================
+        // 🔥 FULL ACTIONS + NEXT UPDATE
+        // ===============================
+
         const USER_ROLE = "{{ request.user.userprofile.role }}";
-
-        let actionsHTML = "";
-
-if (USER_ROLE === "receptionist") {
-
-    const nextTokens = appt.next_tokens || [];
-
-    // 🔥 SEND BUTTON (ONLY FOR NEXT TOKEN)
-    if (nextTokens.includes(appt.appointment_id) && appt.status === "pending") {
-        actionsHTML = `<a href="/send_to_doctor/${appt.appointment_id}/" 
-        class="btn-premium btn-primary btn-sm">▶ Send</a>`;
-    }
-
-    // 🔥 COMPLETE BUTTON
-    if (appt.queue_status === "in_consultation") {
-        actionsHTML = `<a href="/complete_appointment/${appt.appointment_id}/" 
-        class="btn-premium btn-success btn-sm">Complete</a>`;
-    }
-
-
-        } else {
-
-            actionsHTML = `
-                <a href="/add-prescription/${appt.patient_id}/" 
-                class="btn-premium btn-primary btn-sm">Prescription</a>
-
-                <a href="/complete_appointment/${appt.appointment_id}/" 
-                class="btn-premium btn-success btn-sm">Complete</a>
-            `;
-        }
-
-        // 🔥 UPDATE ACTION COLUMN
-        row.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
-
-        // ===============================
-        // 🔥🔥 NEW CODE (NEXT TOKEN FIX)
-        // ===============================
-
         const nextTokens = appt.next_tokens || [];
 
         document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
             const id = parseInt(tr.id.replace("appointment-", ""));
 
+            let actionsHTML = "";
+
+            if (USER_ROLE === "receptionist") {
+
+                // ✅ SEND BUTTON (NEXT ONLY)
+                if (nextTokens.includes(id) && tr.querySelector(".status").innerText.includes("Pending")) {
+                    actionsHTML = `<a href="/send_to_doctor/${id}/" 
+                    class="btn-premium btn-primary btn-sm">▶ Send</a>`;
+                }
+
+                // ✅ COMPLETE BUTTON
+                if (tr.querySelector(".status").innerText.includes("In Room")) {
+                    actionsHTML = `<a href="/complete_appointment/${id}/" 
+                    class="btn-premium btn-success btn-sm">Complete</a>`;
+                }
+
+            } else {
+
+                actionsHTML = `
+                    <a href="/add-prescription/${id}/" 
+                    class="btn-premium btn-primary btn-sm">Prescription</a>
+
+                    <a href="/complete_appointment/${id}/" 
+                    class="btn-premium btn-success btn-sm">Complete</a>
+                `;
+            }
+
+            // 🔥 UPDATE ACTIONS
+            tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+
+            // 🔥 NEXT HIGHLIGHT
             if (nextTokens.includes(id)) {
 
-                // highlight
                 tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
 
-                // NEXT label add
                 if (!tr.querySelector(".next-label")) {
                     const tokenCell = tr.querySelector("td:first-child");
 
@@ -371,13 +365,12 @@ if (USER_ROLE === "receptionist") {
 
             } else {
 
-                // remove highlight
                 tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
 
-                // remove NEXT label
                 const label = tr.querySelector(".next-label");
                 if (label) label.remove();
             }
+
         });
 
     }
