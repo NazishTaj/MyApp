@@ -41,7 +41,7 @@
 </div>
 
 <!-- Queue Table -->
-<div class="card-premium !p-0 overflow-visible">
+<div class="card-premium !p-0 overflow-hidden">
 
     <!-- Header -->
     <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
@@ -84,7 +84,7 @@
             {% for a in appointments %}
 
             
-            <tr id="appointment-{{ a.id }}" data-patient-id="{{ a.patient.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
+            <tr id="appointment-{{ a.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
             {% if next_tokens and a.id in next_tokens %}
             bg-green-50 border-l-4 border-green-500 shadow-sm
             {% endif %}">
@@ -181,37 +181,34 @@
 
         </div>
 
-
-<!-- RIGHT: Dropdown -->
-
+        <!-- RIGHT: Dropdown -->
         <div class="relative">
-                <button type="button"
-                  onclick="toggleDropdown(event, '{{ a.id }}')"
-                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
-                  ⋮
-                </button>
+            <button onclick="toggleMenu(event, 'menu{{ a.id }}')"
+            class="btn-premium btn-ghost btn-icon btn-sm">
+                ⋮
+            </button>
 
-                <div id="dropdown-{{ a.id }}"
-                  class="absolute hidden right-0 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
+            <div id="menu{{ a.id }}"
+            class="hidden absolute right-0 mt-2 w-44 bg-white border border-surface-200 rounded-xl shadow-xl z-50 overflow-hidden">
 
-                 <a href="{% url 'patient_history' a.patient.id %}"
-                    class="block px-4 py-2 hover:bg-gray-100">
-                     📜 History
-                  </a>
+                <a href="{% url 'patient_history' a.patient.id %}"
+                class="block px-4 py-2 text-sm hover:bg-gray-50">
+                    📜 History
+                </a>
+
                 {% if a.status == "pending" or a.queue_status == "in_consultation" %}
                 <a href="{% url 'cancel_appointment' a.id %}"
-                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                     ❌ Cancel
                 </a>
                 {% endif %}
 
+                <a href="{% url 'mark_pending' a.id %}"
+                class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">
+                    ↩️ Undo
+                </a>
 
-                  <a href="{% url 'mark_pending' a.id %}"
-                    class="block px-4 py-2 text-red-500 hover:bg-red-50">
-                     ↩️ Undo
-                  </a>
-
-                </div>
+            </div>
         </div>
 
     </div>
@@ -237,26 +234,44 @@
 
 </div>
 
-
 <script>
-function toggleDropdown(e, id) {
-  e.stopPropagation();
+function toggleMenu(event, id) {
 
-  const el = document.getElementById("dropdown-" + id);
+    event.stopPropagation();   // 🔥 important fix
 
-  // close others
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    if (d !== el) d.classList.add("hidden");
-  });
+    const menu = document.getElementById(id);
 
-  el.classList.toggle("hidden");
+    
+    document.querySelectorAll('[id^="menu"]').forEach(m => {
+        if (m !== menu) m.classList.add("hidden");
+    });
+
+    menu.classList.toggle("hidden");
+
+    if (!menu.classList.contains("hidden")) {
+
+        // reset
+        menu.style.top = "";
+        menu.style.bottom = "";
+        menu.style.marginTop = "";
+        menu.style.marginBottom = "";
+
+        const rect = menu.getBoundingClientRect();
+
+        // smart positioning
+        if (window.innerHeight - rect.bottom < 120) {
+            menu.style.bottom = "100%";
+            menu.style.marginBottom = "8px";
+        } else {
+            menu.style.top = "100%";
+            menu.style.marginTop = "8px";
+        }
+    }
 }
-
-// close outside
-document.addEventListener("click", () => {
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    d.classList.add("hidden");
-  });
+document.addEventListener("click", function(){
+    document.querySelectorAll('[id^="menu"]').forEach(m => {
+        m.classList.add("hidden");
+    });
 });
 </script>
 
@@ -300,44 +315,40 @@ socket.onmessage = function(e) {
         const nextTokens = appt.next_tokens || [];
 
         document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-            const patientId = tr.getAttribute("data-patient-id");
 
             const id = parseInt(tr.id.replace("appointment-", ""));
 
             let actionsHTML = "";
 
             if (USER_ROLE === "receptionist") {
-                actionsHTML = "";
 
+            // 🔥 SEND BUTTON (NEXT ONLY)
                 if (nextTokens.includes(id)) {
-                    actionsHTML += `<a href="/send-to-doctor/${id}/" 
+                    actionsHTML = `<a href="/send-to-doctor/${id}/" 
                     class="btn-premium btn-primary btn-sm">▶ Send</a>`;
                 }
 
+    // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
                 if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
-                    actionsHTML += `<a href="/complete-appointment/${id}/" 
+                    actionsHTML = `<a href="/complete-appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>`;
                 }
-
- 
             }
 
                     
              else {
 
                 actionsHTML = `
-                     <a href="/add-prescription/${patientId}/" 
+                     <a href="/add-prescription/${appt.patient_id}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
 
-                    <a href="/complete-appointment/${id}/"
+                    <a href="/complete_appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>
                 `;
             }
 
             // 🔥 UPDATE ACTIONS
-            if (actionsHTML !== "") {
-                tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
-            }
+            tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
 
             // 🔥 NEXT HIGHLIGHT
             if (nextTokens.includes(id)) {
@@ -365,10 +376,6 @@ socket.onmessage = function(e) {
         });
 
     }
-};
-socket.onclose = function() {
-    console.log("Socket closed. Reloading...");
-    setTimeout(() => location.reload(), 3000);
 };
 </script>
 {% endblock %}
