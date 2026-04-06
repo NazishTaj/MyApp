@@ -164,7 +164,7 @@
 
             {% if a.status == "pending" or a.queue_status == "in_consultation" %}
             
-            <a href="{% url 'complete_appointment' a.id %}" 
+            <a href="{% url 'complete-appointment' a.id %}" 
             class="btn-premium btn-success btn-sm">
                 Complete
             </a>
