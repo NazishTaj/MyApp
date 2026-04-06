@@ -312,17 +312,22 @@ socket.onmessage = function(e) {
 
         let actionsHTML = "";
 
-        if (USER_ROLE === "receptionist") {
+if (USER_ROLE === "receptionist") {
 
-            if (appt.queue_status === "waiting") {
-                actionsHTML = `<a href="/send_to_doctor/${appt.appointment_id}/" 
-                class="btn-premium btn-primary btn-sm">▶ Send</a>`;
-            }
+    const nextTokens = appt.next_tokens || [];
 
-            if (appt.queue_status === "in_consultation") {
-                actionsHTML = `<a href="/complete_appointment/${appt.appointment_id}/" 
-                class="btn-premium btn-success btn-sm">Complete</a>`;
-            }
+    // 🔥 SEND BUTTON (ONLY FOR NEXT TOKEN)
+    if (nextTokens.includes(appt.appointment_id) && appt.status === "pending") {
+        actionsHTML = `<a href="/send_to_doctor/${appt.appointment_id}/" 
+        class="btn-premium btn-primary btn-sm">▶ Send</a>`;
+    }
+
+    // 🔥 COMPLETE BUTTON
+    if (appt.queue_status === "in_consultation") {
+        actionsHTML = `<a href="/complete_appointment/${appt.appointment_id}/" 
+        class="btn-premium btn-success btn-sm">Complete</a>`;
+    }
+
 
         } else {
 
