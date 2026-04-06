@@ -133,7 +133,7 @@
                 </td>
 
                 <!-- 🔥 UPDATED ACTIONS -->
-                 <td class="px-6 py-4">
+                 <td class="px-6 py-4 actions">
     <div class="flex items-center justify-between">
 
         <!-- LEFT: Buttons -->
@@ -283,14 +283,60 @@ socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
 
     if (data.type === "update") {
-        const id = data.data.appointment_id;
-        
 
-        let row = document.getElementById("appointment-" + id);
+        const appt = data.data;
+        const row = document.getElementById("appointment-" + appt.appointment_id);
 
-        if (row) {
-            location.reload();
+        if (!row) return;
+
+        // 🔥 STATUS UPDATE
+        let statusHTML = "";
+
+        if (appt.queue_status === "in_consultation") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+        } 
+        else if (appt.status === "pending") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+        } 
+        else if (appt.status === "completed") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+        } 
+        else if (appt.status === "cancelled") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
         }
+
+        row.querySelector(".status").innerHTML = statusHTML;
+
+        // 🔥 ACTION UPDATE
+        const USER_ROLE = "{{ request.user.userprofile.role }}";
+
+        let actionsHTML = "";
+
+        if (USER_ROLE === "receptionist") {
+
+            if (appt.queue_status === "waiting") {
+                actionsHTML = `<a href="/send_to_doctor/${appt.appointment_id}/" 
+                class="btn-premium btn-primary btn-sm">▶ Send</a>`;
+            }
+
+            if (appt.queue_status === "in_consultation") {
+                actionsHTML = `<a href="/complete_appointment/${appt.appointment_id}/" 
+                class="btn-premium btn-success btn-sm">Complete</a>`;
+            }
+
+        } else {
+
+            actionsHTML = `
+                <a href="/add_prescription/${appt.appointment_id}/" 
+                class="btn-premium btn-primary btn-sm">Prescription</a>
+
+                <a href="/complete_appointment/${appt.appointment_id}/" 
+                class="btn-premium btn-success btn-sm">Complete</a>
+            `;
+        }
+
+        // 🔥 UPDATE ACTION COLUMN
+        row.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
     }
 };
 </script>
