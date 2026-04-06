@@ -304,7 +304,7 @@ socket.onmessage = function(e) {
             if (USER_ROLE === "receptionist") {
 
             // 🔥 SEND BUTTON (NEXT ONLY)
-                if (nextTokens.includes(id)) {
+                if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
                     actionsHTML = `<a href="/send-to-doctor/${id}/" 
                     class="btn-premium btn-primary btn-sm">▶ Send</a>`;
                 }
