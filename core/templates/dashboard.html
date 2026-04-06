@@ -149,7 +149,7 @@
             {% endif %}
 
             {% if a.queue_status == "in_consultation" %}
-                <a href="{% url 'complete-appointment' a.id %}" 
+                <a href="{% url 'complete_appointment' a.id %}" 
                 class="btn-premium btn-success btn-sm">
                     Complete
                 </a>
@@ -164,7 +164,7 @@
 
             {% if a.status == "pending" or a.queue_status == "in_consultation" %}
             
-            <a href="{% url 'complete-appointment' a.id %}" 
+            <a href="{% url 'complete_appointment' a.id %}" 
             class="btn-premium btn-success btn-sm">
                 Complete
             </a>
@@ -330,7 +330,7 @@ socket.onmessage = function(e) {
 
     // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
                 if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
-                    actionsHTML = `<a href="/complete-appointment/${id}/" 
+                    actionsHTML = `<a href="/complete_appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>`;
                 }
             }
@@ -342,7 +342,7 @@ socket.onmessage = function(e) {
                      <a href="/add-prescription/${appt.patient_id}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
 
-                    <a href="/complete-appointment/${id}/" 
+                    <a href="/complete_appointment/${id}/" 
                     class="btn-premium btn-success btn-sm">Complete</a>
                 `;
             }
