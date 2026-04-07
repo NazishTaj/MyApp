@@ -93,9 +93,6 @@
                     <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 font-semibold text-sm border border-indigo-200">
                         {{ a.token_number }}
                     </span>
-                    {% if next_tokens and a.id in next_tokens %}
-                     <span class="text-xs text-green-600 font-semibold animate-pulse">NEXT</span>
-                    {% endif %}
                 </td>
 
                 <td class="px-6 py-4">
@@ -337,29 +334,42 @@ socket.onmessage = function(e) {
                 }
 
     // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
-                if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
+                const statusText = tr.querySelector(".status").innerText;
+
+                if (statusText.includes("In Room")) {
                     actionsHTML += `<button onclick="completeAppointment(${id})"  
                     class="btn-premium btn-success btn-sm">Complete</button>`;
+                } else {
+                         // Completed / Pending → no Complete button
+                        actionsHTML += "";
                 }
-            }
 
-                    
-             else {
+            }
+            else {
+
+                const statusText = tr.querySelector(".status").innerText;
 
                 actionsHTML = `
-                     <a href="/add-prescription/${appt.patient_id}/" 
+                    <a href="/add-prescription/${appt.patient_id}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
+                `;
 
+                if (!statusText.includes("Completed")) {
+                    actionsHTML += `
                     <button onclick="completeAppointment(${id})"
                     class="btn-premium btn-success btn-sm">Complete</button>
-                `;
+                    `;
+                }
             }
+                    
 
             // 🔥 UPDATE ACTIONS
             tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
 
             // 🔥 NEXT HIGHLIGHT
-            if (nextTokens.includes(id)) {
+            const statusText = tr.querySelector(".status").innerText;
+
+            if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
 
                 tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
 
