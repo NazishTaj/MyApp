@@ -1877,3 +1877,21 @@ def export_month_bills(request):
     workbook.save(response)
 
     return response
+
+
+from django.http import JsonResponse
+
+def get_queue_data(request):
+    appointments = Appointment.objects.filter(clinic=...)  # same filter jo dashboard me use kar rahe ho
+
+    data = []
+
+    for a in appointments:
+        data.append({
+            "id": a.id,
+            "patient_id": a.patient.id,
+            "status": a.status,
+            "queue_status": a.queue_status,
+        })
+
+    return JsonResponse({"appointments": data})
