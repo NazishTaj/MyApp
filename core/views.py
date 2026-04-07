@@ -1879,10 +1879,39 @@ def export_month_bills(request):
     return response
 
 
-from django.http import JsonResponse
+from django.utils import timezone
 
 def get_queue_data(request):
-    appointments = Appointment.objects.filter(clinic=...)  # same filter jo dashboard me use kar rahe ho
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+    today = timezone.localtime().date()
+
+    # 🔥 SAME FILTER AS DASHBOARD
+    if profile.role in ["doctor", "owner"]:
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            doctor=profile
+        )
+
+    elif profile.role == "assistant":
+        if profile.assigned_doctor:
+            appointments = Appointment.objects.filter(
+                clinic=clinic,
+                appointment_date=today,
+                doctor=profile.assigned_doctor
+            )
+        else:
+            appointments = Appointment.objects.none()
+
+    else:  # receptionist
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today
+        )
+
+    appointments = appointments.order_by("doctor", "token_number")
 
     data = []
 
@@ -1892,6 +1921,33 @@ def get_queue_data(request):
             "patient_id": a.patient.id,
             "status": a.status,
             "queue_status": a.queue_status,
+            "token_number": a.token_number,
         })
 
-    return JsonResponse({"appointments": data})
+    # 🔥 SAME NEXT LOGIC (copy from dashboard)
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+
+    next_tokens = []
+    seen_doctors = set()
+
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
+    return JsonResponse({
+        "appointments": data,
+        "next_tokens": next_tokens
+    })
