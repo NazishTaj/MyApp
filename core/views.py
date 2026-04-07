@@ -555,8 +555,10 @@ def complete_appointment(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
+    group_name = f"dashboard_{clinic.id}"
+
     async_to_sync(channel_layer.group_send)(
-        "dashboard",
+        group_name,
         {
             "type": "send_update",
             "data": {
@@ -623,9 +625,11 @@ def send_to_doctor(request, appointment_id):
     from asgiref.sync import async_to_sync
 
     channel_layer = get_channel_layer()
-
+    
+    group_name = f"dashboard_{clinic.id}"
     async_to_sync(channel_layer.group_send)(
-        "dashboard",
+        group_name,
+
         {
             "type": "send_update",
             "data": {
@@ -688,8 +692,10 @@ def cancel_appointment(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
+    group_name = f"dashboard_{clinic.id}"
+
     async_to_sync(channel_layer.group_send)(
-        "dashboard",
+        group_name,
         {
             "type": "send_update",
             "data": {
@@ -1393,8 +1399,10 @@ def mark_pending(request, appointment_id):
 
     channel_layer = get_channel_layer()
 
+    group_name = f"dashboard_{clinic.id}"
+
     async_to_sync(channel_layer.group_send)(
-        "dashboard",
+        group_name,
         {
             "type": "send_update",
             "data": {
