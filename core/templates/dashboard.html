@@ -424,4 +424,11 @@ function markPending(id) {
     .catch(err => console.error(err));
 }
 </script>
+<script>
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+</script>
 {% endblock %}
