@@ -84,7 +84,7 @@
             {% for a in appointments %}
 
             
-            <tr id="appointment-{{ a.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
+            <tr id="appointment-{{ a.id }}" data-patient-id="{{ a.patient.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
             {% if next_tokens and a.id in next_tokens %}
             bg-green-50 border-l-4 border-green-500 shadow-sm
             {% endif %}">
@@ -321,6 +321,8 @@ socket.onmessage = function(e) {
 
         document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
+            const patientId = tr.getAttribute("data-patient-id");
+
             const id = parseInt(tr.id.replace("appointment-", ""));
 
             let actionsHTML = "";
@@ -350,7 +352,7 @@ socket.onmessage = function(e) {
                 const statusText = tr.querySelector(".status").innerText;
 
                 actionsHTML = `
-                    <a href="/add-prescription/${appt.patient_id}/" 
+                    <a href="/add-prescription/${patientId}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
                 `;
 
