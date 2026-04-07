@@ -281,7 +281,7 @@ function sendToDoctor(id) {
 
 <script>
 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/");
+const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/");
 
 socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
