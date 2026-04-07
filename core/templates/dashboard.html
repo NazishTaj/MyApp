@@ -398,6 +398,28 @@ socket.onmessage = function(e) {
 };
     
 </script>
+
+<!-- ✅ YAHAN ADD KAR -->
+<script>
+function refreshQueueFromDOM() {
+
+    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+
+        // 🔥 Remove wrong NEXT
+        const label = tr.querySelector(".next-label");
+        if (label) label.remove();
+
+        tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+
+    });
+
+}
+
+// 🔥 BACK BUTTON FIX
+window.addEventListener("pageshow", function () {
+    refreshQueueFromDOM();
+});
+</script>
 <script>
     function cancelAppointment(id) {
     fetch(`/cancel-appointment/${id}/`, {
@@ -424,9 +446,5 @@ function markPending(id) {
     .catch(err => console.error(err));
 }
 </script>
-<script>
-window.addEventListener("focus", function () {
-    window.location.reload();
-});
-</script>
+
 {% endblock %}
