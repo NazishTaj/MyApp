@@ -166,7 +166,13 @@ def dashboard(request):
         "next_tokens": next_tokens
     }
 
-    return render(request, "dashboard.html", context)
+    response = render(request, "dashboard.html", context)
+
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+
+    return response
 # ---------------- PATIENTS ---------------- #
 
 from django.db.models import Q
