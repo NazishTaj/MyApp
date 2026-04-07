@@ -563,7 +563,8 @@ def complete_appointment(request, appointment_id):
         }
     )
 
-    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+    from django.http import JsonResponse
+    return JsonResponse({"status": "ok"})
 
 
 @login_required(login_url="login")
@@ -631,7 +632,8 @@ def send_to_doctor(request, appointment_id):
         }
     )
 
-    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+    from django.http import JsonResponse
+    return JsonResponse({"status": "ok"})
 
 
 @login_required(login_url="login")
@@ -694,7 +696,8 @@ def cancel_appointment(request, appointment_id):
         }
     )
 
-    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+    from django.http import JsonResponse
+    return JsonResponse({"status": "ok"})
 
 # ---------------- PRESCRIPTIONS ---------------- #
 
@@ -1398,7 +1401,8 @@ def mark_pending(request, appointment_id):
         }
     )
 
-    return redirect(request.META.get("HTTP_REFERER", "dashboard"))
+    from django.http import JsonResponse
+    return JsonResponse({"status": "ok"})
 
 
 
