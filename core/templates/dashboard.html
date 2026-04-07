@@ -142,17 +142,17 @@
         {% if user_role == "receptionist" %}
 
             {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
-                <a href="{% url 'send_to_doctor' a.id %}" 
+                <button onclick="sendToDoctor({{ a.id }})"
                 class="btn-premium btn-primary btn-sm">
                     ▶ Send
-                </a>
+                </button>
             {% endif %}
 
             {% if a.queue_status == "in_consultation" %}
-                <a href="{% url 'complete_appointment' a.id %}" 
+                <button onclick="completeAppointment({{ a.id }})" 
                 class="btn-premium btn-success btn-sm">
                     Complete
-                </a>
+                </button>
             {% endif %}
 
         {% else %}
@@ -164,10 +164,10 @@
 
             {% if a.status == "pending" or a.queue_status == "in_consultation" %}
             
-            <a href="{% url 'complete_appointment' a.id %}" 
+            <button onclick="completeAppointment({{ a.id }})"
             class="btn-premium btn-success btn-sm">
                 Complete
-            </a>
+            </button>
 
         <!--    <a href="{% url 'cancel_appointment' a.id %}" 
             class="btn-premium btn-danger btn-sm">
@@ -254,6 +254,33 @@ document.addEventListener("click", () => {
     d.classList.add("hidden");
   });
 });
+
+
+
+function completeAppointment(id) {
+    fetch(`/complete-appointment/${id}/`, {
+        method: "GET",
+    })
+    .then(res => {
+        if (!res.ok) {
+            alert("Error completing appointment");
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+
+function sendToDoctor(id) {
+    fetch(`/send-to-doctor/${id}/`, {
+        method: "GET",
+    })
+    .then(res => {
+        if (!res.ok) {
+            alert("Error sending to doctor");
+        }
+    })
+    .catch(err => console.error(err));
+}
 </script>
 
 <script>
@@ -305,14 +332,14 @@ socket.onmessage = function(e) {
 
             // 🔥 SEND BUTTON (NEXT ONLY)
                 if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
-                    actionsHTML = `<a href="/send-to-doctor/${id}/" 
-                    class="btn-premium btn-primary btn-sm">▶ Send</a>`;
+                    actionsHTML += `<button onclick="sendToDoctor(${id})" 
+                    class="btn-premium btn-primary btn-sm">▶ Send</button>`;
                 }
 
     // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
                 if (id === appt.appointment_id && appt.queue_status === "in_consultation") {
-                    actionsHTML = `<a href="/complete-appointment/${id}/" 
-                    class="btn-premium btn-success btn-sm">Complete</a>`;
+                    actionsHTML += `<button onclick="completeAppointment(${id})"  
+                    class="btn-premium btn-success btn-sm">Complete</button>`;
                 }
             }
 
@@ -323,8 +350,8 @@ socket.onmessage = function(e) {
                      <a href="/add-prescription/${appt.patient_id}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
 
-                    <a href="/complete-appointment/${id}/" 
-                    class="btn-premium btn-success btn-sm">Complete</a>
+                    <button onclick="completeAppointment(${id})"
+                    class="btn-premium btn-success btn-sm">Complete</button>
                 `;
             }
 
