@@ -400,16 +400,23 @@ socket.onmessage = function(e) {
 </script>
 
 <script>
-    function refreshFromServer() {
+function refreshFromServer() {
     fetch("/api/queue/")
     .then(res => res.json())
     .then(data => {
 
-        data.appointments.forEach(appt => {
+        const nextTokens = data.next_tokens || [];
+        const USER_ROLE = "{{ request.user.userprofile.role }}";
 
-            const row = document.getElementById("appointment-" + appt.id);
-            if (!row) return;
+        document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
+            const id = parseInt(tr.id.replace("appointment-", ""));
+            const patientId = tr.getAttribute("data-patient-id");
+
+            const appt = data.appointments.find(a => a.id === id);
+            if (!appt) return;
+
+            // 🔥 STATUS UPDATE
             let statusHTML = "";
 
             if (appt.queue_status === "in_consultation") {
@@ -420,9 +427,67 @@ socket.onmessage = function(e) {
             } 
             else if (appt.status === "completed") {
                 statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+            } 
+            else if (appt.status === "cancelled") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
             }
 
-            row.querySelector(".status").innerHTML = statusHTML;
+            tr.querySelector(".status").innerHTML = statusHTML;
+
+            // 🔥 ACTIONS UPDATE
+            let actionsHTML = "";
+
+            if (USER_ROLE === "receptionist") {
+
+                if (nextTokens.includes(id) && appt.queue_status !== "in_consultation") {
+                    actionsHTML += `<button onclick="sendToDoctor(${id})" 
+                    class="btn-premium btn-primary btn-sm">▶ Send</button>`;
+                }
+
+                if (appt.queue_status === "in_consultation") {
+                    actionsHTML += `<button onclick="completeAppointment(${id})" 
+                    class="btn-premium btn-success btn-sm">Complete</button>`;
+                }
+
+            } else {
+
+                actionsHTML = `
+                    <a href="/add-prescription/${patientId}/" 
+                    class="btn-premium btn-primary btn-sm">Prescription</a>
+                `;
+
+                if (appt.status !== "completed") {
+                    actionsHTML += `
+                    <button onclick="completeAppointment(${id})"
+                    class="btn-premium btn-success btn-sm">Complete</button>
+                    `;
+                }
+            }
+
+            tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+
+            // 🔥 NEXT HIGHLIGHT
+            if (nextTokens.includes(id) && appt.queue_status !== "in_consultation" && appt.status !== "completed") {
+
+                tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
+
+                if (!tr.querySelector(".next-label")) {
+                    const tokenCell = tr.querySelector("td:first-child");
+
+                    const label = document.createElement("span");
+                    label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
+                    label.innerText = "NEXT";
+
+                    tokenCell.appendChild(label);
+                }
+
+            } else {
+
+                tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+
+                const label = tr.querySelector(".next-label");
+                if (label) label.remove();
+            }
 
         });
 
