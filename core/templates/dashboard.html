@@ -20,22 +20,22 @@
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Appointments</p>
-    <h2 id="todayCount" class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg">
     <p class="text-sm opacity-80">Waiting Patients</p>
-    <h2 id="pendingCount" class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Completed</p>
-    <h2 id="completedCount" class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Revenue</p>
-    <h2 id="revenueCount" class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
+    <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
 
 </div>
@@ -296,10 +296,7 @@ function connectSocket() {
             const appt = data.data;
             const row = document.getElementById("appointment-" + appt.appointment_id);
 
-            if (!row) {
-                location.reload();  // fallback
-                return;
-            }
+            if (!row) return;
 
             // 🔥 STATUS UPDATE
             let statusHTML = "";
@@ -389,13 +386,6 @@ function connectSocket() {
                 }
 
             });
-            // 🔥 CARDS UPDATE (ADD THIS)
-            if (appt.counts) {
-                document.getElementById("todayCount").innerText = appt.counts.today;
-                document.getElementById("pendingCount").innerText = appt.counts.pending;
-                document.getElementById("completedCount").innerText = appt.counts.completed;
-                document.getElementById("revenueCount").innerText = "₹ " + appt.counts.revenue;
-            }
 
         }
     };
@@ -515,11 +505,8 @@ function refreshFromServer() {
 }
 </script>
 <script>
-window.addEventListener("pageshow", function (event) {
-    if (event.persisted) {
-        refreshFromServer();
-    }
-    
+window.addEventListener("pageshow", function () {
+    refreshFromServer();
 });
 </script>
 <script>
