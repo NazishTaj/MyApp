@@ -296,7 +296,10 @@ function connectSocket() {
             const appt = data.data;
             const row = document.getElementById("appointment-" + appt.appointment_id);
 
-            if (!row) return;
+            if (!row) {
+                location.reload();  // fallback
+                return;
+            }
 
             // 🔥 STATUS UPDATE
             let statusHTML = "";
