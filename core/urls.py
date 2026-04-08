@@ -44,7 +44,7 @@ path('staff-blocked/', views.staff_blocked, name='staff_blocked'),
 path("send-to-doctor/<int:appointment_id>/", views.send_to_doctor, name="send_to_doctor"),
 path("billing/export-month/", views.export_month_bills, name="export_month_bills"),
 path("billing/export-all/", views.export_all_bills, name="export_all_bills"),
-path('api/queue/', views.get_queue_data),
+path("api/queue/", views.api_queue, name="api_queue"),
 
 
 
