@@ -562,31 +562,6 @@ def complete_appointment(request, appointment_id):
 
     group_name = f"dashboard_{clinic.id}"
 
-    # 🔥 ADD ABOVE (counts calculation)
-    today = appointment.appointment_date
-
-    today_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today
-    ).count()
-
-    pending_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="pending"
-    ).count()
-
-    completed_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="completed"
-    ).count()
-
-    today_revenue = Bill.objects.filter(
-        clinic=clinic,
-        created_at__date=today
-    ).aggregate(total=Sum("total_amount"))["total"] or 0
-
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
@@ -597,17 +572,9 @@ def complete_appointment(request, appointment_id):
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
                 "next_tokens": next_tokens,
-                "counts": {
-                    "today": today_count,
-                    "pending": pending_count,
-                    "completed": completed_count,
-                    "revenue": today_revenue
-                }
             }
         }
     )
-
-
 
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
@@ -665,33 +632,9 @@ def send_to_doctor(request, appointment_id):
     channel_layer = get_channel_layer()
     
     group_name = f"dashboard_{clinic.id}"
-    # 🔥 ADD ABOVE (counts calculation)
-    today = appointment.appointment_date
-
-    today_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today
-    ).count()
-
-    pending_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="pending"
-    ).count()
-
-    completed_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="completed"
-    ).count()
-
-    today_revenue = Bill.objects.filter(
-        clinic=clinic,
-        created_at__date=today
-        ).aggregate(total=Sum("total_amount"))["total"] or 0
-
     async_to_sync(channel_layer.group_send)(
         group_name,
+
         {
             "type": "send_update",
             "data": {
@@ -700,14 +643,6 @@ def send_to_doctor(request, appointment_id):
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
                 "next_tokens": next_tokens,
-
-            # 🔥 ADD THIS
-                "counts": {
-                    "today": today_count,
-                    "pending": pending_count,
-                    "completed": completed_count,
-                    "revenue": today_revenue
-                }
             }
         }
     )
@@ -764,32 +699,6 @@ def cancel_appointment(request, appointment_id):
 
     group_name = f"dashboard_{clinic.id}"
 
-    today = appointment.appointment_date
-    
-    today_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today
-    ).count()
-
-    pending_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="pending"
-    ).count()
-    
-    completed_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="completed"
-    ).count()
-    
-    today_revenue = Bill.objects.filter(
-        clinic=clinic,
-        created_at__date=today
-    ).aggregate(total=Sum("total_amount"))["total"] or 0
-    
-    
-    # 🔥 UPDATED WEBSOCKET SEND
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
@@ -800,14 +709,6 @@ def cancel_appointment(request, appointment_id):
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
                 "next_tokens": next_tokens,
-    
-                # 🔥 ADD THIS
-                "counts": {
-                    "today": today_count,
-                    "pending": pending_count,
-                    "completed": completed_count,
-                    "revenue": today_revenue
-                }
             }
         }
     )
@@ -1505,33 +1406,6 @@ def mark_pending(request, appointment_id):
 
     group_name = f"dashboard_{clinic.id}"
 
-    # 🔥 ADD ABOVE (counts calculation)
-    today = appointment.appointment_date
-    
-    today_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today
-    ).count()
-    
-    pending_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="pending"
-    ).count()
-    
-    completed_count = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        status="completed"
-    ).count()
-    
-    today_revenue = Bill.objects.filter(
-        clinic=clinic,
-        created_at__date=today
-    ).aggregate(total=Sum("total_amount"))["total"] or 0
-    
-    
-    # 🔥 UPDATED WEBSOCKET SEND
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
@@ -1542,14 +1416,6 @@ def mark_pending(request, appointment_id):
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
                 "next_tokens": next_tokens,
-    
-                # 🔥 ADD THIS
-                "counts": {
-                    "today": today_count,
-                    "pending": pending_count,
-                    "completed": completed_count,
-                    "revenue": today_revenue
-                }
             }
         }
     )
