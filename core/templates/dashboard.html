@@ -341,7 +341,7 @@ function connectSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        if (data.type === "appointment_update") {
+        if (data.type === "appointment_update" || data.type === "send_update") {
             const appt = data.data;
             updateAppointmentRow(appt);
             updateStats();
