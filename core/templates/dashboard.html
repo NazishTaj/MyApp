@@ -302,7 +302,7 @@ function connectSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        if (data.type === "update" || data.type === "send_update") {
+        if (data.type === "send_update") {
 
             const appt = data.data;
             const row = document.getElementById("appointment-" + appt.appointment_id);
