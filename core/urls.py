@@ -45,6 +45,7 @@ path("send-to-doctor/<int:appointment_id>/", views.send_to_doctor, name="send_to
 path("billing/export-month/", views.export_month_bills, name="export_month_bills"),
 path("billing/export-all/", views.export_all_bills, name="export_all_bills"),
 path("api/queue/", views.api_queue, name="api_queue"),
+path('get-queue-data/', views.get_queue_data, name='get_queue_data'),
 
 
 
