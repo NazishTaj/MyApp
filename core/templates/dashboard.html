@@ -403,7 +403,7 @@ function connectSocket() {
 
     // 🔥 AUTO RECONNECT
     socket.onclose = function() {
-        console.log("Socket disconnected… reconnecting in 2 sec");
+        console.log("Socket disconnected… reconnecting in 3 sec");
         setTimeout(() => {
             connectSocket();
         }, 3000);
@@ -435,8 +435,11 @@ setInterval(updateStats, 10000);
 
 <script>
 function refreshFromServer() {
-    fetch("/api/queue/")
-    .then(res => res.json())
+    fetch("/get-queue-data/")
+    .then(res => {
+    if (!res.ok) throw new Error("API error");
+    return res.json();
+    })
     .then(data => {
 
         const nextTokens = data.next_tokens || [];
@@ -529,8 +532,16 @@ function refreshFromServer() {
 }
 </script>
 <script>
-window.addEventListener("pageshow", function () {
-    refreshFromServer();
+window.addEventListener("pageshow", function (event) {
+
+    if (event.persisted) {
+        console.log("🔄 Back detected → syncing");
+
+        setTimeout(() => {
+            refreshFromServer();   // table fix
+            updateStats();         // stats fix
+        }, 300);
+    }
 });
 </script>
 <script>
