@@ -303,6 +303,7 @@ function connectSocket() {
         const data = JSON.parse(e.data);
 
         if (data.type === "send_update") {
+            updateStats();
 
             const appt = data.data;
             const row = document.getElementById("appointment-" + appt.appointment_id);
