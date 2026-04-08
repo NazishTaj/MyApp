@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .utils import has_permission
@@ -449,8 +450,12 @@ def book_appointment(request, patient_id):
                 item_name="Consultation",
                 amount=appointment.consultation_fee
             )
+        messages.success(
+        request,
+        f"{patient.name} checked-in successfully (Token #{token}) ✅"
+        )
 
-        return redirect("dashboard")   # 🔥 IMPORTANT
+        return redirect("patient_list")   # 🔥 IMPORTANT
 
     doctors = UserProfile.objects.filter(
         clinic=clinic,
