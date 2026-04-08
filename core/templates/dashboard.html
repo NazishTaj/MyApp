@@ -20,22 +20,22 @@
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Appointments</p>
-    <h2 class="text-3xl font-bold mt-2" id="stat-total">{{ today_appointments }}</h2>
+    <h2 id="stat-total" class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg">
     <p class="text-sm opacity-80">Waiting Patients</p>
-    <h2 class="text-3xl font-bold mt-2" id="stat-waiting">{{ pending_appointments }}</h2>
+    <h2 id="stat-waiting" class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg">
-    <p class="text-sm opacity-80">In Consultation</p>
-    <h2 class="text-3xl font-bold mt-2" id="stat-in-room">0</h2>
+    <p class="text-sm opacity-80">Completed</p>
+    <h2 id="stat-completed" class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg">
-    <p class="text-sm opacity-80">Completed</p>
-    <h2 class="text-3xl font-bold mt-2" id="stat-completed">{{ completed_appointments }}</h2>
+    <p class="text-sm opacity-80">Today's Revenue</p>
+    <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
 
 </div>
@@ -54,7 +54,7 @@
             </div>
             <div>
                 <h3 class="font-semibold text-gray-900 text-lg">Today's Queue</h3>
-                <p class="text-xs text-gray-500">Real-time patient management</p>
+                <p class="text-xs text-gray-500">Manage patient appointments</p>
             </div>
         </div>
     </div>
@@ -78,13 +78,13 @@
             </tr>
             </thead>
 
-            <tbody id="appointments-tbody">
+            <tbody>
             
             {% with user_role=request.user.userprofile.role %}
             {% for a in appointments %}
 
             
-            <tr id="appointment-{{ a.id }}" data-patient-id="{{ a.patient.id }}" data-appointment-id="{{ a.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
+            <tr id="appointment-{{ a.id }}" data-patient-id="{{ a.patient.id }}" class="border-b border-gray-100 hover:bg-gray-50 transition
             {% if next_tokens and a.id in next_tokens %}
             bg-green-50 border-l-4 border-green-500 shadow-sm
             {% endif %}">
@@ -117,95 +117,101 @@
                 </td>
 
                 <!-- Status -->
-                <td class="px-6 py-4 status-cell">
+                <td class="px-6 py-4 status">
                 {% if a.queue_status == "in_consultation" %}
-                <span class="status-badge px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
+                <span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>
                 {% elif a.status == "pending" %}
-                <span class="status-badge px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
+                <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
                 {% elif a.status == "completed" %}
-                <span class="status-badge px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
+                <span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>
                 {% elif a.status == "cancelled" %}
-                <span class="status-badge px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
+                <span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>
                 {% endif %}
                 </td>
 
-                <!-- Actions -->
+                <!-- 🔥 UPDATED ACTIONS -->
                  <td class="px-6 py-4 actions">
-                    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
 
-                        <!-- LEFT: Buttons -->
-                        <div class="flex items-center gap-2 action-buttons">
+        <!-- LEFT: Buttons -->
+        <div class="flex items-center gap-2">
 
-                        {% if user_role == "receptionist" %}
+        {% if user_role == "receptionist" %}
 
-                            {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
-                                <button onclick="sendToDoctor({{ a.id }})"
-                                class="btn-premium btn-primary btn-sm send-btn">
-                                    ▶ Send
-                                </button>
-                            {% endif %}
+            {% if next_tokens and a.id in next_tokens and a.status == "pending" %}
+                <button onclick="sendToDoctor({{ a.id }})"
+                class="btn-premium btn-primary btn-sm">
+                    ▶ Send
+                </button>
+            {% endif %}
 
-                            {% if a.queue_status == "in_consultation" %}
-                                <button onclick="completeAppointment({{ a.id }})" 
-                                class="btn-premium btn-success btn-sm complete-btn">
-                                    Complete
-                                </button>
-                            {% endif %}
+            {% if a.queue_status == "in_consultation" %}
+                <button onclick="completeAppointment({{ a.id }})" 
+                class="btn-premium btn-success btn-sm">
+                    Complete
+                </button>
+            {% endif %}
 
-                        {% else %}
+        {% else %}
 
-                            <a href="{% url 'add_prescription' a.patient.id %}" 
-                            class="btn-premium btn-primary btn-sm">
-                                Prescription
-                            </a>
+            <a href="{% url 'add_prescription' a.patient.id %}" 
+            class="btn-premium btn-primary btn-sm">
+                Prescription
+            </a>
 
-                            {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                            
-                            <button onclick="completeAppointment({{ a.id }})"
-                            class="btn-premium btn-success btn-sm complete-btn">
-                                Complete
-                            </button>
+            {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+            
+            <button onclick="completeAppointment({{ a.id }})"
+            class="btn-premium btn-success btn-sm">
+                Complete
+            </button>
 
-                            {% endif %}
+        <!--    <a href="{% url 'cancel_appointment' a.id %}" 
+            class="btn-premium btn-danger btn-sm">
+                Cancel
+            </a>
+        -->
 
-                        {% endif %}
+            {% endif %}
 
-                        </div>
-                        <!-- RIGHT: Dropdown -->
+        {% endif %}
 
-                        <div class="relative">
-                                <button type="button"
-                                  onclick="toggleDropdown(event, '{{ a.id }}')"
-                                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
-                                  ⋮
-                                </button>
+        </div>
+        <!-- RIGHT: Dropdown -->
 
-                                <div id="dropdown-{{ a.id }}"
-                                  class="absolute hidden right-0 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
+        <div class="relative">
+                <button type="button"
+                  onclick="toggleDropdown(event, '{{ a.id }}')"
+                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
+                  ⋮
+                </button>
 
-                                 <a href="{% url 'patient_history' a.patient.id %}"
-                                    class="block px-4 py-2 hover:bg-gray-100">
-                                     📜 History
-                                  </a>
-                                {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                                <button onclick="cancelAppointment({{ a.id }})"
-                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                    ❌ Cancel
-                                </button>
-                                {% endif %}
+                <div id="dropdown-{{ a.id }}"
+                  class="absolute hidden right-0 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
 
-                                  <button onclick="markPending({{ a.id }})"
-                                    class="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50">
-                                     ↩️ Undo
-                                  </button>
+                 <a href="{% url 'patient_history' a.patient.id %}"
+                    class="block px-4 py-2 hover:bg-gray-100">
+                     📜 History
+                  </a>
+                {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+                <button onclick="cancelAppointment({{ a.id }})"
+                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    ❌ Cancel
+                </button>
+                {% endif %}
 
-                                </div>
-                        </div>
+                  <button onclick="markPending({{ a.id }})"
+                    class="block px-4 py-2 text-red-500 hover:bg-red-50">
+                     ↩️ Undo
+                  </button>
 
-                    </div>
+                </div>
+        </div>
+
+    </div>
                 
 
-                </tr>
+            </tr>
 
             {% empty %}
             <tr>
@@ -225,9 +231,6 @@
 </div>
 
 <script>
-const USER_ROLE = "{{ request.user.userprofile.role }}";
-const CLINIC_ID = "{{ request.user.userprofile.clinic.id }}";
-
 function toggleDropdown(e, id) {
   e.stopPropagation();
 
@@ -248,6 +251,8 @@ document.addEventListener("click", () => {
   });
 });
 
+
+
 function completeAppointment(id) {
     fetch(`/complete-appointment/${id}/`, {
         method: "POST",
@@ -264,6 +269,7 @@ function completeAppointment(id) {
     .catch(err => console.error(err));
 }
 
+
 function sendToDoctor(id) {
     fetch(`/send-to-doctor/${id}/`, {
         method: "POST",
@@ -279,14 +285,262 @@ function sendToDoctor(id) {
     })
     .catch(err => console.error(err));
 }
+</script>
 
-function cancelAppointment(id) {
-    fetch(`/cancel-appointment/${id}/`, {
-        method: "POST",
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
+<script>
+function connectSocket() {
+
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+    const socket = new WebSocket(
+        protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/"
+    );
+    socket.onopen = function() {
+    console.log("WebSocket connected ✅");
+    };
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "update" || data.type === "send_update") {
+
+            const appt = data.data;
+            const row = document.getElementById("appointment-" + appt.appointment_id);
+
+            if (!row) return;
+
+            // 🔥 STATUS UPDATE
+            let statusHTML = "";
+
+            if (appt.queue_status === "in_consultation") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+            } 
+            else if (appt.status === "pending") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+            } 
+            else if (appt.status === "completed") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+            } 
+            else if (appt.status === "cancelled") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
+            }
+
+            row.querySelector(".status").innerHTML = statusHTML;
+
+            // 🔥 SAME LOGIC (unchanged)
+            const USER_ROLE = "{{ request.user.userprofile.role }}";
+            const nextTokens = appt.next_tokens || [];
+
+            document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+
+                const patientId = tr.getAttribute("data-patient-id");
+                const id = parseInt(tr.id.replace("appointment-", ""));
+
+                let actionsHTML = "";
+
+                if (USER_ROLE === "receptionist") {
+
+                    if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
+                        actionsHTML += `<button onclick="sendToDoctor(${id})" 
+                        class="btn-premium btn-primary btn-sm">▶ Send</button>`;
+                    }
+
+                    const statusText = tr.querySelector(".status").innerText;
+
+                    if (statusText.includes("In Room")) {
+                        actionsHTML += `<button onclick="completeAppointment(${id})"  
+                        class="btn-premium btn-success btn-sm">Complete</button>`;
+                    }
+
+                } else {
+
+                    const statusText = tr.querySelector(".status").innerText;
+
+                    actionsHTML = `
+                        <a href="/add-prescription/${patientId}/" 
+                        class="btn-premium btn-primary btn-sm">Prescription</a>
+                    `;
+
+                    if (!statusText.includes("Completed")) {
+                        actionsHTML += `
+                        <button onclick="completeAppointment(${id})"
+                        class="btn-premium btn-success btn-sm">Complete</button>
+                        `;
+                    }
+                }
+
+                tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+
+                // 🔥 NEXT highlight
+                const statusText = tr.querySelector(".status").innerText;
+
+                if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
+
+                    tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
+
+                    if (!tr.querySelector(".next-label")) {
+                        const tokenCell = tr.querySelector("td:first-child");
+
+                        const label = document.createElement("span");
+                        label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
+                        label.innerText = "NEXT";
+
+                        tokenCell.appendChild(label);
+                    }
+
+                } else {
+
+                    tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+
+                    const label = tr.querySelector(".next-label");
+                    if (label) label.remove();
+                }
+
+            });
+
         }
+    };
+
+    // 🔥 AUTO RECONNECT
+    socket.onclose = function() {
+        console.log("Socket disconnected… reconnecting in 2 sec");
+        setTimeout(() => {
+            connectSocket();
+        }, 3000);
+    };
+
+    socket.onerror = function(err) {
+        console.error("WebSocket error:", err);
+        socket.close();
+    };
+}
+
+// 🚀 START CONNECTION
+connectSocket();
+function updateStats() {
+    fetch("/api/queue/")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("stat-total").innerText = data.total_appointments || 0;
+        document.getElementById("stat-waiting").innerText = data.pending_count || 0;
+        document.getElementById("stat-completed").innerText = data.completed_count || 0;
+    })
+    .catch(err => console.error("Stats error:", err));
+}
+
+// auto refresh
+setInterval(updateStats, 10000);
+    
+</script>
+
+<script>
+function refreshFromServer() {
+    fetch("/api/queue/")
+    .then(res => res.json())
+    .then(data => {
+
+        const nextTokens = data.next_tokens || [];
+        const USER_ROLE = "{{ request.user.userprofile.role }}";
+
+        document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+
+            const id = parseInt(tr.id.replace("appointment-", ""));
+            const patientId = tr.getAttribute("data-patient-id");
+
+            const appt = data.appointments.find(a => a.id === id);
+            if (!appt) return;
+
+            // 🔥 STATUS UPDATE
+            let statusHTML = "";
+
+            if (appt.queue_status === "in_consultation") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+            } 
+            else if (appt.status === "pending") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+            } 
+            else if (appt.status === "completed") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+            } 
+            else if (appt.status === "cancelled") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
+            }
+
+            tr.querySelector(".status").innerHTML = statusHTML;
+
+            // 🔥 ACTIONS UPDATE
+            let actionsHTML = "";
+
+            if (USER_ROLE === "receptionist") {
+
+                if (nextTokens.includes(id) && appt.queue_status !== "in_consultation") {
+                    actionsHTML += `<button onclick="sendToDoctor(${id})" 
+                    class="btn-premium btn-primary btn-sm">▶ Send</button>`;
+                }
+
+                if (appt.queue_status === "in_consultation") {
+                    actionsHTML += `<button onclick="completeAppointment(${id})" 
+                    class="btn-premium btn-success btn-sm">Complete</button>`;
+                }
+
+            } else {
+
+                actionsHTML = `
+                    <a href="/add-prescription/${patientId}/" 
+                    class="btn-premium btn-primary btn-sm">Prescription</a>
+                `;
+
+                if (appt.status !== "completed") {
+                    actionsHTML += `
+                    <button onclick="completeAppointment(${id})"
+                    class="btn-premium btn-success btn-sm">Complete</button>
+                    `;
+                }
+            }
+
+            tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+
+            // 🔥 NEXT HIGHLIGHT
+            if (nextTokens.includes(id) && appt.queue_status !== "in_consultation" && appt.status !== "completed") {
+
+                tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
+
+                if (!tr.querySelector(".next-label")) {
+                    const tokenCell = tr.querySelector("td:first-child");
+
+                    const label = document.createElement("span");
+                    label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
+                    label.innerText = "NEXT";
+
+                    tokenCell.appendChild(label);
+                }
+
+            } else {
+
+                tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+
+                const label = tr.querySelector(".next-label");
+                if (label) label.remove();
+            }
+
+        });
+
+    });
+}
+</script>
+<script>
+window.addEventListener("pageshow", function () {
+    refreshFromServer();
+});
+</script>
+<script>
+    function cancelAppointment(id) {
+    fetch(`/cancel-appointment/${id}/`, {
+      method: "POST",
+      headers: {    
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type': 'application/json' 
+      }
     })
     .then(res => {
         if (!res.ok) {
@@ -295,6 +549,7 @@ function cancelAppointment(id) {
     })
     .catch(err => console.error(err));
 }
+
 
 function markPending(id) {
     fetch(`/mark-pending/${id}/`, {
@@ -316,172 +571,16 @@ function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
                 break;
             }
         }
     }
     return cookieValue;
 }
-
-// 🔥 REAL-TIME WEBSOCKET CONNECTION
-function connectSocket() {
-    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-    const socket = new WebSocket(
-        protocol + window.location.host + "/ws/dashboard/" + CLINIC_ID + "/"
-    );
-
-    socket.onopen = function(e) {
-        console.log("✅ WebSocket connected");
-    };
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-
-        if (data.type === "appointment_update" || data.type === "send_update") {
-            const appt = data.data;
-            updateAppointmentRow(appt);
-            updateStats();
-        }
-    };
-
-    socket.onclose = function() {
-        console.log("❌ Socket disconnected… reconnecting in 3 sec");
-        setTimeout(() => {
-            connectSocket();
-        }, 3000);
-    };
-
-    socket.onerror = function(err) {
-        console.error("WebSocket error:", err);
-        socket.close();
-    };
-}
-
-// 🔥 UPDATE APPOINTMENT ROW IN REAL-TIME
-function updateAppointmentRow(appt) {
-    const row = document.getElementById("appointment-" + appt.appointment_id);
-    if (!row) return;
-
-    // Update status badge
-    const statusCell = row.querySelector(".status-cell");
-    let statusHTML = "";
-
-    if (appt.queue_status === "in_consultation") {
-        statusHTML = `<span class="status-badge px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
-    } 
-    else if (appt.status === "pending") {
-        statusHTML = `<span class="status-badge px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
-    } 
-    else if (appt.status === "completed") {
-        statusHTML = `<span class="status-badge px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
-    } 
-    else if (appt.status === "cancelled") {
-        statusHTML = `<span class="status-badge px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
-    }
-
-    statusCell.innerHTML = statusHTML;
-
-    // Update action buttons
-    updateActionButtons(row, appt);
-
-    // Update NEXT highlight
-    updateNextHighlight(appt);
-}
-
-// 🔥 UPDATE ACTION BUTTONS BASED ON STATUS
-function updateActionButtons(row, appt) {
-    const actionDiv = row.querySelector(".action-buttons");
-    const nextTokens = appt.next_tokens || [];
-    const appointmentId = appt.appointment_id;
-
-    let actionsHTML = "";
-
-    if (USER_ROLE === "receptionist") {
-        // Receptionist: Show "Send" for NEXT patient
-        if (nextTokens.includes(appointmentId) && appt.queue_status !== "in_consultation") {
-            actionsHTML += `<button onclick="sendToDoctor(${appointmentId})" 
-            class="btn-premium btn-primary btn-sm send-btn">▶ Send</button>`;
-        }
-
-        // Receptionist: Show "Complete" when in consultation
-        if (appt.queue_status === "in_consultation") {
-            actionsHTML += `<button onclick="completeAppointment(${appointmentId})" 
-            class="btn-premium btn-success btn-sm complete-btn">Complete</button>`;
-        }
-    } else {
-        // Doctor: Always show Prescription
-        const patientId = row.getAttribute("data-patient-id");
-        actionsHTML = `<a href="/add-prescription/${patientId}/" 
-        class="btn-premium btn-primary btn-sm">Prescription</a>`;
-
-        // Doctor: Show Complete if not completed
-        if (appt.status !== "completed") {
-            actionsHTML += `<button onclick="completeAppointment(${appointmentId})"
-            class="btn-premium btn-success btn-sm complete-btn">Complete</button>`;
-        }
-    }
-
-    actionDiv.innerHTML = actionsHTML;
-}
-
-// 🔥 UPDATE NEXT PATIENT HIGHLIGHT
-function updateNextHighlight(appt) {
-    const nextTokens = appt.next_tokens || [];
-    const appointmentId = appt.appointment_id;
-
-    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-        const id = parseInt(tr.id.replace("appointment-", ""));
-        const statusText = tr.querySelector(".status-cell").innerText;
-
-        if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
-            // Highlight NEXT patient
-            tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
-
-            if (!tr.querySelector(".next-label")) {
-                const tokenCell = tr.querySelector("td:first-child");
-                const label = document.createElement("span");
-                label.className = "text-xs text-green-600 font-semibold animate-pulse next-label ml-2";
-                label.innerText = "NEXT";
-                tokenCell.appendChild(label);
-            }
-        } else {
-            // Remove highlight
-            tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
-            const label = tr.querySelector(".next-label");
-            if (label) label.remove();
-        }
-    });
-}
-
-// 🔥 UPDATE STATS CARDS
-function updateStats() {
-    fetch("/api/queue/")
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("stat-total").innerText = data.total_appointments || 0;
-        document.getElementById("stat-waiting").innerText = data.pending_count || 0;
-        document.getElementById("stat-in-room").innerText = data.in_consultation_count || 0;
-        document.getElementById("stat-completed").innerText = data.completed_count || 0;
-    })
-    .catch(err => console.error("Error updating stats:", err));
-}
-
-// 🚀 START WEBSOCKET CONNECTION
-connectSocket();
-
-// Refresh stats every 10 seconds as fallback
-setInterval(updateStats, 10000);
-
-// Refresh on page visibility change
-document.addEventListener("visibilitychange", function() {
-    if (!document.hidden) {
-        updateStats();
-    }
-});
 </script>
 
 {% endblock %}
