@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .utils import has_permission
@@ -1969,4 +1970,49 @@ def get_queue_data(request):
     return JsonResponse({
         "appointments": data,
         "next_tokens": next_tokens
+    })
+
+
+@login_required
+@require_http_methods(["GET"])
+def api_queue(request):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+    today = datetime.now().date()
+
+    # 🔥 SAME LOGIC AS DASHBOARD
+    if profile.role in ["doctor", "owner"]:
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            doctor=profile
+        )
+
+    elif profile.role == "assistant":
+        if profile.assigned_doctor:
+            appointments = Appointment.objects.filter(
+                clinic=clinic,
+                appointment_date=today,
+                doctor=profile.assigned_doctor
+            )
+        else:
+            appointments = Appointment.objects.none()
+
+    else:
+        appointments = Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today
+        )
+
+    total_appointments = appointments.count()
+    pending_count = appointments.filter(status="pending").count()
+    in_consultation_count = appointments.filter(queue_status="in_consultation").count()
+    completed_count = appointments.filter(status="completed").count()
+
+    return JsonResponse({
+        "total_appointments": total_appointments,
+        "pending_count": pending_count,
+        "in_consultation_count": in_consultation_count,
+        "completed_count": completed_count,
     })
