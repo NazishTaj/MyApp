@@ -280,122 +280,132 @@ function sendToDoctor(id) {
 </script>
 
 <script>
-const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/");
+function connectSocket() {
 
-socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
 
-    if (data.type === "update") {
+    const socket = new WebSocket(
+        protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/"
+    );
 
-        const appt = data.data;
-        const row = document.getElementById("appointment-" + appt.appointment_id);
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
 
-        if (!row) return;
+        if (data.type === "update") {
 
-        // 🔥 STATUS UPDATE (only changed row)
-        let statusHTML = "";
+            const appt = data.data;
+            const row = document.getElementById("appointment-" + appt.appointment_id);
 
-        if (appt.queue_status === "in_consultation") {
-            statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
-        } 
-        else if (appt.status === "pending") {
-            statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
-        } 
-        else if (appt.status === "completed") {
-            statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
-        } 
-        else if (appt.status === "cancelled") {
-            statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
-        }
+            if (!row) return;
 
-        row.querySelector(".status").innerHTML = statusHTML;
+            // 🔥 STATUS UPDATE
+            let statusHTML = "";
 
-        // ===============================
-        // 🔥 FULL ACTIONS + NEXT UPDATE
-        // ===============================
+            if (appt.queue_status === "in_consultation") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+            } 
+            else if (appt.status === "pending") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+            } 
+            else if (appt.status === "completed") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+            } 
+            else if (appt.status === "cancelled") {
+                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
+            }
 
-        const USER_ROLE = "{{ request.user.userprofile.role }}";
-        const nextTokens = appt.next_tokens || [];
+            row.querySelector(".status").innerHTML = statusHTML;
 
-        document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+            // 🔥 SAME LOGIC (unchanged)
+            const USER_ROLE = "{{ request.user.userprofile.role }}";
+            const nextTokens = appt.next_tokens || [];
 
-            const patientId = tr.getAttribute("data-patient-id");
+            document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
-            const id = parseInt(tr.id.replace("appointment-", ""));
+                const patientId = tr.getAttribute("data-patient-id");
+                const id = parseInt(tr.id.replace("appointment-", ""));
 
-            let actionsHTML = "";
+                let actionsHTML = "";
 
-            if (USER_ROLE === "receptionist") {
+                if (USER_ROLE === "receptionist") {
 
-            // 🔥 SEND BUTTON (NEXT ONLY)
-                if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
-                    actionsHTML += `<button onclick="sendToDoctor(${id})" 
-                    class="btn-premium btn-primary btn-sm">▶ Send</button>`;
-                }
+                    if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
+                        actionsHTML += `<button onclick="sendToDoctor(${id})" 
+                        class="btn-premium btn-primary btn-sm">▶ Send</button>`;
+                    }
 
-    // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
-                const statusText = tr.querySelector(".status").innerText;
+                    const statusText = tr.querySelector(".status").innerText;
 
-                if (statusText.includes("In Room")) {
-                    actionsHTML += `<button onclick="completeAppointment(${id})"  
-                    class="btn-premium btn-success btn-sm">Complete</button>`;
+                    if (statusText.includes("In Room")) {
+                        actionsHTML += `<button onclick="completeAppointment(${id})"  
+                        class="btn-premium btn-success btn-sm">Complete</button>`;
+                    }
+
                 } else {
-                         // Completed / Pending → no Complete button
-                        actionsHTML += "";
+
+                    const statusText = tr.querySelector(".status").innerText;
+
+                    actionsHTML = `
+                        <a href="/add-prescription/${patientId}/" 
+                        class="btn-premium btn-primary btn-sm">Prescription</a>
+                    `;
+
+                    if (!statusText.includes("Completed")) {
+                        actionsHTML += `
+                        <button onclick="completeAppointment(${id})"
+                        class="btn-premium btn-success btn-sm">Complete</button>
+                        `;
+                    }
                 }
 
-            }
-            else {
+                tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
 
+                // 🔥 NEXT highlight
                 const statusText = tr.querySelector(".status").innerText;
 
-                actionsHTML = `
-                    <a href="/add-prescription/${patientId}/" 
-                    class="btn-premium btn-primary btn-sm">Prescription</a>
-                `;
+                if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
 
-                if (!statusText.includes("Completed")) {
-                    actionsHTML += `
-                    <button onclick="completeAppointment(${id})"
-                    class="btn-premium btn-success btn-sm">Complete</button>
-                    `;
-                }
-            }
-                    
+                    tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
 
-            // 🔥 UPDATE ACTIONS
-            tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
+                    if (!tr.querySelector(".next-label")) {
+                        const tokenCell = tr.querySelector("td:first-child");
 
-            // 🔥 NEXT HIGHLIGHT
-            const statusText = tr.querySelector(".status").innerText;
+                        const label = document.createElement("span");
+                        label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
+                        label.innerText = "NEXT";
 
-            if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
+                        tokenCell.appendChild(label);
+                    }
 
-                tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
+                } else {
 
-                if (!tr.querySelector(".next-label")) {
-                    const tokenCell = tr.querySelector("td:first-child");
+                    tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
 
-                    const label = document.createElement("span");
-                    label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
-                    label.innerText = "NEXT";
-
-                    tokenCell.appendChild(label);
+                    const label = tr.querySelector(".next-label");
+                    if (label) label.remove();
                 }
 
-            } else {
+            });
 
-                tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
+        }
+    };
 
-                const label = tr.querySelector(".next-label");
-                if (label) label.remove();
-            }
+    // 🔥 AUTO RECONNECT
+    socket.onclose = function() {
+        console.log("Socket disconnected… reconnecting in 2 sec");
+        setTimeout(() => {
+            connectSocket();
+        }, 2000);
+    };
 
-        });
+    socket.onerror = function(err) {
+        console.error("WebSocket error:", err);
+        socket.close();
+    };
+}
 
-    }
-};
+// 🚀 START CONNECTION
+connectSocket();
     
 </script>
 
