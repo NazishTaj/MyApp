@@ -47,6 +47,10 @@
   </script>
 
   <style>
+
+    .toast-message {
+    transition: all 0.3s ease;
+  }
     * {
       -webkit-tap-highlight-color: transparent;
     }
@@ -424,6 +428,19 @@
 
 <body class="bg-surface-100 text-surface-900 antialiased">
 
+  {% if messages %}
+  <div class="fixed top-4 right-4 z-50 space-y-2">
+    {% for message in messages %}
+      <div class="toast-message px-4 py-3 rounded-xl shadow-lg text-white
+        {% if message.tags == 'success' %} bg-green-500 {% endif %}
+        {% if message.tags == 'error' %} bg-red-500 {% endif %}
+      ">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
   <div class="flex min-h-screen relative">
 
     <!-- OVERLAY -->
@@ -681,6 +698,16 @@ class="fixed top-0 left-0 h-screen w-72 shrink-0 bg-gradient-to-b from-surface-9
       }
     });
   </script>
+
+  <script>
+setTimeout(() => {
+  document.querySelectorAll('.toast-message').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-10px)';
+    setTimeout(() => el.remove(), 300);
+  });
+}, 3000);
+</script>
 
 </body>
 </html>
