@@ -30,6 +30,6 @@ class DashboardConsumer(AsyncWebsocketConsumer):
     async def send_update(self, event):
 
         await self.send(text_data=json.dumps({
-            "type": "update",
+            "type": "send_update",
             "data": event["data"]
         }))
