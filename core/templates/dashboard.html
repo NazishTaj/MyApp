@@ -20,17 +20,17 @@
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Today's Appointments</p>
-    <h2 class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
+    <h2 id="stat-total" class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Waiting Patients</p>
-    <h2 class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
+    <h2 id="stat-waiting" class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Completed</p>
-    <h2 class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
+    <h2 id="stat-completed" class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
 <div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
