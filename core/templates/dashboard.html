@@ -41,7 +41,7 @@
 </div>
 
 <!-- Queue Table -->
-<div class="card-premium !p-0 overflow-hidden">
+<div class="card-premium !p-0">
 
     <!-- Header -->
     <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
@@ -60,10 +60,10 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div id="tableWrapper" class="max-h-[500px] overflow-y-auto transition-all duration-300">
         <table class="w-full text-sm">
 
-            <thead class="text-xs uppercase tracking-wider text-gray-400 bg-gray-50">
+            <thead class="sticky top-0 bg-gray-50 z-10 text-xs uppercase tracking-wider text-gray-400">
              <tr>
                 <th class="px-6 py-3 text-left">Token</th>
                 <th class="px-6 py-3 text-left">Patient</th>
@@ -182,34 +182,13 @@
         </div>
         <!-- RIGHT: Dropdown -->
 
-        <div class="relative">
-                <button type="button"
-                  onclick="toggleDropdown(event, '{{ a.id }}')"
-                  class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
-                  ⋮
+        
+                <button onclick="event.stopPropagation(); openSheet({{ a.id }})"
+                    class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
+                    ⋮
                 </button>
 
-                <div id="dropdown-{{ a.id }}"
-                   class="absolute hidden right-0 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
-
-                 <a href="{% url 'patient_history' a.patient.id %}"
-                    class="block px-4 py-2 hover:bg-gray-100">
-                     📜 History
-                  </a>
-                {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                <button onclick="cancelAppointment({{ a.id }})"
-                    class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                    ❌ Cancel
-                </button>
-                {% endif %}
-
-                  <button onclick="markPending({{ a.id }})"
-                    class="block px-4 py-2 text-red-500 hover:bg-red-50">
-                     ↩️ Mark Pending
-                  </button>
-
-                </div>
-        </div>
+                
 
     </div>
                 
@@ -227,6 +206,50 @@
             </tbody>
 
         </table>
+        
+        <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-md hidden z-[9998]"></div>
+
+        {% for a in appointments %}
+        <div id="sheet-{{ a.id }}" 
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+        w-[260px] bg-white rounded-2xl shadow-2xl hidden p-4 z-[9999]">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-sm font-semibold text-gray-700">Actions</span>
+                <button onclick="closeSheet()" 
+                class="text-gray-400 hover:text-red-700 text-lg">✕</button>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-t border-gray-100 mb-3"></div>
+
+            <!-- Actions -->
+            <div class="flex flex-col items-center gap-2 text-center">
+
+                <a href="{% url 'patient_history' a.patient.id %}"
+                class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+                📜 History
+                </a>
+
+                {% if a.status == "pending" or a.queue_status == "in_consultation" %}
+                <button onclick="cancelAppointment({{ a.id }})"
+                class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
+                ❌ Cancel
+                </button>
+                {% endif %}
+
+                <button onclick="markPending({{ a.id }})"
+                class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+                ↩️ Mark Pending
+                </button>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+
     </div>
 
 </div>
@@ -234,55 +257,73 @@
 </div>
 
 <script>
-function toggleDropdown(e, id) {
-  e.stopPropagation();
+function openSheet(id) {
 
-  const el = document.getElementById("dropdown-" + id);
-
-  // close others
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    if (d !== el) d.classList.add("hidden");
+  // close all sheets
+  document.querySelectorAll('[id^="sheet-"]').forEach(s => {
+    s.classList.add("hidden");
   });
 
-  el.classList.toggle("hidden");
+  // 🔥 blur all rows
+  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+  tr.classList.add("blur-sm", "opacity-50");
+  });
+  
 
-  if (!el.classList.contains("hidden")) {
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
+  // open sheet
+  document.getElementById("sheet-" + id).classList.remove("hidden");
+  document.getElementById("overlay").classList.remove("hidden");
 
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const dropdownHeight = 150;
-
-    // reset
-    el.style.top = "";
-    el.style.bottom = "";
-    el.style.marginTop = "";
-    el.style.marginBottom = "";
-
-    if (spaceBelow < dropdownHeight) {
-      // 🔥 open upwards
-      el.style.bottom = "100%";
-      el.style.marginBottom = "8px";
-    } else {
-      // ✅ open downwards
-      el.style.top = "100%";
-      el.style.marginTop = "8px";
-    }
+  // 🔥 focus active row
+  const row = document.getElementById("appointment-" + id);
+  if (row) {
+    row.classList.remove("blur-sm", "opacity-50"); // remove blur
+    row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
   }
+
+  document.body.style.overflow = "hidden";
 }
 
 
-// close outside
-document.addEventListener("click", () => {
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
-    d.classList.add("hidden");
+function closeSheet() {
+
+  document.querySelectorAll('[id^="sheet-"]').forEach(s => {
+    s.classList.add("hidden");
   });
+
+  document.getElementById("overlay").classList.add("hidden");
+
+  // remove blur
+  // remove blur from all rows
+  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+   tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
+  });
+
+  // remove focus from rows
+  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+    tr.classList.remove("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
+  });
+
+  document.body.style.overflow = "auto";
+}
+
+
+// overlay click → close
+document.getElementById("overlay").addEventListener("click", closeSheet);
+document.addEventListener("click", function(e) {
+
+  const isSheet = e.target.closest('[id^="sheet-"]');
+  const isButton = e.target.closest('[onclick*="openSheet"]');
+
+  if (!isSheet && !isButton) {
+    closeSheet();
+  }
+
 });
 
 
-
 function completeAppointment(id) {
-    fetch(`/complete-appointment/${id}/`, {
+    fetfuncch(`/complete-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
