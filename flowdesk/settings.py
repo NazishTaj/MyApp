@@ -32,14 +32,12 @@ SECRET_KEY =  os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','76.13.244.125','qurodesk.in','www.qurodesk.in','flowdeskapp.tech','www.flowdeskapp.tech' ]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','76.13.244.125','qurodesk.in','www.qurodesk.in']
 
 CSRF_TRUSTED_ORIGINS = [
      "http://76.13.244.125:8080",
-     
-   
-    "https://flowdeskapp.tech",
-    "https://www.flowdeskapp.tech"
+     "https://qurodesk.in",
+    "https://www.qurodesk.in",
 ]
 
 
