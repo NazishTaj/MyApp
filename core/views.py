@@ -54,7 +54,7 @@ def billing_enabled(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-    return redirect("dashboard")
+        return redirect("dashboard")
 
     if request.method == "POST":
 
