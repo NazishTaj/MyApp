@@ -207,7 +207,7 @@
 
         </table>
         
-        <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-md hidden z-[9998]"></div>
+        <div id="sheetOverlay" class="fixed inset-0 bg-black/20 backdrop-blur-md hidden z-[9998]"></div>
 
         {% for a in appointments %}
         <div id="sheet-{{ a.id }}" 
@@ -272,7 +272,7 @@ function openSheet(id) {
 
   // open sheet
   document.getElementById("sheet-" + id).classList.remove("hidden");
-  document.getElementById("overlay").classList.remove("hidden");
+  document.getElementById("sheetOverlay").classList.remove("hidden");
 
   // 🔥 focus active row
   const row = document.getElementById("appointment-" + id);
@@ -291,7 +291,7 @@ function closeSheet() {
     s.classList.add("hidden");
   });
 
-  document.getElementById("overlay").classList.add("hidden");
+  document.getElementById("sheetOverlay").classList.add("hidden");
 
   // remove blur
   // remove blur from all rows
@@ -299,17 +299,13 @@ function closeSheet() {
    tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
   });
 
-  // remove focus from rows
-  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-    tr.classList.remove("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
-  });
 
   document.body.style.overflow = "auto";
 }
 
 
 // overlay click → close
-document.getElementById("overlay").addEventListener("click", closeSheet);
+document.getElementById("sheetOverlay").addEventListener("click", closeSheet);
 document.addEventListener("click", function(e) {
 
   const isSheet = e.target.closest('[id^="sheet-"]');
