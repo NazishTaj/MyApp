@@ -323,7 +323,7 @@ document.addEventListener("click", function(e) {
 
 
 function completeAppointment(id) {
-    fetfuncch(`/complete-appointment/${id}/`, {
+    fetch(`/complete-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
