@@ -18,22 +18,22 @@
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Appointments</p>
-    <h2 class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
+    <h2 id="stat-total" class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg">
     <p class="text-sm opacity-80">Waiting Patients</p>
-    <h2 class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
+    <h2 id="stat-waiting" class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Completed</p>
-    <h2 class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
+    <h2 id="stat-completed" class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg">
     <p class="text-sm opacity-80">Today's Revenue</p>
     <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
@@ -103,10 +103,7 @@
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        <a href="{% url 'patient_history' a.patient.id %}" 
-                            class="font-semibold text-gray-900 hover:text-cyan-600 transition-colors duration-200 cursor-pointer">
-                            {{ a.patient.name }}
-                        </a>
+                        <span class="font-medium text-gray-900">{{ a.patient.name }}</span>
                     </div>
                 </td>
                 {% if show_doctor_column %}
@@ -190,7 +187,7 @@
                 </button>
 
                 <div id="dropdown-{{ a.id }}"
-                   class="absolute hidden right-0 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
+                  class="absolute hidden right-0 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-[9999]">
 
                  <a href="{% url 'patient_history' a.patient.id %}"
                     class="block px-4 py-2 hover:bg-gray-100">
@@ -245,32 +242,7 @@ function toggleDropdown(e, id) {
   });
 
   el.classList.toggle("hidden");
-
-  if (!el.classList.contains("hidden")) {
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
-
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const dropdownHeight = 150;
-
-    // reset
-    el.style.top = "";
-    el.style.bottom = "";
-    el.style.marginTop = "";
-    el.style.marginBottom = "";
-
-    if (spaceBelow < dropdownHeight) {
-      // 🔥 open upwards
-      el.style.bottom = "100%";
-      el.style.marginBottom = "8px";
-    } else {
-      // ✅ open downwards
-      el.style.top = "100%";
-      el.style.marginTop = "8px";
-    }
-  }
 }
-
 
 // close outside
 document.addEventListener("click", () => {
