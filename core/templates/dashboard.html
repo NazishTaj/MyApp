@@ -18,22 +18,22 @@
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Today's Appointments</p>
-    <h2 id="stat-total" class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ today_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Waiting Patients</p>
-    <h2 id="stat-waiting" class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ pending_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Completed</p>
-    <h2 id="stat-completed" class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
+    <h2 class="text-3xl font-bold mt-2">{{ completed_appointments }}</h2>
 </div>
 
-<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg">
+<div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
     <p class="text-sm opacity-80">Today's Revenue</p>
     <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
@@ -194,16 +194,17 @@
                      📜 History
                   </a>
                 {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                <button onclick="cancelAppointment({{ a.id }})"
+                <a href="{% url 'cancel_appointment' a.id %}"
                     class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                     ❌ Cancel
-                </button>
+                </a>
                 {% endif %}
 
-                  <button onclick="markPending({{ a.id }})"
+
+                  <a href="{% url 'mark_pending' a.id %}"
                     class="block px-4 py-2 text-red-500 hover:bg-red-50">
-                     ↩️ Mark Pending
-                  </button>
+                     ↩️ Undo
+                  </a>
 
                 </div>
         </div>
@@ -255,11 +256,7 @@ document.addEventListener("click", () => {
 
 function completeAppointment(id) {
     fetch(`/complete-appointment/${id}/`, {
-        method: "POST",
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        }
+        method: "GET",
     })
     .then(res => {
         if (!res.ok) {
@@ -272,11 +269,7 @@ function completeAppointment(id) {
 
 function sendToDoctor(id) {
     fetch(`/send-to-doctor/${id}/`, {
-        method: "POST",
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        }
+        method: "GET",
     })
     .then(res => {
         if (!res.ok) {
@@ -288,224 +281,97 @@ function sendToDoctor(id) {
 </script>
 
 <script>
-function connectSocket() {
+const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const socket = new WebSocket(protocol + window.location.host + "/ws/dashboard/");
 
-    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
 
-    const socket = new WebSocket(
-        protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/"
-    );
-    socket.onopen = function() {
-    console.log("WebSocket connected ✅");
-    };
+    if (data.type === "update") {
 
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
+        const appt = data.data;
+        const row = document.getElementById("appointment-" + appt.appointment_id);
 
-        if (data.type === "send_update") {
-            updateStats();
+        if (!row) return;
 
-            const appt = data.data;
-            const row = document.getElementById("appointment-" + appt.appointment_id);
+        // 🔥 STATUS UPDATE (only changed row)
+        let statusHTML = "";
 
-            if (!row) return;
-
-            // 🔥 STATUS UPDATE
-            let statusHTML = "";
-
-            if (appt.queue_status === "in_consultation") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
-            } 
-            else if (appt.status === "pending") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
-            } 
-            else if (appt.status === "completed") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
-            } 
-            else if (appt.status === "cancelled") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
-            }
-
-            row.querySelector(".status").innerHTML = statusHTML;
-
-            // 🔥 SAME LOGIC (unchanged)
-            const USER_ROLE = "{{ request.user.userprofile.role }}";
-            const nextTokens = appt.next_tokens || [];
-
-            document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-
-                const patientId = tr.getAttribute("data-patient-id");
-                const id = parseInt(tr.id.replace("appointment-", ""));
-
-                let actionsHTML = "";
-
-                if (USER_ROLE === "receptionist") {
-
-                    if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
-                        actionsHTML += `<button onclick="sendToDoctor(${id})" 
-                        class="btn-premium btn-primary btn-sm">▶ Send</button>`;
-                    }
-
-                    const statusText = tr.querySelector(".status").innerText;
-
-                    if (statusText.includes("In Room")) {
-                        actionsHTML += `<button onclick="completeAppointment(${id})"  
-                        class="btn-premium btn-success btn-sm">Complete</button>`;
-                    }
-
-                } else {
-
-                    const statusText = tr.querySelector(".status").innerText;
-
-                    actionsHTML = `
-                        <a href="/add-prescription/${patientId}/" 
-                        class="btn-premium btn-primary btn-sm">Prescription</a>
-                    `;
-
-                    if (!statusText.includes("Completed")) {
-                        actionsHTML += `
-                        <button onclick="completeAppointment(${id})"
-                        class="btn-premium btn-success btn-sm">Complete</button>
-                        `;
-                    }
-                }
-
-                tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
-
-                // 🔥 NEXT highlight
-                const statusText = tr.querySelector(".status").innerText;
-
-                if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
-
-                    tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
-
-                    if (!tr.querySelector(".next-label")) {
-                        const tokenCell = tr.querySelector("td:first-child");
-
-                        const label = document.createElement("span");
-                        label.className = "text-xs text-green-600 font-semibold animate-pulse next-label";
-                        label.innerText = "NEXT";
-
-                        tokenCell.appendChild(label);
-                    }
-
-                } else {
-
-                    tr.classList.remove("bg-green-50", "border-l-4", "border-green-500");
-
-                    const label = tr.querySelector(".next-label");
-                    if (label) label.remove();
-                }
-
-            });
-
+        if (appt.queue_status === "in_consultation") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
+        } 
+        else if (appt.status === "pending") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
+        } 
+        else if (appt.status === "completed") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
+        } 
+        else if (appt.status === "cancelled") {
+            statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
         }
-    };
 
-    // 🔥 AUTO RECONNECT
-    socket.onclose = function() {
-        console.log("Socket disconnected… reconnecting in 3 sec");
-        setTimeout(() => {
-            connectSocket();
-        }, 3000);
-    };
+        row.querySelector(".status").innerHTML = statusHTML;
 
-    socket.onerror = function(err) {
-        console.error("WebSocket error:", err);
-        socket.close();
-    };
-}
+        // ===============================
+        // 🔥 FULL ACTIONS + NEXT UPDATE
+        // ===============================
 
-// 🚀 START CONNECTION
-connectSocket();
-function updateStats() {
-    fetch("/api/queue/")
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("stat-total").innerText = data.total_appointments || 0;
-        document.getElementById("stat-waiting").innerText = data.pending_count || 0;
-        document.getElementById("stat-completed").innerText = data.completed_count || 0;
-    })
-    .catch(err => console.error("Stats error:", err));
-}
-
-// auto refresh
-setInterval(updateStats, 10000);
-    
-</script>
-
-<script>
-function refreshFromServer() {
-    fetch("/get-queue-data/")
-    .then(res => {
-    if (!res.ok) throw new Error("API error");
-    return res.json();
-    })
-    .then(data => {
-
-        const nextTokens = data.next_tokens || [];
         const USER_ROLE = "{{ request.user.userprofile.role }}";
+        const nextTokens = appt.next_tokens || [];
 
         document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
-            const id = parseInt(tr.id.replace("appointment-", ""));
             const patientId = tr.getAttribute("data-patient-id");
 
-            const appt = data.appointments.find(a => a.id === id);
-            if (!appt) return;
+            const id = parseInt(tr.id.replace("appointment-", ""));
 
-            // 🔥 STATUS UPDATE
-            let statusHTML = "";
-
-            if (appt.queue_status === "in_consultation") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">In Room</span>`;
-            } 
-            else if (appt.status === "pending") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Pending</span>`;
-            } 
-            else if (appt.status === "completed") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Completed</span>`;
-            } 
-            else if (appt.status === "cancelled") {
-                statusHTML = `<span class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-full">Cancelled</span>`;
-            }
-
-            tr.querySelector(".status").innerHTML = statusHTML;
-
-            // 🔥 ACTIONS UPDATE
             let actionsHTML = "";
 
             if (USER_ROLE === "receptionist") {
 
-                if (nextTokens.includes(id) && appt.queue_status !== "in_consultation") {
+            // 🔥 SEND BUTTON (NEXT ONLY)
+                if (nextTokens.includes(id) && !tr.querySelector(".status").innerText.includes("In Room")) {
                     actionsHTML += `<button onclick="sendToDoctor(${id})" 
                     class="btn-premium btn-primary btn-sm">▶ Send</button>`;
                 }
 
-                if (appt.queue_status === "in_consultation") {
-                    actionsHTML += `<button onclick="completeAppointment(${id})" 
+    // 🔥 COMPLETE BUTTON (ONLY UPDATED ROW)
+                const statusText = tr.querySelector(".status").innerText;
+
+                if (statusText.includes("In Room")) {
+                    actionsHTML += `<button onclick="completeAppointment(${id})"  
                     class="btn-premium btn-success btn-sm">Complete</button>`;
+                } else {
+                         // Completed / Pending → no Complete button
+                        actionsHTML += "";
                 }
 
-            } else {
+            }
+            else {
+
+                const statusText = tr.querySelector(".status").innerText;
 
                 actionsHTML = `
                     <a href="/add-prescription/${patientId}/" 
                     class="btn-premium btn-primary btn-sm">Prescription</a>
                 `;
 
-                if (appt.status !== "completed") {
+                if (!statusText.includes("Completed")) {
                     actionsHTML += `
                     <button onclick="completeAppointment(${id})"
                     class="btn-premium btn-success btn-sm">Complete</button>
                     `;
                 }
             }
+                    
 
+            // 🔥 UPDATE ACTIONS
             tr.querySelector(".actions .flex.items-center.gap-2").innerHTML = actionsHTML;
 
             // 🔥 NEXT HIGHLIGHT
-            if (nextTokens.includes(id) && appt.queue_status !== "in_consultation" && appt.status !== "completed") {
+            const statusText = tr.querySelector(".status").innerText;
+
+            if (nextTokens.includes(id) && !statusText.includes("In Room") && !statusText.includes("Completed")) {
 
                 tr.classList.add("bg-green-50", "border-l-4", "border-green-500");
 
@@ -529,70 +395,8 @@ function refreshFromServer() {
 
         });
 
-    });
-}
-</script>
-<script>
-window.addEventListener("pageshow", function (event) {
-
-    if (event.persisted) {
-        console.log("🔄 Back detected → syncing");
-
-        setTimeout(() => {
-            refreshFromServer();   // table fix
-            updateStats();         // stats fix
-        }, 300);
     }
-});
+};
+    
 </script>
-<script>
-    function cancelAppointment(id) {
-    fetch(`/cancel-appointment/${id}/`, {
-      method: "POST",
-      headers: {    
-          'X-CSRFToken': getCookie('csrftoken'),
-          'Content-Type': 'application/json' 
-      }
-    })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error cancelling appointment");
-        }
-    })
-    .catch(err => console.error(err));
-}
-
-
-function markPending(id) {
-    fetch(`/mark-pending/${id}/`, {
-        method: "POST",
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error marking pending");
-        }
-    })
-    .catch(err => console.error(err));
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
-
 {% endblock %}
