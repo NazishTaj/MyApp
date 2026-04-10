@@ -10,25 +10,32 @@ class StaffAccessMiddleware:
 
         if request.user.is_authenticated:
 
-            # Check userprofile safely
             if hasattr(request.user, 'userprofile'):
 
                 profile = request.user.userprofile
                 clinic = profile.clinic
 
-                # Owner ko allow karo
+                allowed_paths = [
+                    reverse('login'),
+                    reverse('logout'),
+                    reverse('staff_blocked'),
+                    reverse('clinic_blocked'),
+                ]
+
+                # 🔴 1. Clinic check (MOST IMPORTANT)
+                if not clinic.is_active:
+                    if not any(request.path.startswith(p) for p in allowed_paths):
+                        return redirect('clinic_blocked')
+
+                # 🔴 2. User check
+                if not profile.is_active:
+                    if not any(request.path.startswith(p) for p in allowed_paths):
+                        return redirect('user_blocked')
+
+                # 🟡 3. Existing logic (Advanced mode)
                 if not profile.is_owner:
-
-                    # 🔴 Advanced mode OFF → block staff
                     if not clinic.is_advanced:
-
-                        allowed_paths = [
-                            reverse('login'),
-                            reverse('logout'),
-                            reverse('staff_blocked'),
-                        ]
-
-                        if request.path not in allowed_paths:
+                        if not any(request.path.startswith(p) for p in allowed_paths):
                             return redirect('staff_blocked')
 
         return self.get_response(request)
