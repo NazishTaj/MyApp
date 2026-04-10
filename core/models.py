@@ -11,6 +11,7 @@ class Clinic(models.Model):
     logo = models.ImageField(upload_to="clinic_logos/", blank=True, null=True)
     is_advanced = models.BooleanField(default=False)
     billing_enabled = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
 
     def __str__(self):
@@ -39,6 +40,7 @@ class UserProfile(models.Model):
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='owner')
     is_owner = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20, blank=True)
