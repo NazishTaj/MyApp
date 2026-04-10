@@ -1741,7 +1741,7 @@ def staff_list(request):
     if not profile.is_owner:
         return render(request, "403.html", status=403)
 
-    staff = UserProfile.objects.filter(clinic=clinic,is_owner=False)
+    staff = UserProfile.objects.filter(clinic=clinic, is_owner=False, is_active=True)
 
     return render(request, "staff/staff_list.html", {
         "staff": staff
