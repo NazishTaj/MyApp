@@ -211,12 +211,16 @@
 
         {% for a in appointments %}
         <div id="sheet-{{ a.id }}" 
-        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-        w-[260px] bg-white rounded-2xl shadow-2xl hidden p-4 z-[9999]">
+        class="fixed bottom-0 left-1/2 -translate-x-1/2 
+        w-full max-w-xs 
+        bg-white rounded-t-2xl shadow-2xl 
+        hidden p-4 z-[9999]
+        md:top-1/2 md:bottom-auto md:-translate-y-1/2 md:rounded-2xl">
+
 
             <!-- Header -->
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-sm font-semibold text-gray-700">Actions</span>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-base font-semibold text-gray-700">Actions</span>
                 <button onclick="closeSheet()" 
                 class="text-gray-400 hover:text-red-700 text-lg">✕</button>
             </div>
@@ -225,7 +229,7 @@
             <div class="border-t border-gray-100 mb-3"></div>
 
             <!-- Actions -->
-            <div class="flex flex-col items-center gap-2 text-center">
+            <div class="flex flex-col items-center gap-1.5 text-center">
 
                 <a href="{% url 'patient_history' a.patient.id %}"
                 class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
