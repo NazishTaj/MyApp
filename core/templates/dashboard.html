@@ -268,24 +268,34 @@ function openSheet(id) {
     s.classList.add("hidden");
   });
 
-  // 🔥 blur all rows
-  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-  tr.classList.add("blur-sm", "opacity-50");
-  });
-  
-
-  // open sheet
-  document.getElementById("sheet-" + id).classList.remove("hidden");
-  document.getElementById("sheetOverlay").classList.remove("hidden");
-
-  // 🔥 focus active row
   const row = document.getElementById("appointment-" + id);
+
+  // 🔥 STEP 1: scroll row into view FIRST
   if (row) {
-    row.classList.remove("blur-sm", "opacity-50"); // remove blur
-    row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  document.body.style.overflow = "hidden";
+  // 🔥 STEP 2: slight delay (important for mobile)
+  setTimeout(() => {
+
+    // blur all rows
+    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+      tr.classList.add("blur-sm", "opacity-50");
+    });
+
+    // open sheet
+    document.getElementById("sheet-" + id).classList.remove("hidden");
+    document.getElementById("sheetOverlay").classList.remove("hidden");
+
+    // focus active row
+    if (row) {
+      row.classList.remove("blur-sm", "opacity-50");
+      row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
+    }
+
+    document.body.style.overflow = "hidden";
+
+  }, 200); // 🔥 important delay
 }
 
 
