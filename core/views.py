@@ -2023,3 +2023,28 @@ def api_queue(request):
         "in_consultation_count": in_consultation_count,
         "completed_count": completed_count,
     })
+
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required
+def deactivate_staff(request, staff_id):
+    profile = request.user.userprofile
+
+    # 🔴 Only owner allowed
+    if not profile.is_owner:
+        return redirect("dashboard")
+
+    # 🔴 Same clinic ka staff hi mile
+    staff = get_object_or_404(UserProfile, id=staff_id, clinic=profile.clinic)
+
+    # ❌ Owner ko remove nahi karna
+    if staff.is_owner:
+        return redirect("staff_list")
+
+    # ✅ MAIN LOGIC
+    staff.is_active = False
+    staff.save()
+
+    return redirect("staff_list")
