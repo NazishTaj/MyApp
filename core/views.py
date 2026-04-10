@@ -14,7 +14,11 @@ from django.core.exceptions import ValidationError
 from .models import Bill, BillItem
 from django.db.models import Sum
 
+def clinic_blocked(request):
+    return render(request, 'clinic_blocked.html')
 
+def user_blocked(request):
+    return render(request, 'user_blocked.html')
 
 
 def format_medicines(request):
