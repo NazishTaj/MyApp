@@ -233,19 +233,19 @@
 
                 <a href="{% url 'patient_history' a.patient.id %}"
                 class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                📜 History
+                📜 Patient History
                 </a>
 
                 {% if a.status == "pending" or a.queue_status == "in_consultation" %}
-                <button onclick="cancelAppointment({{ a.id }})"
+                <button onclick="cancelAppointment({{ a.id }}); closeSheet();"
                 class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
-                ❌ Cancel
+                ❌ Cancel Appointment
                 </button>
                 {% endif %}
 
-                <button onclick="markPending({{ a.id }})"
+                <button onclick="markPending({{ a.id }}); closeSheet();"
                 class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                ↩️ Mark Pending
+                ↩️ Mark as Pending
                 </button>
 
             </div>
