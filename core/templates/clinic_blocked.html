@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="min-h-[80vh] flex items-center justify-center px-4">
+
+    <div class="w-full max-w-lg">
+
+        <!-- Card Premium -->
+        <div class="card-premium text-center relative overflow-hidden">
+
+            <!-- Background Decorations -->
+            <div class="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full blur-3xl opacity-60"></div>
+            <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-gradient-to-br from-brand-100 to-indigo-100 rounded-full blur-3xl opacity-60"></div>
+
+            <!-- Icon Container -->
+            <div class="relative mb-6">
+                <div class="w-20 h-20 mx-auto bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center shadow-lg">
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Pulse ring -->
+                <div class="absolute inset-0 w-20 h-20 mx-auto rounded-full border-4 border-amber-200 animate-ping opacity-20"></div>
+            </div>
+
+            <!-- Title -->
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                Access Restricted
+            </h2>
+
+            <!-- Badge -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                Subscription Expired
+            </span>
+
+            <!-- Description -->
+            <p class="text-sm text-gray-500 mt-4 leading-relaxed max-w-sm mx-auto">
+                Your clinic subscription has expired or access has been 
+                <span class="font-semibold text-gray-700">restricted.</span>.
+                Please contact administrator to reactivate your account.
+            </p>
+
+            <!-- Info Box -->
+            <div class="mt-6 bg-gradient-to-br from-brand-50 to-indigo-50 border border-brand-100 rounded-xl p-5 text-left">
+
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-800 text-sm">What does this mean?</p>
+                </div>
+
+                <ul class="space-y-2.5">
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <div class="w-5 h-5 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                        <span>If you think this is a mistake then </span>
+                    </li>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span>please contact us at info@qurodesk.in</span>
+                    </li>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span></span>
+                    </li>
+                </ul>
+
+            </div>
+
+            <!-- Contact Info -->
+            <div class="mt-5 py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                <p class="text-xs text-gray-500">
+                    <span class="font-medium text-gray-600">Need access?</span> 
+                    Contact QuroDesk Support
+                </p>
+            </div>
+
+            <!-- Action -->
+            <div class="mt-6">
+                <a href="/logout/" class="btn-premium btn-primary w-full justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout & Exit
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
