@@ -20,6 +20,7 @@ class StaffAccessMiddleware:
                     reverse('logout'),
                     reverse('staff_blocked'),
                     reverse('clinic_blocked'),
+                    reverse('user_blocked'),
                 ]
 
                 # 🔴 1. Clinic check (MOST IMPORTANT)
