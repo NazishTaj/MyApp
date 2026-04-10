@@ -157,6 +157,30 @@
                 </div>
 
             </form>
+            <div class="mt-8">
+                <form method="POST" action="{% url 'deactivate_staff' staff.id %}">
+                    {% csrf_token %}
+
+                    <button 
+                        class="btn-premium btn-danger inline-flex items-center justify-center gap-2"
+                        onclick="return confirm('⚠️ This will delete the staff and block access.\n\nAre you sure?')">
+
+                        <!-- Premium Trash Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 24 24" 
+                            fill="currentColor" 
+                            class="w-5 h-5">
+                            <path fill-rule="evenodd" 
+                                d="M9 3a1 1 0 00-1 1v1H5a1 1 0 100 2h.293l.853 11.094A2 2 0 008.14 20h7.72a2 2 0 001.994-1.906L18.707 7H19a1 1 0 100-2h-3V4a1 1 0 00-1-1H9zm2 6a1 1 0 012 0v7a1 1 0 11-2 0V9zm-4 0a1 1 0 012 0v7a1 1 0 11-2 0V9zm8 0a1 1 0 012 0v7a1 1 0 11-2 0V9z" 
+                                clip-rule="evenodd"/>
+                        </svg>
+
+                        Remove staff
+                    </button>
+
+                </form>
+            </div>
+           
 
         </div>
 
