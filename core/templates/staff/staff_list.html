@@ -93,6 +93,21 @@
                             </svg>
                             Manage
                         </a>
+                         <form method="POST" action="{% url 'deactivate_staff' s.id %}" style="display:inline; margin-left:6px;">
+                            {% csrf_token %}
+                            <button class="btn-premium text-xs py-1.5 px-3 text-red-600 flex items-center gap-1"
+                                    onclick="return confirm('Are you sure you want to remove this staff?')">
+
+                                <!-- 🔥 TRASH ICON -->
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6 7h12M9 7v10m6-10v10M10 11v6m4-6v6M5 7l1-2h12l1 2M7 7h10"/>
+                                </svg>
+
+                                Remove
+                            </button>
+                        </form>
+
                     </td>
 
                 </tr>
@@ -165,6 +180,20 @@
                 </svg>
                 Manage Permissions
             </a>
+            <form method="POST" action="{% url 'deactivate_staff' s.id %}">
+                {% csrf_token %}
+                <button class="btn-premium w-full text-red-600 mt-2 flex items-center justify-center gap-2"
+                        onclick="return confirm('Remove this staff?')">
+
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 7h12M9 7v10m6-10v10M10 11v6m4-6v6M5 7l1-2h12l1 2M7 7h10"/>
+                    </svg>
+
+                    Remove
+                </button>
+            </form>
+                
 
         </div>
 
