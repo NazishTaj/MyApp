@@ -1448,14 +1448,20 @@ def create_bill(request):
         return redirect("dashboard")
 
     patients = Patient.objects.filter(clinic=clinic)
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
 
     if request.method == "POST":
 
         patient_id = request.POST.get("patient")
+        referred_by_id = request.POST.get("referred_by")
         payment_mode = request.POST.get("payment_mode", "").strip().lower()
         discount_percent = float(request.POST.get("discount") or 0)
 
         patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+   
 
         # 🔥 Bill number generate
         last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
@@ -1474,19 +1480,26 @@ def create_bill(request):
 
         subtotal = 0
         doctor = None
+        referred_by = None
+        if referred_by_id:
+            referred_by = UserProfile.objects.filter(
+                id=referred_by_id,
+                clinic=clinic,
+                role__in=["owner", "doctor"]
+            ).first()
 
-        # 🔥 STEP 4: bill create
         bill = Bill.objects.create(
             clinic=clinic,
             patient=patient,
-            doctor=doctor,
+              doctor=None,
+            referred_by=referred_by,
             bill_number=bill_number,
             payment_mode=payment_mode,
         )
 
         # 🔥 STEP 5: save items
         for name, amount in zip(item_names, item_amounts):
-            if name and amount:
+            if name.strip() and amount:
                 amount = float(amount)
 
                 BillItem.objects.create(
@@ -1512,6 +1525,7 @@ def create_bill(request):
     return render(request, "billing/create_bill.html", {
         "patients": patients,
         "clinic": clinic,
+        "doctors": doctors,
     })
 
 
