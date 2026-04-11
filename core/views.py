@@ -11,8 +11,9 @@ import openpyxl
 from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
 from django.core.exceptions import ValidationError
-from .models import Bill, BillItem
+from .models import Bill, BillItem, UserProfile
 from django.db.models import Sum
+from django.utils import timezone
 
 def clinic_blocked(request):
     return render(request, 'clinic_blocked.html')
@@ -2048,3 +2049,63 @@ def deactivate_staff(request, staff_id):
     staff.save()
 
     return redirect("staff_list")
+
+def revenue_report(request):
+
+    clinic = request.user.userprofile.clinic
+
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    doctor_id = request.GET.get("doctor")
+
+    today = timezone.localdate()
+
+    # 🔥 DEFAULT = TODAY
+    bills = Bill.objects.filter(
+        clinic=clinic,
+        created_at__date=today
+    )
+
+    # 🔥 FILTER override
+    if start_date or end_date or doctor_id:
+
+        bills = Bill.objects.filter(clinic=clinic)
+
+        if start_date:
+            bills = bills.filter(created_at__date__gte=start_date)
+
+        if end_date:
+            bills = bills.filter(created_at__date__lte=end_date)
+
+        if doctor_id:
+            bills = bills.filter(doctor_id=doctor_id)
+
+    total = bills.aggregate(total=Sum("total_amount"))["total"] or 0
+
+    doctor_revenue = (
+        bills.values("doctor__name")
+        .annotate(total=Sum("total_amount"))
+        .order_by("-total")
+    )
+    doctor_revenue = list(doctor_revenue)
+
+    for d in doctor_revenue:
+        d["percent"] = (d["total"] / total * 100) if total > 0 else 0
+
+
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    )
+    
+    bill_count = bills.count()
+    avg_bill = total / bill_count if bill_count > 0 else 0
+
+    return render(request, "revenue_report.html", {
+        "doctor_revenue": doctor_revenue,
+        "total": total,
+        "doctors": doctors,
+        "bill_count": bill_count,     
+        "avg_bill": avg_bill,          
+        "today": today,                
+    })
