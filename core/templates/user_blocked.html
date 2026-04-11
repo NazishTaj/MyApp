@@ -14,113 +14,218 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Floating blobs */
 @keyframes float {
-    0%,100% { transform: translateY(0px);}
-    50% { transform: translateY(-20px);}
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(3deg); }
 }
 
-/* subtle fade */
+@keyframes floatReverse {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(20px) rotate(-3deg); }
+}
+
 @keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.animate-float { animation: float 6s ease-in-out infinite; }
-.animate-fadeUp { animation: fadeUp 0.8s ease forwards; }
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.15); opacity: 0.1; }
+    100% { transform: scale(1); opacity: 0.3; }
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.animate-float { animation: float 8s ease-in-out infinite; }
+.animate-float-reverse { animation: floatReverse 7s ease-in-out infinite; }
+.animate-fadeUp { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+.animate-gradient { animation: gradient-shift 6s ease infinite; background-size: 200% 200%; }
 
 .blob {
     border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-    filter: blur(60px);
-    opacity: 0.4;
+    filter: blur(70px);
+}
+
+.glass-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.shimmer-btn {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.icon-glow {
+    box-shadow: 
+        0 0 20px rgba(6, 182, 212, 0.3),
+        0 0 40px rgba(6, 182, 212, 0.2),
+        0 0 60px rgba(6, 182, 212, 0.1);
+}
+
+.card-shadow {
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 10px 15px -3px rgba(0, 0, 0, 0.08),
+        0 25px 50px -12px rgba(6, 182, 212, 0.15);
+}
+
+.noise-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
 }
 </style>
 
 </head>
 
-<body class="bg-gray-50 min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+<body class="bg-slate-50 min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
 
-<!-- 🌈 BACKGROUND (Landing page style) -->
-<div class="absolute inset-0 bg-gradient-to-br from-cyan-50 via-white to-cyan-100"></div>
+<!-- Background Layer -->
+<div class="absolute inset-0 bg-gradient-to-br from-cyan-50 via-slate-50 to-sky-100"></div>
 
-<div class="absolute top-20 left-10 w-72 h-72 bg-cyan-300 blob animate-float"></div>
-<div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-200 blob animate-float" style="animation-delay:2s;"></div>
+<!-- Noise Texture -->
+<div class="absolute inset-0 noise-overlay pointer-events-none"></div>
 
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-100 rounded-full blur-3xl opacity-40"></div>
+<!-- Animated Blobs -->
+<div class="absolute top-10 left-5 w-80 h-80 bg-gradient-to-br from-cyan-300 to-teal-400 blob animate-float opacity-50"></div>
+<div class="absolute bottom-10 right-5 w-96 h-96 bg-gradient-to-br from-sky-300 to-blue-400 blob animate-float-reverse opacity-40" style="animation-delay: 1s;"></div>
+<div class="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-br from-violet-200 to-indigo-300 blob animate-float opacity-30" style="animation-delay: 3s;"></div>
 
-<!-- CARD -->
-<div class="relative w-full max-w-md animate-fadeUp">
+<!-- Center Radial Glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-cyan-100/60 via-transparent to-transparent rounded-full"></div>
 
-    <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-8 text-center">
+<!-- Main Card -->
+<div class="relative w-full max-w-md animate-fadeUp" style="animation-delay: 0.1s;">
 
-        <!-- ICON -->
-        <div class="relative mb-6">
-            <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center shadow-lg">
+    <div class="glass-card rounded-[2rem] card-shadow border border-white/50 overflow-hidden">
 
-                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
+        <!-- Top Accent Bar -->
+        <div class="h-1 bg-gradient-to-r from-cyan-400 via-teal-500 to-cyan-600 animate-gradient"></div>
+
+        <div class="p-8 md:p-10 text-center relative">
+
+            <!-- Decorative Corner Elements -->
+            <div class="absolute top-4 right-4 w-20 h-20 border border-cyan-200/30 rounded-full"></div>
+            <div class="absolute top-6 right-6 w-12 h-12 border border-cyan-200/20 rounded-full"></div>
+
+            <!-- Icon Container -->
+            <div class="relative mb-8 flex justify-center">
+                <!-- Pulse Rings -->
+                <div class="absolute w-24 h-24 rounded-2xl border-2 border-cyan-300/40 animate-pulse-ring"></div>
+                <div class="absolute w-28 h-28 rounded-2xl border border-cyan-200/20 animate-pulse-ring" style="animation-delay: 0.5s;"></div>
+                
+                <!-- Main Icon -->
+                <div class="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 via-cyan-600 to-teal-600 flex items-center justify-center icon-glow">
+                    <svg class="w-9 h-9 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    
+                    <!-- Inner Shimmer -->
+                    <div class="absolute inset-0 rounded-2xl shimmer-btn pointer-events-none"></div>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 tracking-tight">
+                Access Restricted
+            </h1>
+
+            <!-- Status Badge -->
+            <div class="mt-4 flex justify-center">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/60 shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    Account Suspended
+                </span>
+            </div>
+
+            <!-- Description -->
+            <p class="text-gray-500 mt-5 leading-relaxed max-w-xs mx-auto">
+                Your account has been <span class="font-semibold text-gray-700">temporarily blocked</span>. 
+                Please contact support to regain access.
+            </p>
+
+            <!-- Info Card -->
+            <div class="mt-7 text-left bg-gradient-to-br from-slate-50 to-gray-50/80 rounded-2xl p-5 border border-gray-100/80 shadow-inner">
+
+                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                    <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="font-semibold text-gray-800 text-sm">What does this mean?</p>
+                </div>
+
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-600">Mistake? Contact support</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-600">Response time: 24 hours</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-600 font-medium">info@qurodesk.in</span>
+                    </li>
+                </ul>
 
             </div>
 
-            <!-- glow ring -->
-            <div class="absolute inset-0 w-20 h-20 mx-auto rounded-2xl border-4 border-cyan-200 animate-ping opacity-20"></div>
-        </div>
+            <!-- CTA Button -->
+            <div class="mt-7">
+                <a href="/logout/" class="group relative w-full inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 shadow-xl shadow-gray-900/20 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-gray-900/30 hover:-translate-y-0.5">
+                    
+                    <!-- Button Shimmer -->
+                    <div class="absolute inset-0 shimmer-btn opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <svg class="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span class="relative">Logout & Exit</span>
+                </a>
+            </div>
 
-        <!-- TITLE -->
-        <h1 class="text-2xl font-bold text-gray-900">
-            Access Restricted
-        </h1>
-
-        <!-- BADGE -->
-        <div class="mt-3">
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-700 border border-cyan-200">
-                <span class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
-                Account Suspended
-            </span>
-        </div>
-
-        <!-- TEXT -->
-        <p class="text-sm text-gray-600 mt-4 leading-relaxed">
-            Your account has been <span class="font-semibold text-gray-800">temporarily blocked</span>.
-            Please contact support to regain access.
-        </p>
-
-        <!-- INFO BOX -->
-        <div class="mt-6 text-left bg-gray-50 rounded-2xl p-5 border border-gray-100">
-
-            <p class="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                ℹ️ What does this mean?
-            </p>
-
-            <ul class="space-y-2 text-sm text-gray-600">
-                <li class="flex gap-2">❌ Mistake? Contact support</li>
-                <li class="flex gap-2">⏳ Response time: 24 hours</li>
-                <li class="flex gap-2">✅ info@qurodesk.in</li>
-            </ul>
+            <!-- Footer -->
+            <div class="mt-6 pt-5 border-t border-gray-100/60">
+                <p class="text-xs text-gray-400 flex items-center justify-center gap-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+                    </svg>
+                    QuroDesk Support  |  Secure Access System
+                </p>
+            </div>
 
         </div>
-
-        <!-- BUTTON -->
-        <div class="mt-6">
-            <a href="/logout/"
-               class="w-full inline-flex justify-center items-center px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
-
-                Logout & Exit
-            </a>
-        </div>
-
-        <!-- FOOTER -->
-        <p class="text-xs text-gray-400 mt-5">
-            QuroDesk Support • Secure Access System
-        </p>
 
     </div>
 
