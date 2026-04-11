@@ -49,6 +49,7 @@ path("api/queue/", views.api_queue, name="api_queue"),
 path('get-queue-data/', views.get_queue_data, name='get_queue_data'),
 path('clinic-blocked/', views.clinic_blocked, name='clinic_blocked'),
 path('user-blocked/', views.user_blocked, name='user_blocked'),
+path('revenue-report/', views.revenue_report, name='revenue_report'),
 
 
 
