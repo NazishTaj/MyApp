@@ -310,6 +310,13 @@ class Bill(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    referred_by = models.ForeignKey(
+        UserProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="referred_bills"
+    )
 
     bill_number = models.CharField(max_length=20)
 
