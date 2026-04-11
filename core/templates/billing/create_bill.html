@@ -96,6 +96,18 @@
     {% endif %}
   </div>
 </div>
+<div class="mb-4">
+  <label class="block text-sm text-gray-600 mb-1">Referred By </label>
+
+  <select name="referred_by" class="w-full border rounded-lg px-3 py-2 text-sm">
+    <option value="">Select Doctor (Optional)</option>
+
+    {% for doc in doctors %}
+      <option value="{{ doc.id }}">{{ doc.name }}</option>
+    {% endfor %}
+
+  </select>
+</div>
 
 <!-- Bill Items Card -->
 <div class="card-premium p-4 space-y-3">
