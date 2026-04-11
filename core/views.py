@@ -1435,12 +1435,12 @@ def mark_pending(request, appointment_id):
 
 
 #Bill 
-
 @login_required
 def create_bill(request):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+
     if not has_permission(request.user, "manage_billing"):
         return render(request, "403.html", status=403)
 
@@ -1452,12 +1452,12 @@ def create_bill(request):
     if request.method == "POST":
 
         patient_id = request.POST.get("patient")
-        payment_mode = request.POST.get("payment_mode")
-        discount_percent = float(request.POST.get("discount")or 0)
+        payment_mode = request.POST.get("payment_mode", "").strip().lower()
+        discount_percent = float(request.POST.get("discount") or 0)
 
         patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
-        # Generate bill number
+        # 🔥 Bill number generate
         last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
 
         if last_bill:
@@ -1468,9 +1468,14 @@ def create_bill(request):
 
         bill_number = f"FD-{new_number}"
 
-        doctor = profile if profile.role in ["owner", "doctor"] else None
+        # 🔥 STEP 1: items lo
+        item_names = request.POST.getlist("item_name[]")
+        item_amounts = request.POST.getlist("item_amount[]")
 
-        # Create empty bill
+        subtotal = 0
+        doctor = None
+
+        # 🔥 STEP 4: bill create
         bill = Bill.objects.create(
             clinic=clinic,
             patient=patient,
@@ -1479,14 +1484,9 @@ def create_bill(request):
             payment_mode=payment_mode,
         )
 
-        item_names = request.POST.getlist("item_name[]")
-        item_amounts = request.POST.getlist("item_amount[]")
-
-        subtotal = 0
+        # 🔥 STEP 5: save items
         for name, amount in zip(item_names, item_amounts):
-
             if name and amount:
-
                 amount = float(amount)
 
                 BillItem.objects.create(
@@ -1494,12 +1494,10 @@ def create_bill(request):
                     item_name=name,
                     amount=amount
                 )
-
                 subtotal += amount
 
-        # Discount calculation
+        # 🔥 Discount calculation
         discount_amount = (subtotal * discount_percent) / 100
-
         total = subtotal - discount_amount
 
         bill.subtotal = subtotal
@@ -1513,18 +1511,16 @@ def create_bill(request):
 
     return render(request, "billing/create_bill.html", {
         "patients": patients,
-        "clinic": clinic
+        "clinic": clinic,
     })
 
 
-
 #Bill History
-
 @login_required
 def bill_history(request):
-
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
+    
     if not has_permission(request.user, "manage_billing"):
         return render(request, "403.html", status=403)
 
@@ -1533,8 +1529,45 @@ def bill_history(request):
 
     bills = Bill.objects.filter(clinic=clinic).order_by("-created_at")
 
+    # ========== FILTERS ==========
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    patient_id = request.GET.get('patient')
+    doctor_id = request.GET.get('doctor')
+
+    if start_date:
+        bills = bills.filter(created_at__date__gte=start_date)
+    if end_date:
+        bills = bills.filter(created_at__date__lte=end_date)
+    if patient_id:
+        bills = bills.filter(patient_id=patient_id)
+    if doctor_id:
+        bills = bills.filter(doctor_id=doctor_id)
+
+    # ========== DROPDOWN DATA ==========
+    patients = Patient.objects.filter(clinic=clinic).order_by('name')
+    
+    # Doctors = UserProfile with role owner/doctor
+    doctors = UserProfile.objects.filter(
+        clinic=clinic,
+        role__in=["owner", "doctor"]
+    ).order_by('name')
+
+    # Selected names for active filter tags
+    selected_patient_name = None
+    selected_doctor_name = None
+    
+    if patient_id:
+        selected_patient_name = patients.filter(id=patient_id).values_list('name', flat=True).first()
+    if doctor_id:
+        selected_doctor_name = doctors.filter(id=doctor_id).values_list('name', flat=True).first()
+
     return render(request, "billing/bill_history.html", {
-        "bills": bills
+        "bills": bills,
+        "patients": patients,
+        "doctors": doctors,
+        "selected_patient_name": selected_patient_name,
+        "selected_doctor_name": selected_doctor_name,
     })
 
 #Bill Detail
@@ -2081,16 +2114,29 @@ def revenue_report(request):
             bills = bills.filter(doctor_id=doctor_id)
 
     total = bills.aggregate(total=Sum("total_amount"))["total"] or 0
+    
 
-    doctor_revenue = (
-        bills.values("doctor__name")
-        .annotate(total=Sum("total_amount"))
-        .order_by("-total")
-    )
+    doctor_revenue = BillItem.objects.filter(
+        bill__in=bills,
+        bill__clinic=clinic,
+        bill__doctor__isnull=False,   # ❗ NA hata diya
+        item_name__icontains="consultation"
+    ).values(
+        "bill__doctor__id",
+        "bill__doctor__name"
+    ).annotate(
+        total=Sum("amount")
+    ).order_by("-total")
     doctor_revenue = list(doctor_revenue)
 
+    total_doctor_revenue = sum(d["total"] for d in doctor_revenue)
+    clinic_revenue = total - total_doctor_revenue
+
     for d in doctor_revenue:
-        d["percent"] = (d["total"] / total * 100) if total > 0 else 0
+        d["percent"] = (
+            (d["total"] / total_doctor_revenue) * 100
+            if total_doctor_revenue > 0 else 0
+        )
 
 
     doctors = UserProfile.objects.filter(
@@ -2107,5 +2153,7 @@ def revenue_report(request):
         "doctors": doctors,
         "bill_count": bill_count,     
         "avg_bill": avg_bill,          
-        "today": today,                
+        "today": today,
+        "total_doctor_revenue": total_doctor_revenue,      
+        "clinic_revenue": clinic_revenue,          
     })
