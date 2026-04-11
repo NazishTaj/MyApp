@@ -73,13 +73,25 @@
         <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white p-5 rounded-2xl shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs opacity-80 uppercase tracking-wide">Clinic's Revenue</p>
+                    <p class="text-xs opacity-80 uppercase tracking-wide">Total Revenue</p>
                     <h2 class="text-2xl font-bold mt-1">₹ {{ total|floatformat:0|default:"0" }}</h2>
                 </div>
                 <div class="bg-white/20 p-3 rounded-xl">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
+                </div>
+            </div>
+        </div>
+        <!-- Consultation Revenue -->
+        <div class="bg-gradient-to-br from-indigo-500 to-blue-500 text-white p-5 rounded-2xl shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs opacity-80 uppercase tracking-wide">Consultation Revenue</p>
+                    <h2 class="text-2xl font-bold mt-1">₹ {{ total_doctor_revenue|floatformat:0 }}</h2>
+                </div>
+                <div class="bg-white/20 p-3 rounded-xl">
+                    👨‍⚕️
                 </div>
             </div>
         </div>
@@ -102,7 +114,7 @@
         <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-5 rounded-2xl shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs opacity-80 uppercase tracking-wide">Total Bills</p>
+                    <p class="text-xs opacity-80 uppercase tracking-wide">Total Invoices</p>
                     <h2 class="text-2xl font-bold mt-1">{{ bill_count|default:"0" }}</h2>
                 </div>
                 <div class="bg-white/20 p-3 rounded-xl">
@@ -114,25 +126,7 @@
         </div>
 
         <!-- Top Doctor -->
-        <div class="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-lg">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs opacity-80 uppercase tracking-wide">Top Earner</p>
-                    <h2 class="text-lg font-bold mt-1 truncate">
-                        {% if doctor_revenue %}
-                            {{ doctor_revenue.0.bill__doctor__name|default:"N/A" }}
-                        {% else %}
-                            --
-                        {% endif %}
-                    </h2>
-                </div>
-                <div class="bg-white/20 p-3 rounded-xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
+        
 
     </div>
 
