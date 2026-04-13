@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .utils import has_permission
 from datetime import date , datetime
+from django.core.paginator import Paginator
 from .forms import ClinicScheduleForm
 import openpyxl
 from django.http import HttpResponse
@@ -196,17 +197,35 @@ def patient_list(request):
 
     query = request.GET.get("q", "").strip()
 
-    patients = Patient.objects.filter(clinic=clinic).order_by('patient_id')
+    patients_list = Patient.objects.filter(clinic=clinic).order_by('patient_id')
 
     if query:
-        patients = patients.filter(
+        patients_list = patients_list.filter(
             Q(name__icontains=query) |
             Q(phone__icontains=query)
         )
 
+    # 🔥 pagination logic
+    per_page = request.GET.get("limit", 20)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 20
+
+    if per_page not in [20, 50]:
+        per_page = 20
+
+    paginator = Paginator(patients_list, per_page)
+
+    page = request.GET.get("page")
+
+    patients = paginator.get_page(page)
+
     context = {
         "patients": patients,
-        "query": query
+        "query": query,
+        "limit": per_page
     }
 
     return render(request, "patients.html", context)
