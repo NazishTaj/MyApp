@@ -97,7 +97,7 @@
                 </td>
 
                 <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 leading-none">
                         <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +105,7 @@
                             </svg>
                         </div>
                         <a href="{% url 'patient_history' a.patient.id %}" 
-                            class="font-semibold text-gray-900 hover:text-cyan-600 transition-colors duration-200 cursor-pointer">
+                            class="font-semibold text-gray-900 hover:text-cyan-600 transition-colors duration-200 cursor-pointer leading-none mt-[1px]">
                             {{ a.patient.name }}
                         </a>
                     </div>
