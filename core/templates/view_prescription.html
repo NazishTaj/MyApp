@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-.watermark {
+.presc_watermark {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -13,7 +13,7 @@
     pointer-events: none;
 }
 
-.watermark img {
+.presc_watermark img {
     max-width: 300px;
     max-height: 300px;
     object-fit: contain;
@@ -29,7 +29,7 @@
     z-index: 1;
 }
 @media print {
-    .watermark {
+    .presc_watermark {
         opacity: 0.03;
     }
 }
@@ -41,7 +41,7 @@
 
 <div class="bg-white rounded-xl shadow p-5 sm:p-8 relative">
     {% if clinic.logo %}
-        <div class="watermark">
+        <div class="presc_watermark">
         <img src="{{ clinic.logo.url }}">
         </div>
 {% endif %}
