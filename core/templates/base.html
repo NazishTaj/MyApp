@@ -423,10 +423,30 @@
       margin-top: 1.5rem;
       margin-bottom: 0.5rem;
     }
+    .watermark {
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 144px);
+    width: 550px;
+    height: 550px;
+    background: url("{% static 'images/logo.png' %}") no-repeat center;
+    background-size: contain;
+    opacity: 0.03;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  @media (max-width: 768px) {
+  .watermark {
+    left: 50%;
+    width: 300px;
+    height: 300px;
+  }
+}
   </style>
 </head>
 
-<body class="bg-surface-100 text-surface-900 antialiased">
+<body class="bg-surface-100 text-surface-900 antialiased relative">
 
   {% if messages %}
   <div class="fixed top-4 right-4 z-50 space-y-2">
@@ -645,8 +665,10 @@ class="fixed top-0 left-0 h-screen w-72 shrink-0 bg-gradient-to-b from-surface-9
 
       <!-- CONTENT -->
       <main class="flex-1 overflow-y-auto min-h-[calc(100dvh-4.5rem)] p-4 md:p-8 pb-6 md:pb-10 bg-surface-100 main-scroll">
-
-        <div class="max-w-6xl mx-auto animate-fade-in">
+        {% if not hide_watermark %}
+          <div class="watermark"></div>
+        {% endif %}
+        <div class="max-w-6xl mx-auto animate-fade-in relative">
 
           {% block content %}
           {% endblock %}
