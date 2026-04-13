@@ -134,6 +134,38 @@
       </tbody>
     </table>
   </div>
+    <!-- 🔥 PAGINATION START -->
+<div class="flex justify-between items-center px-6 py-4">
+
+  <!-- Rows dropdown -->
+  <form method="get">
+    <select name="limit" onchange="this.form.submit()" class="input-premium text-sm">
+      <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+      <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+    </select>
+  </form>
+
+  <!-- Buttons -->
+  <div class="flex gap-2">
+
+    {% if appointments.has_previous %}
+      <a href="?page={{ appointments.previous_page_number }}&limit={{ limit }}"
+         class="btn-premium btn-secondary text-sm">
+        Prev
+      </a>
+    {% endif %}
+
+    {% if appointments.has_next %}
+      <a href="?page={{ appointments.next_page_number }}&limit={{ limit }}"
+         class="btn-premium btn-primary text-sm">
+        Next
+      </a>
+    {% endif %}
+
+  </div>
+
+</div>
+<!-- 🔥 PAGINATION END -->
 </div>
 
 <!-- ✅ SCRIPT FIXED -->
