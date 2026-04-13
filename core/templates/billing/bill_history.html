@@ -377,6 +377,53 @@
 
   </div>
 
+    <!-- 🔥 PAGINATION START -->
+  <div class="flex justify-between items-center px-6 py-4 border-t border-gray-100">
+
+    <!-- LEFT: Rows selector -->
+    <form method="get" class="flex items-center gap-2">
+
+      <!-- 🔥 filters preserve -->
+      <input type="hidden" name="start_date" value="{{ request.GET.start_date }}">
+      <input type="hidden" name="end_date" value="{{ request.GET.end_date }}">
+      <input type="hidden" name="patient" value="{{ request.GET.patient }}">
+      <input type="hidden" name="doctor" value="{{ request.GET.doctor }}">
+
+      <label class="text-sm text-gray-600">Rows:</label>
+
+      <select name="limit" onchange="this.form.submit()" class="input-premium text-sm w-20">
+        <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+        <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+      </select>
+
+    </form>
+
+    <!-- RIGHT: Pagination buttons -->
+    <div class="flex gap-2">
+
+      {% if bills.has_previous %}
+        <a href="?page={{ bills.previous_page_number }}&limit={{ limit }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&patient={{ request.GET.patient }}&doctor={{ request.GET.doctor }}"
+          class="btn-premium btn-secondary text-sm">
+          Prev
+        </a>
+      {% endif %}
+
+      <span class="text-sm text-gray-600 whitespace-nowrap flex items-center">
+        Page {{ bills.number }} of {{ bills.paginator.num_pages }}
+      </span>
+
+      {% if bills.has_next %}
+        <a href="?page={{ bills.next_page_number }}&limit={{ limit }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&patient={{ request.GET.patient }}&doctor={{ request.GET.doctor }}"
+          class="btn-premium btn-primary text-sm">
+          Next
+        </a>
+      {% endif %}
+
+    </div>
+
+  </div>
+  <!-- 🔥 PAGINATION END -->
+
 </div>
 
 <!-- Mobile Cards -->
