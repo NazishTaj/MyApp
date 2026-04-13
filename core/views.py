@@ -1857,7 +1857,7 @@ def export_all_bills(request):
     if not profile.is_owner:
         return render(request, "403.html", status=403)
 
-    bills = Bill.objects.filter(clinic=clinic).select_related("patient")
+    bills = Bill.objects.filter(clinic=clinic).select_related("patient", "doctor", "appointment")
 
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -1867,7 +1867,10 @@ def export_all_bills(request):
         "Bill No",
         "Patient Name",
         "Phone",
+        "Doctor",
+        "Type",
         "Date",
+        "Time",
         "Amount",
         "Payment Mode"
     ]
@@ -1875,11 +1878,30 @@ def export_all_bills(request):
     sheet.append(headers)
 
     for bill in bills:
+
+    # Doctor name
+        doctor_name = "-"
+        if bill.doctor:
+            doctor_name = bill.doctor.name
+        elif bill.referred_by:
+            doctor_name = bill.referred_by.name + " (Referred)"
+
+        # Type
+        bill_type = "Consultation" if bill.doctor else "Service"
+
+        # Appointment time
+        appointment_time = "-"
+        if bill.appointment and bill.appointment.appointment_time:
+            appointment_time = bill.appointment.appointment_time.strftime("%H:%M")
+
         sheet.append([
             bill.bill_number,
             bill.patient.name,
             bill.patient.phone,
+            doctor_name,
+            bill_type,
             bill.created_at.strftime("%d-%m-%Y"),
+            appointment_time,
             bill.total_amount,
             bill.payment_mode
         ])
@@ -1915,7 +1937,7 @@ def export_month_bills(request):
         clinic=clinic,
         created_at__month=int(month),
         created_at__year=int(year)
-    ).select_related("patient")
+    ).select_related("patient", "doctor", "appointment")
 
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -1925,7 +1947,10 @@ def export_month_bills(request):
         "Bill No",
         "Patient Name",
         "Phone",
+        "Doctor",
+        "Type",
         "Date",
+        "Time",
         "Amount",
         "Payment Mode"
     ]
@@ -1933,11 +1958,30 @@ def export_month_bills(request):
     sheet.append(headers)
 
     for bill in bills:
+
+        # Doctor name
+        doctor_name = "-"
+        if bill.doctor:
+            doctor_name = bill.doctor.name
+        elif bill.referred_by:
+            doctor_name = bill.referred_by.name + " (Referred)"
+
+        # Type
+        bill_type = "Consultation" if bill.doctor else "Service"
+
+        # Appointment time
+        appointment_time = "-"
+        if bill.appointment and bill.appointment.appointment_time:
+            appointment_time = bill.appointment.appointment_time.strftime("%H:%M")
+
         sheet.append([
             bill.bill_number,
             bill.patient.name,
             bill.patient.phone,
+            doctor_name,
+            bill_type,
             bill.created_at.strftime("%d-%m-%Y"),
+            appointment_time,
             bill.total_amount,
             bill.payment_mode
         ])
