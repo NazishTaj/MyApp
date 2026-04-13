@@ -1018,7 +1018,8 @@ def create_bill_for_patient(request, patient_id):
 
     return render(request, "billing/create_bill.html", {
         "patient": patient,
-        "clinic": clinic
+        "clinic": clinic,
+        "hide_watermark": True
     })
 
 @login_required(login_url="login")
@@ -1058,7 +1059,8 @@ def view_prescription(request, id):
     return render(request, "view_prescription.html", {
         "prescription": prescription,
         "clinic": clinic,
-        "med_lines": med_lines
+        "med_lines": med_lines,
+        "hide_watermark": True
     })
 
 
@@ -1560,6 +1562,7 @@ def create_bill(request):
         "patients": patients,
         "clinic": clinic,
         "doctors": doctors,
+        
     })
 
 
@@ -1654,7 +1657,8 @@ def view_bill(request, bill_id):
     return render(request, "billing/view_bill.html", {
         "bill": bill,
         "items": items,
-        "clinic": clinic
+        "clinic": clinic,
+        "hide_watermark": True
     })
 
 
@@ -1678,7 +1682,8 @@ def print_bill(request, bill_id):
     return render(request, "billing/print_bill.html", {
         "bill": bill,
         "items": items,
-        "clinic": clinic
+        "clinic": clinic,
+        "hide_watermark": True
     })
 
 
@@ -1719,7 +1724,8 @@ def print_prescription(request, id):
     return render(request, "print_prescription.html", {
         "prescription": prescription,
         "clinic": clinic,
-        "med_lines": med_lines   # 🔥 IMPORTANT
+        "med_lines": med_lines,
+        "hide_watermark": True   # 🔥 IMPORTANT
     })
 
 @login_required
