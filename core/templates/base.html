@@ -63,7 +63,7 @@
     body {
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: max(env(safe-area-inset-bottom), 16px);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     html, body {
@@ -423,12 +423,6 @@
       margin-top: 1.5rem;
       margin-bottom: 0.5rem;
     }
-
-    .scroll-ios-fix {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    
-  }
   </style>
 </head>
 
@@ -650,7 +644,7 @@ class="fixed top-0 left-0 h-screen w-72 shrink-0 bg-gradient-to-b from-surface-9
       </header>
 
       <!-- CONTENT -->
-      <main class="flex-1 overflow-hidden min-h-[calc(100dvh-4.5rem)] p-4 md:p-8 pb-6 md:pb-10 bg-surface-100 main-scroll">
+      <main class="flex-1 overflow-y-auto min-h-[calc(100dvh-4.5rem)] p-4 md:p-8 pb-6 md:pb-10 bg-surface-100 main-scroll">
 
         <div class="max-w-6xl mx-auto animate-fade-in">
 
