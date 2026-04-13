@@ -24,6 +24,7 @@
       placeholder="Search patient..."
       class="input-premium flex-1 min-w-[220px]">
 
+
     <button type="submit" class="btn-premium btn-secondary">
       Search
     </button>
@@ -31,11 +32,30 @@
 </div>
 
 <!-- 🔥 TABLE -->
-<div class="card-premium !p-0">
+<div class="card-premium !p-0 overflow-visible">
 
   <!-- Title -->
   <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-    <h3 class="font-semibold text-gray-900">Patient List</h3>
+    <div class="flex justify-between items-center">
+
+  <h3 class="font-semibold text-gray-900">Patient List</h3>
+
+    <!-- 🔥 LIMIT DROPDOWN -->
+    <form method="GET" class="flex items-center gap-2">
+
+      <!-- search preserve -->
+      <input type="hidden" name="q" value="{{ query }}">
+
+      <label class="text-sm text-gray-600">Rows:</label>
+
+      <select name="limit" onchange="this.form.submit()" class="input-premium w-20">
+        <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+        <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+      </select>
+
+    </form>
+
+  </div>
   </div>
 
   <!-- 🔥 ONLY THIS SCROLL -->
@@ -104,7 +124,31 @@
     </table>
 
   </div>
+  
+<!-- 🔥 PAGINATION OUTSIDE -->
+<div class="p-4 flex justify-between items-center">
 
+  {% if patients.has_previous %}
+    <a href="?page={{ patients.previous_page_number }}&q={{ query }}&limit={{ limit }}" 
+       class="btn-premium btn-sm">
+      Previous
+    </a>
+  {% endif %}
+
+  <span class="text-sm text-gray-600">
+    Page {{ patients.number }} of {{ patients.paginator.num_pages }}
+  </span>
+
+  {% if patients.has_next %}
+    <a href="?page={{ patients.next_page_number }}&q={{ query }}&limit={{ limit }}" 
+       class="btn-premium btn-sm">
+      Next
+    </a>
+  {% endif %}
+
+</div>
+
+  <!--    -->
 </div>
 
 <script>
