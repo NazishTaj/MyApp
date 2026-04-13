@@ -212,10 +212,10 @@
 
         {% for a in appointments %}
         <div id="sheet-{{ a.id }}" 
-        class="fixed bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-auto
+        class="fixed bottom-0 left-0 right-0 mx-auto
         w-full max-w-sm 
         bg-white rounded-t-2xl shadow-2xl 
-        hidden p-4 z-[9999] pb-[env(safe-area-inset-bottom)] max-h-[85vh] overflow-y-auto
+        hidden p-4 z-[9999]  max-h-[80dvh] overflow-y-auto
         md:top-1/2 md:bottom-auto md:-translate-y-1/2 md:rounded-2xl">
 
 
@@ -271,7 +271,7 @@ function openSheet(id) {
 
   // 🔥 STEP 1: scroll row into view FIRST
   if (row) {
-    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    // row.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   // 🔥 STEP 2: slight delay (important for mobile)
@@ -292,7 +292,12 @@ function openSheet(id) {
       row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
     }
 
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
 
   }, 200); // 🔥 important delay
 }
@@ -313,7 +318,14 @@ function closeSheet() {
   });
 
 
-  document.body.style.overflow = "auto";
+  const scrollY = document.body.style.top;
+
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+
+  window.scrollTo(0, parseInt(scrollY || "0") * -1);
 }
 
 
