@@ -528,6 +528,20 @@ def appointments(request):
         appointments = Appointment.objects.filter(clinic=clinic)
 
     appointments = appointments.order_by("-appointment_date", "appointment_time")
+    # ✅ pagination
+    per_page = request.GET.get("limit", 20)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 20
+
+    if per_page not in [20, 50]:
+        per_page = 20
+
+    paginator = Paginator(appointments, per_page)
+    page = request.GET.get("page")
+    appointments = paginator.get_page(page)
 
     doctors = UserProfile.objects.filter(
         clinic=clinic,
@@ -538,7 +552,8 @@ def appointments(request):
 
     return render(request, "appointments.html", {
         "appointments": appointments,
-        "show_doctor_column": show_doctor_column
+        "show_doctor_column": show_doctor_column,
+         "limit": per_page
     })
 
 
@@ -1576,6 +1591,25 @@ def bill_history(request):
         bills = bills.filter(patient_id=patient_id)
     if doctor_id:
         bills = bills.filter(doctor_id=doctor_id)
+    
+    # 🔥 PAGINATION START
+    from django.core.paginator import Paginator
+
+    per_page = request.GET.get("limit", 20)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 20
+
+    if per_page not in [20, 50]:
+        per_page = 20
+
+    paginator = Paginator(bills, per_page)
+    page = request.GET.get("page")
+
+    bills = paginator.get_page(page)
+    # 🔥 PAGINATION END
 
     # ========== DROPDOWN DATA ==========
     patients = Patient.objects.filter(clinic=clinic).order_by('name')
@@ -1601,6 +1635,7 @@ def bill_history(request):
         "doctors": doctors,
         "selected_patient_name": selected_patient_name,
         "selected_doctor_name": selected_doctor_name,
+        "limit": per_page
     })
 
 #Bill Detail
