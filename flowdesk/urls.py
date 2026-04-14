@@ -3,13 +3,19 @@ from django.urls import path , include
 from core import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
+from core.sitemaps import StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap(),
+}
 
 
 urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-    path('', views.dashboard, name='home'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('patients/', views.patient_list, name='patient_list'),
     path('add-patient/', views.add_patient, name='add_patient'),
     path('book-appointment/<int:patient_id>/', views.book_appointment, name='book_appointment'),
@@ -23,6 +29,7 @@ urlpatterns = [
     path('patient/edit/<int:patient_id>/', views.edit_patient, name='edit_patient'),
     path('patient/delete/<int:patient_id>/', views.delete_patient, name='delete_patient'),
     path("add-schedule/", views.add_schedule, name="add_schedule"),
+    
 ]
 
 if settings.DEBUG:
