@@ -1,15 +1,10 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
-from django.shortcuts import redirect
-
-
-def login_redirect(request):
-    return redirect('/')
 
 urlpatterns = [
     path("", views.login_view, name="home"),
-    path("login/", login_redirect),
+    path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path(
