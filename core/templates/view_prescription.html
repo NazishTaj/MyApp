@@ -2,49 +2,10 @@
 {% block page_title %}Prescription{% endblock %}
 
 {% block content %}
-<style>
-.presc_watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.05; /* 👈 light watermark */
-    z-index: 0;
-    pointer-events: none;
-}
-
-.presc_watermark img {
-    max-width: 300px;
-    max-height: 300px;
-    object-fit: contain;
-}
-
-/* Ensure content is above watermark */
-#print-area {
-    position: relative;
-}
-
-.bg-white {
-    position: relative;
-    z-index: 1;
-}
-@media print {
-    .presc_watermark {
-        opacity: 0.03;
-    }
-}
-
-</style>
 
 <div id="print-area" class="max-w-3xl mx-auto px-3 sm:px-0">
 
-
-<div class="bg-white rounded-xl shadow p-5 sm:p-8 relative">
-    {% if clinic.logo %}
-        <div class="presc_watermark">
-        <img src="{{ clinic.logo.url }}">
-        </div>
-{% endif %}
+<div class="bg-white rounded-xl shadow p-5 sm:p-8">
 
 <!-- Clinic Header -->
 
@@ -64,19 +25,6 @@
 <p class="text-xs sm:text-sm text-gray-600">
 Dr. {{ prescription.doctor.name }}
 </p>
-{% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
-
-    {% if prescription.doctor.degree or prescription.doctor.reg_no %}
-    <p class="text-xs text-gray-500">
-        {{ prescription.doctor.degree }}
-
-        {% if prescription.doctor.reg_no %}
-            • Reg No: {{ prescription.doctor.reg_no }}
-        {% endif %}
-    </p>
-    {% endif %}
-
-{% endif %}
 </div>
 
 </div>
@@ -92,6 +40,8 @@ Dr. {{ prescription.doctor.name }}
 </div>
 
 </div>
+
+
 
 <!-- Patient Info -->
 
@@ -135,6 +85,7 @@ Dr. {{ prescription.doctor.name }}
 
 {% if prescription.parent %}
 <div class="mb-4 flex items-center gap-3 print:hidden">
+
 <span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-medium">
 Revised
 </span>
@@ -143,8 +94,11 @@ Revised
 class="text-xs text-blue-600 underline">
 View Previous
 </a>
+
 </div>
 {% endif %}
+
+<!-- Diagnosis -->
 
 <!-- Diagnosis -->
 
@@ -168,54 +122,55 @@ View Previous
 </div>
 {% endif %}
 
-<!-- ✅ MEDICINES (FIXED + PROFESSIONAL) -->
+<!-- Medicines -->
 
 {% if prescription.medicines %}
 <div class="mb-6">
 
 <h4 class="text-base font-semibold text-gray-800 mb-3">Medicines</h4>
 
-<div class="bg-gray-50 rounded-lg p-4 overflow-x-auto">
+<div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 overflow-x-auto">
 
-<table class="w-full text-sm">
+<ol class="list-decimal ml-5 space-y-3">
 
-<thead>
-<tr class="text-gray-600 border-b">
-<th class="text-left py-2">Medicine</th>
-<th class="text-left py-2">Dose</th>
-<th class="text-left py-2">Duration</th>
-<th class="text-left py-2">Remarks</th>
-</tr>
-</thead>
+{% for med in prescription.medicines.splitlines %}
 
-<tbody>
+{% if "||" in med %}
+{% with parts=med.split:"||" %}
 
-{% for med in med_lines %}
+<li>
 
-<tr class="border-b last:border-0">
+<div class="font-medium text-gray-800">
+{{ parts.0 }}
+</div>
 
-<td class="py-2 font-medium text-gray-800">
-{{ med.name }}
-</td>
+{% if parts|length > 1 %}
+<div class="text-xs text-gray-600">
+{{ parts.1 }}
+</div>
+{% endif %}
 
-<td class="py-2 text-gray-600">
-{{ med.dose|default:"-" }}
-</td>
-<td class="py-2 text-gray-600">
-{{ med.duration|default:"-" }}   
-</td>
+{% if parts|length > 2 %}
+<div class="text-xs text-gray-500 italic">
+{{ parts.2 }}
+</div>
+{% endif %}
 
-<td class="py-2 text-gray-600">
-{{ med.remark|default:"-" }}
-</td>
+</li>
 
-</tr>
+{% endwith %}
+
+{% else %}
+
+<li>{{ med }}</li>
+
+{% endif %}
 
 {% endfor %}
 
-</tbody>
+</ol>
 
-</table>
+</div>
 
 </div>
 
@@ -258,17 +213,24 @@ Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
 <!-- Signature -->
 
 <div class="flex justify-center sm:justify-end">
+
 <div class="text-center">
+
+
+
 <p class="text-sm font-semibold">
 Dr. {{ prescription.doctor.name }}
 </p>
+
 <p class="text-xs text-gray-500">
 Signature
 </p>
-</div>
+
 </div>
 
-<!-- Buttons -->
+</div>
+
+<!-- Buttons (Responsive) -->
 
 <div class="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
 
@@ -280,18 +242,21 @@ class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-yellow-500 text-white r
 <button
 onclick="printPrescription({{ prescription.id }})"
 class="w-full sm:w-auto px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
+
 🖨 Print
+
 </button>
 
 </div>
 
 <script>
 function printPrescription(id){
-    window.location.href = `/prescription/${id}/print/`;
+    window.open(`/prescription/${id}/print/`, '_blank');
 }
 </script>
 
 </div>
+
 </div>
 
 {% endblock %}
