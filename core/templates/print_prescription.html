@@ -38,7 +38,7 @@
 </style>
 </head>
 
-<body onload="setTimeout(handlePrint, 300)">
+<body onload="window.print()">
 
 <div class="max-w-3xl mx-auto bg-white p-6">
 
@@ -212,17 +212,4 @@ Signature
 </div>
 
 </body>
-<script>
-function handlePrint() {
-    window.print();
-
-    window.onafterprint = function () {
-        window.close();
-    };
-
-    setTimeout(function () {
-        window.close();
-    }, 1000);
-}
-</script>
 </html>
