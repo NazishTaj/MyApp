@@ -8,7 +8,7 @@
 
 <style>
 
-
+/* ✅ ADD THIS (MOST IMPORTANT) */
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -29,49 +29,18 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-    html, body {
-            height: auto !important;
-            overflow: visible !important;
-    }
 
     .no-break {
         page-break-inside: avoid;
     }
 }
 
-
-
-.print-container {
-    position: relative;
-    z-index: 1;
-}
-
-.print-container {
-    min-height: auto !important;
-    height: auto !important;
-}
-
-@media print {
-    nav, header, .navbar, .mobile-menu {
-        display: none !important;
-    }
-}
-
 </style>
 </head>
 
-<body>
-<script>
-window.onload = function() {
-    setTimeout(() => {
-        window.print();
-    }, 500);
-};
-window.onafterprint = function() {
-    window.history.back();
-};
-</script>
+<body onload="window.print()">
 
+<div class="max-w-3xl mx-auto bg-white p-6">
 
 <!-- ================= HEADER ================= -->
 <div class="flex justify-between items-center border-b pb-4 mb-6 no-break">
@@ -145,7 +114,7 @@ window.onafterprint = function() {
 
 <!-- ================= DIAGNOSIS ================= -->
 {% if prescription.diagnosis %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Diagnosis</h4>
     <p>{{ prescription.diagnosis|linebreaksbr }}</p>
 </div>
@@ -153,7 +122,7 @@ window.onafterprint = function() {
 
 <!-- ================= SYMPTOMS ================= -->
 {% if prescription.symptoms %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Symptoms</h4>
     <p>{{ prescription.symptoms|linebreaksbr }}</p>
 </div>
@@ -204,12 +173,12 @@ window.onafterprint = function() {
 
 </div>
 
-
+</div>
 {% endif %}
 
 <!-- ================= TESTS ================= -->
 {% if prescription.tests %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Tests</h4>
     <p>{{ prescription.tests|linebreaksbr }}</p>
 </div>
@@ -217,7 +186,7 @@ window.onafterprint = function() {
 
 <!-- ================= ADVICE ================= -->
 {% if prescription.notes %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Advice</h4>
     <p>{{ prescription.notes|linebreaksbr }}</p>
 </div>
