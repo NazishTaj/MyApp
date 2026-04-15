@@ -35,6 +35,7 @@
 /* content above presc_watermark */
 .print-container {
     position: relative;
+    z-index: 1;
 }
 
 /* ✅ PRINT FIXES */
@@ -76,12 +77,6 @@
         transform: translate(-50%, -50%) !important;
         opacity: 0.08;
     }
-    .max-w-3xl {
-        max-width: 100% !important;
-    }
-}
-thead {
-    display: table-header-group;
 }
 
 </style>
@@ -90,8 +85,9 @@ thead {
 <body>
 <script>
 window.onload = function() {
-    window.print();
     
+    window.print();
+
 };
 window.onafterprint = function() {
     window.history.back();
