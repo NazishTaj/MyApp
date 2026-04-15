@@ -38,7 +38,7 @@
 </style>
 </head>
 
-<body onload="window.print()">
+<body onload="handlePrint()">
 
 <div class="max-w-3xl mx-auto bg-white p-6">
 
@@ -212,4 +212,14 @@ Signature
 </div>
 
 </body>
+<script>
+function handlePrint() {
+    window.print();
+
+    // Print ya cancel ke baad
+    window.onafterprint = function () {
+        window.close();
+    };
+}
+</script>
 </html>
