@@ -8,7 +8,7 @@
 
 <style>
 
-/* ✅ ADD THIS (MOST IMPORTANT) */
+
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -20,9 +20,13 @@
         size: A4;
         margin: 10mm;
     }
-        .watermark {
-        opacity: 0.03;
-    }
+        .presc_watermark {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            opacity: 0.08;
+        }
 
     body {
         margin: 0;
@@ -32,12 +36,16 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
+    html, body {
+            height: auto !important;
+            overflow: visible !important;
+    }
 
     .no-break {
         page-break-inside: avoid;
     }
 }
-.watermark {
+.presc_watermark {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -47,13 +55,13 @@
     pointer-events: none;
 }
 
-.watermark img {
+.presc_watermark img {
     max-width: 300px;
     max-height: 300px;
     object-fit: contain;
 }
 
-/* content upar rahe */
+
 .print-container {
     position: relative;
     z-index: 1;
@@ -62,12 +70,22 @@
 </style>
 </head>
 
-<body onload="window.print()">
+<body>
+<script>
+window.onload = function() {
+    
+    window.print();
+
+};
+window.onafterprint = function() {
+    window.history.back();
+};
+</script>
 
 
 <div class="max-w-3xl mx-auto bg-white p-6 relative print-container min-h-screen">
     {% if clinic.logo %}
-        <div class="watermark">
+        <div class="presc_watermark">
         <img src="{{ clinic.logo.url }}">
         </div>
     {% endif %}
@@ -144,7 +162,7 @@
 
 <!-- ================= DIAGNOSIS ================= -->
 {% if prescription.diagnosis %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Diagnosis</h4>
     <p>{{ prescription.diagnosis|linebreaksbr }}</p>
 </div>
@@ -152,7 +170,7 @@
 
 <!-- ================= SYMPTOMS ================= -->
 {% if prescription.symptoms %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Symptoms</h4>
     <p>{{ prescription.symptoms|linebreaksbr }}</p>
 </div>
@@ -208,7 +226,7 @@
 
 <!-- ================= TESTS ================= -->
 {% if prescription.tests %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Tests</h4>
     <p>{{ prescription.tests|linebreaksbr }}</p>
 </div>
@@ -216,7 +234,7 @@
 
 <!-- ================= ADVICE ================= -->
 {% if prescription.notes %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Advice</h4>
     <p>{{ prescription.notes|linebreaksbr }}</p>
 </div>
