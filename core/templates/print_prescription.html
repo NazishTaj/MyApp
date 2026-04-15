@@ -67,6 +67,17 @@
     z-index: 1;
 }
 
+.print-container {
+    min-height: auto !important;
+    height: auto !important;
+}
+
+@media print {
+    nav, header, .navbar, .mobile-menu {
+        display: none !important;
+    }
+}
+
 </style>
 </head>
 
@@ -83,7 +94,7 @@ window.onafterprint = function() {
 </script>
 
 
-<div class="max-w-3xl mx-auto bg-white p-6 relative print-container min-h-screen">
+<div class="max-w-3xl mx-auto bg-white p-6 relative print-container">
     {% if clinic.logo %}
         <div class="presc_watermark">
         <img src="{{ clinic.logo.url }}">
