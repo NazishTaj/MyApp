@@ -8,42 +8,20 @@
 
 <style>
 
-/* grid fix */
+/* ✅ ADD THIS (MOST IMPORTANT) */
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px 12px;
 }
 
-/* presc_watermark */
-.presc_watermark {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.1;
-    z-index: 0;
-    pointer-events: none;
-}
-
-.presc_watermark img {
-    max-width: 300px;
-    max-height: 300px;
-    object-fit: contain;
-}
-
-/* content above presc_watermark */
-.print-container {
-    position: relative;
-    z-index: 1;
-}
-
-/* ✅ PRINT FIXES */
 @media print {
-
     @page {
         size: A4;
         margin: 10mm;
+    }
+        .watermark {
+        opacity: 0.03;
     }
 
     body {
@@ -55,49 +33,41 @@
         print-color-adjust: exact;
     }
 
-    /* 🔥 MAIN FIX (blank page solve) */
-    html, body {
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    .print-container {
-        min-height: auto !important;
-    }
-
-    /* break control */
     .no-break {
         page-break-inside: avoid;
     }
+}
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.05;
+    z-index: 0;
+    pointer-events: none;
+}
 
-    .presc_watermark {
-        position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        opacity: 0.08;
-    }
+.watermark img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* content upar rahe */
+.print-container {
+    position: relative;
+    z-index: 1;
 }
 
 </style>
 </head>
 
-<body>
-<script>
-window.onload = function() {
-    
-    window.print();
-
-};
-window.onafterprint = function() {
-    window.history.back();
-};
-</script>
+<body onload="window.print()">
 
 
-<div class="max-w-3xl mx-auto bg-white p-6 relative print-container">
+<div class="max-w-3xl mx-auto bg-white p-6 relative print-container min-h-screen">
     {% if clinic.logo %}
-        <div class="presc_watermark">
+        <div class="watermark">
         <img src="{{ clinic.logo.url }}">
         </div>
     {% endif %}
@@ -174,7 +144,7 @@ window.onafterprint = function() {
 
 <!-- ================= DIAGNOSIS ================= -->
 {% if prescription.diagnosis %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Diagnosis</h4>
     <p>{{ prescription.diagnosis|linebreaksbr }}</p>
 </div>
@@ -182,7 +152,7 @@ window.onafterprint = function() {
 
 <!-- ================= SYMPTOMS ================= -->
 {% if prescription.symptoms %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Symptoms</h4>
     <p>{{ prescription.symptoms|linebreaksbr }}</p>
 </div>
@@ -238,7 +208,7 @@ window.onafterprint = function() {
 
 <!-- ================= TESTS ================= -->
 {% if prescription.tests %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Tests</h4>
     <p>{{ prescription.tests|linebreaksbr }}</p>
 </div>
@@ -246,7 +216,7 @@ window.onafterprint = function() {
 
 <!-- ================= ADVICE ================= -->
 {% if prescription.notes %}
-<div class="mb-6">
+<div class="mb-6 no-break">
     <h4 class="font-semibold mb-1">Advice</h4>
     <p>{{ prescription.notes|linebreaksbr }}</p>
 </div>
