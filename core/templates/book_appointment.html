@@ -146,7 +146,7 @@
                     </div>
 
                     <!-- Doctor -->
-                    {% if doctors|length > 1 %}
+                    {% if profile.role == "receptionist" and doctors|length > 1 %}
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Select Doctor</label>
                         <select name="doctor_id" id="doctorSelect" class="input-premium">
@@ -158,8 +158,18 @@
                         </select>
                     </div>
                     {% else %}
-                    <input type="hidden" name="doctor_id" value="{{ doctors.0.id }}">
+                        <input type="hidden" name="doctor_id" value="{{ profile.id }}">
+
+                        <div class="mb-4">
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
+                                Doctor
+                            </label>
+                            <div class="input-premium bg-gray-50 cursor-not-allowed">
+                                {{ profile.name }} (Auto Selected)
+                            </div>
+                        </div>
                     {% endif %}
+                                        
 
                     <!-- Visit Type -->
                     <div>
