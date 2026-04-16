@@ -189,7 +189,8 @@
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">Rs.</span>
                                 <input type="number" id="feeInput" name="consultation_fee"
-                                    value="{% if doctors|length == 1 %}{{ doctors.0.consultation_fee }}{% endif %}"
+                                    value="{% if profile.role == 'doctor' or profile.role == 'owner' %}{{ profile.consultation_fee }}{% endif %}"
+                                    
                                     class="input-premium pl-10">
                             </div>
                         </div>
