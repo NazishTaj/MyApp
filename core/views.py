@@ -372,17 +372,20 @@ def book_appointment(request, patient_id):
         role__in=["owner", "doctor"]
         )
 
-        if doctors.count() == 1:
-            doctor = doctors.first()
+        # 🔥 ROLE BASED DOCTOR LOGIC
+        if profile.role in ["doctor", "owner"]:
+            doctor = profile   # auto assign logged-in doctor
+
         else:
             doctor_id = request.POST.get("doctor_id")
 
             if not doctor_id:
                 return render(request, "book_appointment.html", {
-                "patient": patient,
-                "doctors": doctors,
-                "error": "Please select doctor",
-                "billing_enabled": clinic.billing_enabled
+                    "patient": patient,
+                    "doctors": doctors,
+                    "error": "Please select doctor",
+                    "billing_enabled": clinic.billing_enabled,
+                    "profile": profile   # 👈 ADD
                 })
 
             doctor = UserProfile.objects.filter(
@@ -390,13 +393,14 @@ def book_appointment(request, patient_id):
                 clinic=clinic,
                 role__in=["owner", "doctor"]
             ).first()
-           
+
             if not doctor:
                 return render(request, "book_appointment.html", {
                     "patient": patient,
                     "doctors": doctors,
                     "error": "Invalid doctor selected",
-                    "billing_enabled": clinic.billing_enabled
+                    "billing_enabled": clinic.billing_enabled,
+                    "profile": profile   # 👈 ADD
                 }) 
         posted_fee = request.POST.get("consultation_fee")
         fee = float(posted_fee) if posted_fee not in [None, ""] else (doctor.consultation_fee or 0)
@@ -427,7 +431,7 @@ def book_appointment(request, patient_id):
             else:
                 payment_status = "unpaid"
 
-    # ✅ IMPORTANT FIX
+            # ✅ IMPORTANT FIX
             if fee == 0:
                 payment_mode = "free"
             else:
@@ -493,7 +497,8 @@ def book_appointment(request, patient_id):
     return render(request, "book_appointment.html", {
         "patient": patient,
         "doctors": doctors,
-        "billing_enabled": clinic.billing_enabled
+        "billing_enabled": clinic.billing_enabled,
+        "profile": profile
     })
 
 
