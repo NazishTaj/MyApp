@@ -379,3 +379,24 @@ class Permission(models.Model):
 class UserPermission(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+
+from django.db import models
+
+class Medicine(models.Model):
+    name = models.CharField(max_length=255, db_index=True)
+
+    clinic = models.ForeignKey(
+        "Clinic",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    usage_count = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.strip()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
