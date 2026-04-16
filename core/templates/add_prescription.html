@@ -39,7 +39,8 @@
 <!-- Form -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
 
-<form method="POST" onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
+<form method="POST" autocomplete="off"
+onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
 {% csrf_token %}
 
                 {% if profile.role == "receptionist" %}
@@ -153,14 +154,16 @@ autocomplete="off">
 <div>
 <label class="text-xs text-gray-500 sm:hidden">Dosage</label>
 <input name="dosage[]" value="{{ m.dose }}"
-placeholder="1-0-1"
+list="dosage-list"
+placeholder="e.g. 1-0-1 / BD / TDS"
 class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
 <div>
 <label class="text-xs text-gray-500 sm:hidden">Duration</label>
 <input name="duration[]" value="{{ m.duration }}"
-placeholder="5 days"
+list="duration-list"
+placeholder="e.g. 5 days"
 class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
@@ -189,14 +192,16 @@ autocomplete="off">
 
 <div>
 <label class="text-xs text-gray-500 sm:hidden">Dosage</label>
-<input name="dosage[]" placeholder="1-0-1"
+<input name="dosage[]" list="dosage-list" autocomplete="off" placeholder="e.g. 1-0-1 / BD"
 class="border rounded px-2 py-2 text-sm w-full">
+
 </div>
 
 <div>
 <label class="text-xs text-gray-500 sm:hidden">Duration</label>
-<input name="duration[]" placeholder="5 days"
+<input name="duration[]" list="duration-list" autocomplete="off"  placeholder="e.g. 5 days"
 class="border rounded px-2 py-2 text-sm w-full">
+
 </div>
 
 <div>
@@ -245,6 +250,36 @@ Cancel
 </a>
 
 </div>
+<datalist id="dosage-list">
+  <option value="1-0-1">
+  <option value="0-1-0">
+  <option value="1-1-1">
+  <option value="1-0-0">
+  <option value="0-0-1">
+  <option value="OD">
+  <option value="BD">
+  <option value="TDS">
+  <option value="QID">
+  <option value="SOS">
+  <option value="HS">
+  <option value="1x1">
+  <option value="1x2">
+  <option value="1x3">
+  <option value="2x1">
+</datalist>
+
+<datalist id="duration-list">
+  <option value="2 days">
+  <option value="3 days">
+  <option value="4 days">
+  <option value="5 days">
+  <option value="7 days">
+  <option value="10 days">
+  <option value="15 days">
+  <option value="20 days">
+  <option value="1 month">
+  <option value="2 months">
+</datalist>
 
 </form>
 </div>
@@ -296,12 +331,12 @@ autocomplete="off">
 </div>
 
 <div>
-<input name="dosage[]" placeholder="1-0-1"
+<input name="dosage[]" list="dosage-list" autocomplete="off"  placeholder="e.g. 1-0-1 / BD"
 class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
 <div>
-<input name="duration[]" placeholder="5 days"
+<input name="duration[]" list="duration-list" autocomplete="off" placeholder="e.g. 5 days"
 class="border rounded px-2 py-2 text-sm w-full">
 </div>
 
