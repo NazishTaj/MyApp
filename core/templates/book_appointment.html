@@ -247,12 +247,18 @@ if (!feeInput) {
 } else {
 
     function setDoctorFee() {
+
+        // 🧑‍💼 Receptionist case
         if (doctorSelect && doctorSelect.selectedOptions.length > 0) {
             const fee = doctorSelect.selectedOptions[0].dataset.fee || "";
             feeInput.value = fee;
         }
-    }
 
+        // 👨‍⚕️ Doctor case (IMPORTANT FIX)
+        else {
+            feeInput.value = "{{ profile.consultation_fee|default:0 }}";
+        }
+    }
     setDoctorFee();
 
     if (doctorSelect) {
