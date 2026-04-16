@@ -777,6 +777,22 @@ def add_prescription(request, patient_id):
         diagnosis = request.POST.get("diagnosis")
         symptoms = request.POST.get("symptoms")
         medicines = format_medicines(request)
+        # 🔥 AUTO SAVE MEDICINES (yahi daalna hai)
+        med_lines = medicines.split("\n")
+
+        for med in med_lines:
+            med = med.strip()
+
+            if not med:
+                continue
+
+            # name extract
+            if "||" in med:
+                name = med.split("||")[0]
+            else:
+                name = med
+
+            save_medicine(name, clinic)
         tests = request.POST.get("tests")
         notes = request.POST.get("notes")
         weight = request.POST.get("weight")
@@ -2275,3 +2291,37 @@ def revenue_report(request):
         "total_doctor_revenue": total_doctor_revenue,      
         "clinic_revenue": clinic_revenue,          
     })
+
+from django.db.models import Q
+from .models import Medicine
+
+@login_required
+def search_medicine(request):
+    query = request.GET.get('q', '').strip()
+
+    if not query:
+        return JsonResponse([], safe=False)
+
+    clinic = request.user.userprofile.clinic
+
+    medicines = Medicine.objects.filter(
+        Q(clinic=clinic) | Q(clinic__isnull=True),
+        name__istartswith=query
+    ).order_by('-usage_count')[:10]
+
+    return JsonResponse([m.name for m in medicines], safe=False)
+
+def save_medicine(name, clinic):
+    name = name.strip()
+
+    if not name:
+        return
+
+    med, created = Medicine.objects.get_or_create(
+        name__iexact=name,
+        clinic=clinic,
+        defaults={"name": name}
+    )
+
+    med.usage_count += 1
+    med.save(update_fields=["usage_count"])
