@@ -39,7 +39,7 @@
 </style>
 </head>
 
-<body onload="window.print(); window.onafterprint = () => setTimeout(() => window.close(), 300);">
+<body>
 
 <div class="max-w-3xl mx-auto bg-white p-6">
 
@@ -211,6 +211,23 @@ Signature
 </div>
 
 </div>
+
+<script>
+  function isMobile() {
+    return /Android|iPhone|iPad/i.test(navigator.userAgent);
+  }
+
+  window.onload = function () {
+    window.print();
+
+    // Sirf desktop pe auto close
+    if (!isMobile()) {
+      window.onafterprint = function () {
+        window.close();
+      };
+    }
+  };
+</script>
 
 </body>
 </html>
