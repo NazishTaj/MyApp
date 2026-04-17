@@ -84,10 +84,21 @@ onsubmit="return fixWeight()" onkeydown="handleEnter(event)">
                                 </svg>
                                 Blood Group
                             </label>
-                            <input type="text" name="blood_group"
-                                   value="{{ old.blood_group|default:'' }}"
-                                   placeholder="e.g. B+"
-                                   class="input-premium w-full">
+                            <select name="blood_group" class="input-premium w-full">
+                                <option value="">Select Blood Group (Optional)</option>
+                                
+                                <option value="A+" {% if old.blood_group == "A+" %}selected{% endif %}>A+</option>
+                                <option value="A-" {% if old.blood_group == "A-" %}selected{% endif %}>A-</option>
+                                
+                                <option value="B+" {% if old.blood_group == "B+" %}selected{% endif %}>B+</option>
+                                <option value="B-" {% if old.blood_group == "B-" %}selected{% endif %}>B-</option>
+                                
+                                <option value="AB+" {% if old.blood_group == "AB+" %}selected{% endif %}>AB+</option>
+                                <option value="AB-" {% if old.blood_group == "AB-" %}selected{% endif %}>AB-</option>
+                                
+                                <option value="O+" {% if old.blood_group == "O+" %}selected{% endif %}>O+</option>
+                                <option value="O-" {% if old.blood_group == "O-" %}selected{% endif %}>O-</option>
+                            </select>
                         </div>
 </div>
 
