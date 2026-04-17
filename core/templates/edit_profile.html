@@ -71,19 +71,13 @@
         <!-- CONSULTATION FEE -->
         <div>
           <label class="block text-xs font-medium text-surface-500 mb-1.5">Consultation Fee</label>
-          <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-            
-            <span class="px-3 text-gray-400 text-sm bg-gray-50 border-r border-gray-300">
-              ₹
-            </span>
-          
-            <input type="number"
-              name="consultation_fee"
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">₹</span>
+            <input type="number" name="consultation_fee"
               value="{{ profile.consultation_fee }}"
               step="0.01" min="0"
               placeholder="500"
-              class="w-full h-12 px-3 text-sm focus:outline-none bg-white">
-              
+              class="input-premium pl-10">
           </div>
         </div>
 
