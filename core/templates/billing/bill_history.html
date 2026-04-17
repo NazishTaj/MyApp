@@ -4,7 +4,7 @@
 {% block content %}
 
 <!-- Header -->
-<div class="flex items-center justify-between mb-4">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
 
   <!-- Left Content -->
   <div class="pl-1">
@@ -14,7 +14,7 @@
   </div>
 
   <!-- Right Buttons -->
-  <div class="flex items-center gap-3 pr-1">
+  <div class="flex flex-wrap items-center gap-2 sm:gap-3 pr-1">
 
     <!-- Filter Toggle Button -->
     <button onclick="toggleFilter()" id="filterToggleBtn"
