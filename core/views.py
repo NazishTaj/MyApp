@@ -197,7 +197,7 @@ def patient_list(request):
 
     query = request.GET.get("q", "").strip()
 
-    patients_list = Patient.objects.filter(clinic=clinic).order_by('patient_id')
+    patients_list = Patient.objects.filter(clinic=clinic,is_active=True).order_by('patient_id')
 
     if query:
         patients_list = patients_list.filter(
@@ -339,7 +339,8 @@ def delete_patient(request, patient_id):
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
-    patient.delete()
+    patient.is_active = False
+    patient.save()
 
     return redirect("patient_list")
 
