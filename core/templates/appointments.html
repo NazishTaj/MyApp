@@ -86,12 +86,15 @@
    <form method="get" class="card-premium p-4 flex flex-nowrap gap-3 items-center overflow-x-auto">
   
     <!-- Date -->
+     <label class="block text-xs font-medium text-gray-500 mb-1.5">From Date</label>
      <input type="date" name="start_date" value="{{ request.GET.start_date }}" placeholder="From Date" class="input-premium text-sm !w-auto">
 
+    <label class="block text-xs font-medium text-gray-500 mb-1.5">To Date</label>
     <input type="date" name="end_date" value="{{ request.GET.end_date }}" placeholder="To Date" class="input-premium text-sm !w-auto">
 
   
     <!-- Patient -->
+    <label class="block text-xs font-medium text-gray-500 mb-1.5">Patient</label>
     <select name="patient" class="input-premium text-sm w-auto">
       <option value="">All Patients</option>
       {% for p in patients %}
@@ -102,6 +105,7 @@
     </select>
   
     <!-- Doctor -->
+    <label class="block text-xs font-medium text-gray-500 mb-1.5">Doctor</label>
     <select name="doctor" class="input-premium text-sm w-auto">
       <option value="">All Doctors</option>
       {% for d in doctors %}
@@ -110,6 +114,7 @@
     </select>
   
     <!-- Status -->
+    <label class="block text-xs font-medium text-gray-500 mb-1.5">Status</label>
     <select name="status" class="input-premium text-sm w-auto">
       <option value="">All Status</option>
       <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
