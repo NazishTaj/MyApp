@@ -87,6 +87,8 @@ class Patient(models.Model):
     address = models.TextField(blank=True, null=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
+    
+    is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.patient_id:
