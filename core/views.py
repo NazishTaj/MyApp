@@ -137,7 +137,7 @@ def dashboard(request):
     pending_appointments = appointments_today.filter(status="pending").count()
     completed_appointments = appointments_today.filter(status="completed").count()
 
-    total_patients = Patient.objects.filter(clinic=clinic).count()
+    total_patients = Patient.objects.filter(clinic=clinic,is_active=True).count()
     total_appointments = Appointment.objects.filter(clinic=clinic).count()
     from collections import defaultdict  # (top pe import kar lena ek baar)
 
@@ -312,7 +312,7 @@ def edit_patient(request, patient_id):
     if not has_permission(request.user, "manage_patients"):
         return render(request, "403.html", status=403)
 
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
     if request.method == "POST":
 
@@ -359,7 +359,7 @@ def book_appointment(request, patient_id):
     if not has_permission(request.user, "manage_appointments"):
         return render(request, "403.html", status=403)
 
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
     if request.method == "POST":
 
@@ -776,7 +776,7 @@ def add_prescription(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
     if request.method == "POST":
 
@@ -941,7 +941,7 @@ def patient_history(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
    
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
     bills = Bill.objects.filter(
         clinic=clinic,
@@ -994,7 +994,7 @@ def create_bill_for_patient(request, patient_id):
     if not clinic.billing_enabled:
         return redirect("dashboard")
 
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
     if request.method == "POST":
 
@@ -1505,7 +1505,7 @@ def create_bill(request):
     if not clinic.billing_enabled:
         return redirect("dashboard")
 
-    patients = Patient.objects.filter(clinic=clinic)
+    patients = Patient.objects.filter(clinic=clinic,is_active=True)
     doctors = UserProfile.objects.filter(
         clinic=clinic,
         role__in=["owner", "doctor"]
@@ -1518,7 +1518,7 @@ def create_bill(request):
         payment_mode = request.POST.get("payment_mode", "").strip().lower()
         discount_percent = float(request.POST.get("discount") or 0)
 
-        patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
+        patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
    
 
         # 🔥 Bill number generate
@@ -1637,7 +1637,7 @@ def bill_history(request):
     # 🔥 PAGINATION END
 
     # ========== DROPDOWN DATA ==========
-    patients = Patient.objects.filter(clinic=clinic).order_by('name')
+    patients = Patient.objects.filter(clinic=clinic,is_active=True).order_by('name')
     
     # Doctors = UserProfile with role owner/doctor
     doctors = UserProfile.objects.filter(
