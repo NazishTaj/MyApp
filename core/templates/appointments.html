@@ -18,10 +18,14 @@
   </div>
 
   <!-- ✅ Export Button -->
-  <div class="relative">
+  <div class="flex items-center gap-2 relative">
+    <button onclick="toggleFilters()" class="btn-premium btn-secondary text-sm">
+      Filters
+    </button>
     <button onclick="toggleExport()" class="btn-premium btn-primary text-sm flex items-center gap-2 px-6 py-2">
       Export
     </button>
+    
 
     <!-- ✅ FIXED DROPDOWN -->
     <div id="exportMenu"
@@ -69,50 +73,52 @@
     </div>
   </div>
 </div>
+<div id="filterBox" class="hidden mb-4">
+   <form method="get" class="card-premium p-4 flex flex-wrap gap-3 items-center">
+  
+    <!-- Date -->
+    <input type="date" name="start_date" value="{{ request.GET.start_date }}" class="input-premium text-sm w-auto">
 
-<form method="get" class="flex flex-wrap gap-2 mb-4">
+    <input type="date" name="end_date" value="{{ request.GET.end_date }}" class="input-premium text-sm w-auto">
 
-  <!-- Date -->
-  <input type="date" name="start_date" value="{{ request.GET.start_date }}" class="input-premium text-sm">
-  <input type="date" name="end_date" value="{{ request.GET.end_date }}" class="input-premium text-sm">
-
-  <!-- Patient -->
-  <select name="patient" class="input-premium text-sm">
-    <option value="">All Patients</option>
-    {% for p in patients %}
-       <option value="{{ p.id }}" {% if request.GET.patient == p.id|stringformat:"s" %}selected{% endif %}>
-      {{ p.name }}
-      </option>
-    {% endfor %}
-  </select>
-
-  <!-- Doctor -->
-  <select name="doctor" class="input-premium text-sm">
-    <option value="">All Doctors</option>
-    {% for d in doctors %}
-      <option value="{{ d.id }}" {% if request.GET.doctor == d.id|stringformat:"s" %}selected{% endif %}>   {{ d.name }} </option>
-    {% endfor %}
-  </select>
-
-  <!-- Status -->
-  <select name="status" class="input-premium text-sm">
-    <option value="">All Status</option>
-    <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
-    <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>Completed</option>
-    <option value="cancelled" {% if request.GET.status == "cancelled" %}selected{% endif %}>Cancelled</option>
-  </select>
-
-  <!-- Buttons -->
-  <button type="submit" class="btn-premium btn-primary text-sm">
-    Filter
-  </button>
-
-  <a href="{% url 'appointments' %}" class="btn-premium btn-secondary text-sm">
-    Reset
-  </a>
-
-</form>
-
+  
+    <!-- Patient -->
+    <select name="patient" class="input-premium text-sm w-auto">
+      <option value="">All Patients</option>
+      {% for p in patients %}
+         <option value="{{ p.id }}" {% if request.GET.patient == p.id|stringformat:"s" %}selected{% endif %}>
+        {{ p.name }}
+        </option>
+      {% endfor %}
+    </select>
+  
+    <!-- Doctor -->
+    <select name="doctor" class="input-premium text-sm w-auto">
+      <option value="">All Doctors</option>
+      {% for d in doctors %}
+        <option value="{{ d.id }}" {% if request.GET.doctor == d.id|stringformat:"s" %}selected{% endif %}>   {{ d.name }} </option>
+      {% endfor %}
+    </select>
+  
+    <!-- Status -->
+    <select name="status" class="input-premium text-sm w-auto">
+      <option value="">All Status</option>
+      <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
+      <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>Completed</option>
+      <option value="cancelled" {% if request.GET.status == "cancelled" %}selected{% endif %}>Cancelled</option>
+    </select>
+  
+    <!-- Buttons -->
+    <button type="submit" class="btn-premium btn-primary text-sm">
+      Filter
+    </button>
+  
+    <a href="{% url 'appointments' %}" class="btn-premium btn-secondary text-sm">
+      Reset
+    </a>
+  
+  </form>
+</div>
 <!-- ✅ IMPORTANT FIX: overflow-hidden hata diya -->
 <div class="card-premium p-0">
 
@@ -226,6 +232,26 @@ document.addEventListener("click", function(e) {
     if (!menu.contains(e.target)) {
       menu.classList.add("hidden");
     }
+  }
+});
+</script>
+<script>
+function toggleFilters() {
+  const box = document.getElementById("filterBox");
+  box.classList.toggle("hidden");
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const hasFilter =
+    "{{ request.GET.start_date }}" ||
+    "{{ request.GET.end_date }}" ||
+    "{{ request.GET.patient }}" ||
+    "{{ request.GET.doctor }}" ||
+    "{{ request.GET.status }}";
+
+  if (hasFilter) {
+    document.getElementById("filterBox").classList.remove("hidden");
   }
 });
 </script>
