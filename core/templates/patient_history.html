@@ -27,6 +27,9 @@
           <h2 class="text-xl md:text-2xl font-bold text-surface-900 tracking-tight">
             {{ patient.name }}
           </h2>
+          {% if not patient.is_active %}
+            <span class="text-red-500 text-xs ml-2">(Deleted)</span>
+          {% endif %}
           <p class="text-sm text-surface-400 mt-0.5 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -38,23 +41,35 @@
       </div>
 
       <!-- Action Buttons -->
+      
       <div class="flex flex-wrap gap-3">
-        <a href="/add-prescription/{{ patient.id }}/" class="btn-premium btn-primary">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Add Prescription
-        </a>
-
-        <a href="{% url 'create_bill_for_patient' patient.id %}" class="btn-premium btn-secondary">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
-          </svg>
-          Create Bill
-        </a>
+        {% if patient.is_active %}
+          <a href="/add-prescription/{{ patient.id }}/" class="btn-premium btn-primary">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Add Prescription
+          </a>
+  
+          <a href="{% url 'create_bill_for_patient' patient.id %}" class="btn-premium btn-secondary">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+            </svg>
+            Create Bill
+          </a>
+        {% else %}
+           <!-- Deleted Patient -->
+            <button class="btn-premium btn-primary opacity-50 cursor-not-allowed" disabled title="Patient is deleted">
+              Add Prescription
+            </button>
+        
+            <button class="btn-premium btn-secondary opacity-50 cursor-not-allowed" disabled title="Patient is deleted">
+              Create Bill
+            </button>
+        {% endif %}
       </div>
 
-    </div>
+   </div>
 
     <!-- Patient Details Grid -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-8 pt-6 border-t border-surface-100">
