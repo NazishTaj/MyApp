@@ -197,7 +197,7 @@ def patient_list(request):
 
     query = request.GET.get("q", "").strip()
 
-    patients_list = Patient.objects.filter(clinic=clinic,is_active=True).order_by('patient_id')
+    patients_list = Patient.objects.filter(clinic=clinic,is_active=True).order_by('id')
 
     if query:
         patients_list = patients_list.filter(
