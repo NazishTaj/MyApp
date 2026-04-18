@@ -533,6 +533,30 @@ def appointments(request):
     else:
         appointments = Appointment.objects.filter(clinic=clinic)
 
+    
+
+    # ========== FILTERS ==========
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    patient_id = request.GET.get('patient')
+    doctor_id = request.GET.get('doctor')
+    status = request.GET.get('status')
+    
+    if start_date:
+        appointments = appointments.filter(appointment_date__gte=start_date)
+    
+    if end_date:
+        appointments = appointments.filter(appointment_date__lte=end_date)
+    
+    if patient_id:
+        appointments = appointments.filter(patient_id=patient_id)
+    
+    if doctor_id:
+        appointments = appointments.filter(doctor_id=doctor_id)
+    
+    if status:
+        appointments = appointments.filter(status=status)
+
     appointments = appointments.order_by("-appointment_date", "appointment_time")
     # ✅ pagination
     per_page = request.GET.get("limit", 20)
@@ -549,16 +573,20 @@ def appointments(request):
     page = request.GET.get("page")
     appointments = paginator.get_page(page)
 
+    # ========== DROPDOWN DATA ==========
+    patients = Patient.objects.filter(clinic=clinic).order_by('name')
+    
     doctors = UserProfile.objects.filter(
         clinic=clinic,
         role__in=["owner", "doctor"]
-    )
-
+    ).order_by('name')
     show_doctor_column = doctors.count() > 1
 
     return render(request, "appointments.html", {
         "appointments": appointments,
         "show_doctor_column": show_doctor_column,
+        "patients": patients,
+        "doctors": doctors,
          "limit": per_page
     })
 
