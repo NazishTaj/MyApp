@@ -1637,7 +1637,7 @@ def bill_history(request):
     # 🔥 PAGINATION END
 
     # ========== DROPDOWN DATA ==========
-    patients = Patient.objects.filter(clinic=clinic,is_active=True).order_by('name')
+    patients = Patient.objects.filter(clinic=clinic).order_by('name')
     
     # Doctors = UserProfile with role owner/doctor
     doctors = UserProfile.objects.filter(
