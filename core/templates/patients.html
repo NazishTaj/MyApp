@@ -122,17 +122,17 @@
         </tr>
         {% empty %}
           <tr>
-          <td colspan="5" class="text-center py-10">
+          <td colspan="5" class="py-16 text-center align-middle">
 
-          <div class="flex flex-col items-center justify-center gap-4">
+          <div class="flex flex-col items-center justify-center gap-3">
           
-          <p class="text-gray-500 mb-4">
+          <p class="text-gray-500 text-sm">
           No patients found
           </p>
           
           {% if query and query|length == 10 and query.isdigit %}
           <a href="{% url 'add_patient' %}?phone={{ query }}"
-          class="btn-premium btn-primary btn-sm w-auto px-4 py-2">
+          class="btn-premium btn-secondary btn-sm w-auto px-4 py-2">
           Add New Patient
           </a>
           {% else %}
