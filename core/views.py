@@ -969,7 +969,7 @@ def patient_history(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
    
-    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
+    patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
     bills = Bill.objects.filter(
         clinic=clinic,
