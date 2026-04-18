@@ -132,7 +132,7 @@
           
           {% if query and query|length == 10 and query.isdigit %}
           <a href="{% url 'add_patient' %}?phone={{ query }}"
-          class="btn-premium btn-secondary btn-sm w-auto px-4 py-2">
+          class="btn-premium btn-secondary">
           Add New Patient
           </a>
           {% else %}
