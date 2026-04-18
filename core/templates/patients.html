@@ -128,7 +128,7 @@
           No patients found
           </p>
           
-          {% if query and query|length == 10 %}
+          {% if query and query|length == 10 and query.isdigit %}
           <a href="{% url 'add_patient' %}?phone={{ query }}"
           class="btn-premium btn-primary">
           Add New Patient
