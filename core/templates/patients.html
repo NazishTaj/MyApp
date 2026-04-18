@@ -21,7 +21,8 @@
       type="text" 
       name="q"
       value="{{ query }}"
-      placeholder="Search patient..."
+      placeholder="Search patient by name or phone"
+      oninput="handleSearchInput(this)"
       class="input-premium flex-1 min-w-[220px]">
 
 
@@ -119,6 +120,30 @@
             </div>
           </td>
         </tr>
+        {% empty %}
+          <tr>
+          <td colspan="5" class="text-center py-10">
+          
+          <p class="text-gray-500 mb-4">
+          No patients found
+          </p>
+          
+          {% if query and query|length == 10 %}
+          <a href="{% url 'add_patient' %}?phone={{ query }}"
+          class="btn-premium btn-primary">
+          Add New Patient
+          </a>
+          {% else %}
+          <a href="{% url 'add_patient' %}"
+          class="btn-premium btn-primary">
+          Add New Patient
+          </a>
+          {% endif %}
+          
+          </td>
+          </tr>
+
+        
         {% endfor %}
       </tbody>
     </table>
@@ -190,6 +215,24 @@ document.addEventListener("click", () => {
     d.classList.add("hidden");
   });
 });
+</script>
+<script>
+function handleSearchInput(input){
+  let value = input.value
+
+  // 🔢 Agar sirf number hai
+  if (/^\d*$/.test(value)) {
+    if (value.length > 10) {
+      input.value = value.slice(0, 10)
+    }
+  } 
+  // 🔤 Agar text hai (name search)
+  else {
+    if (value.length > 40) {
+      input.value = value.slice(0, 40)
+    }
+  }
+}
 </script>
 
 {% endblock %}
