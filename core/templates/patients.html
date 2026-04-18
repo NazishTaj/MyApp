@@ -65,7 +65,8 @@
     <table class="table-premium">
       <thead class="sticky top-0 bg-gray-50 z-10">
         <tr>
-          <th>#</th>
+          <th>S No.</th>
+          <th>Patient ID</th>
           <th>Name</th>
           <th>Phone</th>
           <th>Age</th>
@@ -77,6 +78,12 @@
         {% for patient in patients %}
         <tr>
           <td>{{ forloop.counter }}</td>
+
+          <td>
+             <span class="px-2 py-1 text-xs bg-gray-100 rounded-lg font-semibold">
+              PT-{{ patient.id|stringformat:"04d" }}
+            </span>
+          </td>
           <td class="font-medium">{{ patient.name }}</td>
           <td>{{ patient.phone }}</td>
           <td>{{ patient.age }} yrs</td>
