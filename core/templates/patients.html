@@ -65,7 +65,7 @@
     <table class="table-premium">
       <thead class="sticky top-0 bg-gray-50 z-10">
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Name</th>
           <th>Phone</th>
           <th>Age</th>
@@ -76,7 +76,7 @@
       <tbody>
         {% for patient in patients %}
         <tr>
-          <td>{{ patient.patient_id }}</td>
+          <td>{{ forloop.counter }}</td>
           <td class="font-medium">{{ patient.name }}</td>
           <td>{{ patient.phone }}</td>
           <td>{{ patient.age }} yrs</td>
