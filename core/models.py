@@ -94,7 +94,7 @@ class Patient(models.Model):
         if not self.patient_id:
             last_patient = Patient.objects.filter(
                 clinic=self.clinic
-            ).order_by('-id').first()
+            ).order_by('-patient_id').first()
 
             if last_patient:
                 self.patient_id = last_patient.patient_id + 1
