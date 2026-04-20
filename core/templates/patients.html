@@ -6,29 +6,28 @@
 
 
 <!-- Page Header -->
-<div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+<div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
 <p class="text-sm text-gray-800">
   Search or add patients to quickly schedule appointments
 </p>
 
-  <a href="{% url 'add_patient' %}" class="btn-premium btn-primary">
+  <a href="{% url 'add_patient' %}" class="btn-premium btn-primary w-full sm:w-auto">
     + Add Patient
   </a>
 </div>
 
 <!-- Search -->
-<div class="card-premium mb-4 p-6">
-  <form method="GET" class="flex gap-3 flex-wrap">
+<div class="card-premium mb-4 p-4 sm:p-6">
+  <form method="GET" class="flex gap-2 sm:gap-3 flex-col sm:flex-row">
     <input 
       type="text" 
       name="q"
       value="{{ query }}"
       placeholder="Search patient by name or phone"
       oninput="handleSearchInput(this)"
-      class="input-premium flex-1 min-w-[220px]">
+      class="input-premium flex-1 min-w-0">
 
-
-    <button type="submit" class="btn-premium btn-secondary">
+    <button type="submit" class="btn-premium btn-secondary w-full sm:w-auto">
       Search
     </button>
   </form>
@@ -38,8 +37,8 @@
 <div class="card-premium !p-0 overflow-visible">
 
   <!-- Table Header -->
-<div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-<div class="flex justify-between items-center">
+<div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+<div class="flex justify-between items-center flex-col sm:flex-row gap-3 sm:gap-0">
 <div>
 <h3 class="font-semibold text-gray-900 text-lg">Patient List</h3>
 {% if patients.paginator.count %}
@@ -48,12 +47,12 @@
 </div>
 
     <!-- 🔥 LIMIT DROPDOWN -->
-    <form method="GET" class="flex items-center gap-2">
+    <form method="GET" class="flex items-center gap-2 w-full sm:w-auto">
 
       <!-- search preserve -->
       <input type="hidden" name="q" value="{{ query }}">
 
-      <label class="text-sm text-gray-600">Rows:</label>
+      <label class="text-sm text-gray-600 whitespace-nowrap">Rows:</label>
 
       <select name="limit" onchange="this.form.submit()" class="input-premium w-20">
         <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
@@ -65,9 +64,8 @@
   </div>
   </div>
 
-  <!-- 🔥 ONLY THIS SCROLL -->
-  <div class="max-h-[400px] overflow-y-auto">
-
+  <!-- 🔥 DESKTOP TABLE VIEW (md and above) -->
+  <div class="max-h-[400px] overflow-y-auto hidden md:block">
     <table class="table-premium">
       <thead class="sticky top-0 bg-gray-50 z-10">
         <tr>
@@ -107,12 +105,12 @@
 
               <div class="relative">
                 <button type="button"
-                  onclick="toggleDropdown(event, {{ patient.id }})"
+                  onclick="toggleDropdown(event, {{ patient.id }}, 'desktop')"
                   class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
                   ⋮
                 </button>
 
-                <div id="dropdown-{{ patient.id }}"
+                <div id="dropdown-desktop-{{ patient.id }}"
                   class="absolute right-0 hidden bg-white border border-gray-200 shadow-xl rounded-xl w-48 z-50">
 
                   <a href="{% url 'edit_patient' patient.id %}"
@@ -158,12 +156,100 @@
           
           </td>
           </tr>
-
-        
         {% endfor %}
       </tbody>
     </table>
+  </div>
 
+  <!-- 🔥 MOBILE CARD VIEW (below md) -->
+  <div class="md:hidden space-y-3 p-4">
+    {% for patient in patients %}
+    <div class="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow overflow-visible">
+      <!-- Row 1: S No & Patient ID -->
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <p class="text-xs text-gray-500">S No.</p>
+          <p class="font-semibold text-gray-900">{{ forloop.counter }}</p>
+        </div>
+        <span class="px-2 py-1 text-xs bg-gray-100 rounded-lg font-semibold">
+          PT-{{ patient.patient_id|stringformat:"04d" }}
+        </span>
+      </div>
+
+      <!-- Row 2: Name -->
+      <div class="mb-3">
+        <p class="text-xs text-gray-500">Name</p>
+        <p class="font-medium text-gray-900">{{ patient.name }}</p>
+      </div>
+
+      <!-- Row 3: Phone & Age -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <p class="text-xs text-gray-500">Phone</p>
+          <p class="text-sm text-gray-900">{{ patient.phone }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500">Age</p>
+          <p class="text-sm text-gray-900">{{ patient.age }} yrs</p>
+        </div>
+      </div>
+
+      <!-- Row 4: Actions -->
+      <div class="flex gap-2 flex-wrap items-center">
+        <a href="{% url 'book_appointment' patient.id %}" class="btn-premium btn-primary btn-sm flex-1 min-w-[100px]">
+          Book
+        </a>
+
+        <a href="/patient-history/{{ patient.id }}/" class="btn-premium btn-outline btn-sm flex-1 min-w-[100px]">
+          Profile
+        </a>
+
+        <div class="relative z-[60]">
+          <button type="button"
+            onclick="toggleDropdown(event, {{ patient.id }}, 'mobile')"
+            class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100">
+            ⋮
+          </button>
+
+          <div id="dropdown-mobile-{{ patient.id }}"
+            class="absolute right-0 top-full mt-2 hidden bg-white border border-gray-200 shadow-lg rounded-xl w-48 z-[100]">
+
+            <a href="{% url 'edit_patient' patient.id %}"
+              class="block px-4 py-2 hover:bg-gray-100 text-sm">
+              ✏️ Edit Patient
+            </a>
+
+            <a href="{% url 'delete_patient' patient.id %}"
+              onclick="return confirm('Delete this patient?')"
+              class="block px-4 py-2 text-red-500 hover:bg-red-50 text-sm">
+              🗑️ Delete Patient
+            </a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="py-12 text-center">
+      <div class="flex flex-col items-center justify-center gap-4">
+        <p class="text-gray-500 text-sm">
+          No patients found
+        </p>
+        
+        {% if query and query|length == 10 and query.isdigit %}
+        <a href="{% url 'add_patient' %}?phone={{ query }}"
+        class="btn-premium btn-secondary btn-sm w-auto px-4 py-2">
+        Add New Patient
+        </a>
+        {% else %}
+        <a href="{% url 'add_patient' %}"
+        class="btn-premium btn-primary">
+        Add New Patient
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
   
 <!-- 🔥 PAGINATION OUTSIDE -->
@@ -193,41 +279,44 @@
 </div>
 
 <script>
-function toggleDropdown(e, id) {
+function toggleDropdown(e, id, type) {
   e.stopPropagation();
 
-  const el = document.getElementById("dropdown-" + id);
-  const row = e.currentTarget.closest("tr");
+  const el = document.getElementById(`dropdown-${type}-` + id);
 
   // close others
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+    document.querySelectorAll(`[id^='dropdown-${type}-']`).forEach(d => {
     if (d !== el) d.classList.add("hidden");
   });
 
   el.classList.toggle("hidden");
 
   if (!el.classList.contains("hidden")) {
+    // For desktop table rows only - adjust position
+    const row = e.currentTarget.closest("tr");
+    
+    if (row) {
+      el.classList.remove("top-full", "bottom-full", "mt-2", "mb-2");
+      
+      // find row position
+      const allRows = Array.from(document.querySelectorAll("tbody tr"));
+      const index = allRows.indexOf(row);
+      const total = allRows.length;
 
-    // reset
-    el.classList.remove("top-full", "bottom-full", "mt-2", "mb-2");
-
-    // 🔥 find row position
-    const allRows = Array.from(document.querySelectorAll("tbody tr"));
-    const index = allRows.indexOf(row);
-    const total = allRows.length;
-
-    // 🔥 LAST 2 ROWS → OPEN UP
-    if (total > 2 && index >= total - 2) {
-      el.classList.add("bottom-full", "mb-2");
-    } else {
-      el.classList.add("top-full", "mt-2");
+      // LAST 2 ROWS → OPEN UP
+      if (total > 2 && index >= total - 2) {
+        el.classList.add("bottom-full", "mb-2");
+      } else {
+        el.classList.add("top-full", "mt-2");
+      }
     }
+    // On mobile cards, dropdown defaults to top-full mt-2
   }
 }
 
 // close outside
 document.addEventListener("click", () => {
-  document.querySelectorAll("[id^='dropdown-']").forEach(d => {
+   document.querySelectorAll("[id^='dropdown-']").forEach(d => {
     d.classList.add("hidden");
   });
 });
