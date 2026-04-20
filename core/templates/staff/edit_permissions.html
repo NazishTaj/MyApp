@@ -5,22 +5,21 @@
 <div class="px-4 md:px-2 py-2">
 
     <!-- Back Navigation -->
-    <a href="/staff/" class="btn-premium btn-ghost inline-flex items-center gap-2 mb-4">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-        </svg>
-        Back to Team
-    </a>
-
-    <!-- Header -->
-   
-
-
-        <p class="text-sm text-gray-500 mt-1">
+    <div class="flex items-center gap-4 mb-4">
+        <p class="text-sm text-gray-500">
             Configure permissions for 
             <span class="font-medium text-gray-700">{{ staff.name }}</span>
         </p>
+
+         <a href="/staff/" class="btn-premium btn-ghost inline-flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to Team
+        </a>
+    
     </div>
+   
 
     <!-- GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
