@@ -211,7 +211,7 @@ function toggleDropdown(e, id) {
     const total = allRows.length;
 
     // 🔥 LAST 2 ROWS → OPEN UP
-    if (index >= total - 2) {
+    if (total > 2 && index >= total - 2) {
       el.classList.add("bottom-full", "mb-2");
     } else {
       el.classList.add("top-full", "mt-2");
