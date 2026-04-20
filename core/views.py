@@ -1920,7 +1920,18 @@ def edit_staff_permissions(request, staff_id):
 
     staff = get_object_or_404(UserProfile, id=staff_id, clinic=clinic)
 
-    permissions = Permission.objects.all()
+    order = [
+        "manage_patients",
+        "manage_appointments",
+        "create_prescription",
+        "view_prescription",
+        "manage_billing"
+    ]
+    
+    permissions = sorted(
+        Permission.objects.all(),
+        key=lambda x: order.index(x.code) if x.code in order else 999
+    )
 
     # 🔥 CLEAN LABEL BANANE KE LIYE
     permissions_data = []
