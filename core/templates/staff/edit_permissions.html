@@ -71,6 +71,17 @@
                                     <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
+                                    {% elif perm.code == "view_prescription" %}
+                                        <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" 
+                                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5
+                                                     c4.478 0 8.268 2.943 9.542 7
+                                                     -1.274 4.057-5.064 7-9.542 7
+                                                     -4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
                                     {% elif perm.code == "manage_billing" %}
                                     <svg class="w-4 h-4 text-gray-600 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -92,9 +103,14 @@
                                         {% elif perm.code == "manage_appointments" %}
                                             Can book, update, and manage appointments.
                                         {% elif perm.code == "create_prescription" %}
-                                            Can create and view prescriptions for patients. 
+                                            Can create prescriptions for patients. 
                                             <span class="text-rose-500 font-medium">
-                                                If disabled, user cannot create or view prescriptions.
+                                            If disabled, user cannot create prescriptions.
+                                            </span>
+                                        {% elif perm.code == "view_prescription" %}
+                                             Can view prescriptions of patients.
+                                            <span class="text-rose-500 font-medium">
+                                                If disabled, user cannot view prescriptions.
                                             </span>
                                         {% elif perm.code == "manage_billing" %}
                                             Can create bills and access billing history.
@@ -220,7 +236,7 @@
                             <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                             </svg>
-                            <span class="opacity-95">Create Prescription - Create & view prescriptions</span>
+                            <span class="opacity-95">Prescription Access - Create and view prescriptions</span>
                         </li>
                         <li class="flex items-start gap-3 bg-white/10 rounded-lg px-3 py-2.5">
                             <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
