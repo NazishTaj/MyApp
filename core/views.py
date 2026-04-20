@@ -890,6 +890,9 @@ def add_prescription(request, patient_id):
 @login_required(login_url="login")
 def revise_prescription(request, id):
 
+    if not has_permission(request.user, "create_prescription"):
+        return render(request, "403.html", status=403)
+
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
@@ -1077,7 +1080,7 @@ def view_prescription(request, id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
-    if not has_permission(request.user, "create_prescription"):
+    if not has_permission(request.user, "view_prescription"):
         return render(request, "403.html", status=403)
 
     prescription = get_object_or_404(
@@ -1860,6 +1863,7 @@ def add_staff(request):
                 "manage_patients",
                 "manage_appointments",
                 "create_prescription",
+                "view_prescription",
                 "manage_billing"
             ]
 
