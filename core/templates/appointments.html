@@ -159,8 +159,14 @@
           </td>
           <td>
             {% if a.status == "pending" %}
-              <a href="/complete-appointment/{{ a.id }}/" class="btn-premium btn-success btn-sm">Complete</a>
-              <a href="/cancel-appointment/{{ a.id }}/" class="btn-premium btn-danger btn-sm">Cancel</a>
+              <button onclick="completeAppointment({{ a.id }})"
+                class="btn-premium btn-success btn-sm">
+                Complete
+              </button>
+              <button onclick="cancelAppointment({{ a.id }})"
+                class="btn-premium btn-danger btn-sm">
+                Cancel
+              </button>
             {% else %}
               <span class="text-xs text-gray-400">No actions</span>
             {% endif %}
@@ -213,8 +219,8 @@
       <!-- Actions -->
       {% if a.status == "pending" %}
       <div class="flex gap-2">
-        <a href="/complete-appointment/{{ a.id }}/" class="btn-premium btn-success btn-sm flex-1 text-center">✓ Complete</a>
-        <a href="/cancel-appointment/{{ a.id }}/" class="btn-premium btn-danger btn-sm flex-1 text-center">✕ Cancel</a>
+        <button onclick="completeAppointment({{ a.id }})" class="btn-premium btn-success btn-sm flex-1 text-center">✓ Complete</button>
+        <button onclick="cancelAppointment({{ a.id }})" class="btn-premium btn-danger btn-sm flex-1 text-center">✕ Cancel</button>
       </div>
       {% endif %}
     </div>
@@ -261,6 +267,52 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("filterBox").classList.remove("hidden");
   }
 });
+</script>
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function cancelAppointment(id) {
+    fetch(`/cancel-appointment/${id}/`, {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        location.reload(); // ✅ simple & perfect
+    })
+    .catch(err => console.error(err));
+}
+
+function completeAppointment(id) {
+    fetch(`/complete-appointment/${id}/`, {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        location.reload(); // ✅
+    })
+    .catch(err => console.error(err));
+}
 </script>
 
 {% endblock %}
