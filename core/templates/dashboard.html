@@ -444,19 +444,22 @@ function connectSocket() {
 
                 } else {
 
-                    const statusText = tr.querySelector(".status").innerText;
+                const statusText = tr.querySelector(".status").innerText;
 
-                    actionsHTML = `
-                        <a href="/add-prescription/${patientId}/" 
-                        class="btn-premium btn-primary btn-sm">Prescription</a>
+                actionsHTML = `
+                    <a href="/add-prescription/${patientId}/" 
+                    class="btn-premium btn-primary btn-sm">Prescription</a>
+                `;
+                
+                if (
+                    !statusText.includes("Completed") &&
+                    !statusText.includes("Cancelled")
+                ) {
+                    actionsHTML += `
+                    <button onclick="completeAppointment(${id})"
+                    class="btn-premium btn-success btn-sm">Complete</button>
                     `;
-
-                    if (!statusText.includes("Completed")) {
-                        actionsHTML += `
-                        <button onclick="completeAppointment(${id})"
-                        class="btn-premium btn-success btn-sm">Complete</button>
-                        `;
-                    }
+                }
                 }
 
                 tr.querySelector(".actions-container").innerHTML = actionsHTML;
@@ -578,17 +581,17 @@ function refreshFromServer() {
 
             } else {
 
-                actionsHTML = `
-                    <a href="/add-prescription/${patientId}/" 
-                    class="btn-premium btn-primary btn-sm">Prescription</a>
+            actionsHTML = `
+                <a href="/add-prescription/${patientId}/" 
+                class="btn-premium btn-primary btn-sm">Prescription</a>
+            `;
+            
+            if (appt.status !== "completed" && appt.status !== "cancelled") {
+                actionsHTML += `
+                <button onclick="completeAppointment(${id})"
+                class="btn-premium btn-success btn-sm">Complete</button>
                 `;
-
-                if (appt.status !== "completed") {
-                    actionsHTML += `
-                    <button onclick="completeAppointment(${id})"
-                    class="btn-premium btn-success btn-sm">Complete</button>
-                    `;
-                }
+            }
             }
 
             tr.querySelector(".actions-container").innerHTML = actionsHTML;
