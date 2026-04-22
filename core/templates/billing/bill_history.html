@@ -2,19 +2,6 @@
 {% block page_title %}Billing{% endblock %}
 
 {% block content %}
-<style>
-input[type="date"] {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-@supports (-webkit-touch-callout: none) {
-  input[type="date"] {
-    font-size: 16px; /* zoom prevent karta hai */
-  }
-}
-</style>
 
 <!-- Header -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -122,17 +109,17 @@ input[type="date"] {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
 
         <!-- Date From -->
-        <div class="min-w-0 overflow-hidden">
+        <div>
           <label class="block text-xs font-medium text-gray-500 mb-1.5">From Date</label>
           <input type="date" name="start_date" value="{{ request.GET.start_date }}"
-            class="input-premium w-full text-sm min-w-0 max-w-full">
+            class="input-premium w-full text-sm">
         </div>
 
         <!-- Date To -->
-        <div class="min-w-0 overflow-hidden">
+        <div>
           <label class="block text-xs font-medium text-gray-500 mb-1.5">To Date</label>
           <input type="date" name="end_date" value="{{ request.GET.end_date }}"
-            class="input-premium w-full text-sm min-w-0 max-w-full">
+            class="input-premium w-full text-sm">
         </div>
 
         <!-- Patient Filter -->
