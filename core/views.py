@@ -1832,7 +1832,15 @@ def download_prescription_pdf(request, id):
 
     # 🔥 response
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="prescription_{id}.pdf"'
+    import re
+
+    patient_name = prescription.patient.name
+    patient_name = re.sub(r'[^a-zA-Z0-9 ]', '', patient_name)
+    patient_name = patient_name.strip().replace(" ", "_")
+    
+    filename = f"{patient_name}_prescription.pdf"
+    
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     return response
 
