@@ -17,6 +17,9 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.template.loader import render_to_string
 from weasyprint import HTML
+import threading
+
+PDF_SEMAPHORE = threading.Semaphore(2)
 
 def clinic_blocked(request):
     return render(request, 'clinic_blocked.html')
@@ -1786,63 +1789,62 @@ def print_prescription(request, id):
 @login_required(login_url="login")
 def download_prescription_pdf(request, id):
 
-    profile = get_object_or_404(UserProfile, user=request.user)
-    clinic = profile.clinic
+    with PDF_SEMAPHORE:   # 🔥 YAHI MAGIC LINE HAI
 
-    prescription = get_object_or_404(
-        Prescription,
-        id=id,
-        clinic=clinic
-    )
+        profile = get_object_or_404(UserProfile, user=request.user)
+        clinic = profile.clinic
 
-    # 🔥 SAME med logic
-    med_lines = []
+        prescription = get_object_or_404(
+            Prescription,
+            id=id,
+            clinic=clinic
+        )
 
-    if prescription.medicines:
-        for med in prescription.medicines.split("\n"):
-            if "||" in med:
-                parts = med.split("||")
-                med_lines.append({
-                    "name": parts[0],
-                    "dose": parts[1] if len(parts) > 1 else "",
-                    "duration": parts[2] if len(parts) > 2 else "",
-                    "remark": parts[3] if len(parts) > 3 else "",
-                })
-            else:
-                med_lines.append({
-                    "name": med,
-                    "dose": "",
-                    "duration": "",
-                    "remark": "",
-                })
+        # med logic (same)
+        med_lines = []
 
-    # 🔥 HTML render
-    html_string = render_to_string("print_prescription.html", {
-        "prescription": prescription,
-        "clinic": clinic,
-        "med_lines": med_lines,
-        "hide_watermark": True
-    })
+        if prescription.medicines:
+            for med in prescription.medicines.split("\n"):
+                if "||" in med:
+                    parts = med.split("||")
+                    med_lines.append({
+                        "name": parts[0],
+                        "dose": parts[1] if len(parts) > 1 else "",
+                        "duration": parts[2] if len(parts) > 2 else "",
+                        "remark": parts[3] if len(parts) > 3 else "",
+                    })
+                else:
+                    med_lines.append({
+                        "name": med,
+                        "dose": "",
+                        "duration": "",
+                        "remark": "",
+                    })
 
-    # 🔥 PDF generate
-    pdf = HTML(
-        string=html_string,
-        base_url=request.build_absolute_uri("/")
-    ).write_pdf()
+        html_string = render_to_string("print_prescription.html", {
+            "prescription": prescription,
+            "clinic": clinic,
+            "med_lines": med_lines,
+            "hide_watermark": True
+        })
 
-    # 🔥 response
-    response = HttpResponse(pdf, content_type='application/pdf')
-    import re
+        pdf = HTML(
+            string=html_string,
+            base_url=request.build_absolute_uri("/")
+        ).write_pdf()
 
-    patient_name = prescription.patient.name
-    patient_name = re.sub(r'[^a-zA-Z0-9 ]', '', patient_name)
-    patient_name = patient_name.strip().replace(" ", "_")
-    
-    filename = f"{patient_name}_prescription.pdf"
-    
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response = HttpResponse(pdf, content_type='application/pdf')
 
-    return response
+        import re
+        patient_name = prescription.patient.name
+        patient_name = re.sub(r'[^a-zA-Z0-9 ]', '', patient_name)
+        patient_name = patient_name.strip().replace(" ", "_")
+
+        filename = f"{patient_name}_prescription.pdf"
+
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        return response
 
 @login_required
 def enable_advanced_mode(request):
