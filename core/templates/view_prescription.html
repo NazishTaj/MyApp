@@ -2,6 +2,26 @@
 {% block page_title %}Prescription{% endblock %}
 
 {% block content %}
+<style>
+/* PDF MODE FIX */
+.pdf-mode {
+    width: 794px;
+    margin: auto;
+    box-sizing: border-box;
+    padding: 20px;
+    background: white;
+}
+
+
+.pdf-mode .bg-white {
+    padding: 10px !important;
+}
+
+
+.pdf-mode .print-hidden {
+    display: none !important;
+}
+</style>
 
 <div id="print-area" class="max-w-3xl mx-auto px-3 sm:px-0">
 
@@ -231,7 +251,7 @@ Signature
 
 <!-- Buttons -->
 
-<div class="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
+<div class="mt-6 flex flex-col sm:flex-row gap-3 print-hidden">
 
 <a href="/prescription/{{ prescription.id }}/revise/"
 class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition shadow-sm">
@@ -243,12 +263,39 @@ onclick="printPrescription({{ prescription.id }})"
 class="w-full sm:w-auto px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
 🖨 Print
 </button>
+<button onclick="downloadPDF()"
+class="w-full sm:w-auto px-4 py-2 text-sm bg-blue-500 text-white rounded-lg">
+📄 PDF
+</button>
 
 </div>
 
 <script>
 function printPrescription(id){
     window.open(`/prescription/${id}/print/`, '_blank');
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+function downloadPDF() {
+
+    const element = document.getElementById("print-area");
+
+    // PDF mode ON
+    element.classList.add("pdf-mode");
+
+    const opt = {
+        margin: [0, 0, 0, 0],
+        filename: 'prescription.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove("pdf-mode");
+    });
 }
 </script>
 
