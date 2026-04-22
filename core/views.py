@@ -1636,22 +1636,31 @@ def bill_history(request):
     if not clinic.billing_enabled:
         return redirect("dashboard")
 
-    bills = Bill.objects.filter(clinic=clinic).order_by("-created_at")
+    bills = Bill.objects.filter(clinic=clinic)
 
-    # ========== FILTERS ==========
+    # filters
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     patient_id = request.GET.get('patient')
     doctor_id = request.GET.get('doctor')
-
+    
     if start_date:
         bills = bills.filter(created_at__date__gte=start_date)
+    
     if end_date:
         bills = bills.filter(created_at__date__lte=end_date)
+    
     if patient_id:
         bills = bills.filter(patient_id=patient_id)
+    
     if doctor_id:
         bills = bills.filter(doctor_id=doctor_id)
+    
+    # 🔥 YAHI MAIN MAGIC HAI
+    if start_date or end_date:
+        bills = bills.order_by("created_at")   # filter me ascending
+    else:
+        bills = bills.order_by("-created_at")  # normal me descending
     
     # 🔥 PAGINATION START
     from django.core.paginator import Paginator
