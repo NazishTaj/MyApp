@@ -12,6 +12,20 @@
     background: white;
 }
 
+/* 🔥 FORCE DESKTOP LAYOUT */
+.pdf-mode .flex {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+}
+
+.pdf-mode .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.pdf-mode .px-3 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
 
 .pdf-mode .bg-white {
     padding: 10px !important;
@@ -289,7 +303,7 @@ function downloadPDF() {
         margin: [0, 0, 0, 0],
         filename: 'prescription.pdf',
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true,  windowWidth: 1024 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
