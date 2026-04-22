@@ -15,6 +15,8 @@ from django.core.exceptions import ValidationError
 from .models import Bill, BillItem, UserProfile
 from django.db.models import Sum
 from django.utils import timezone
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
 def clinic_blocked(request):
     return render(request, 'clinic_blocked.html')
@@ -1780,6 +1782,59 @@ def print_prescription(request, id):
         "med_lines": med_lines,
         "hide_watermark": True   # 🔥 IMPORTANT
     })
+
+@login_required(login_url="login")
+def download_prescription_pdf(request, id):
+
+    profile = get_object_or_404(UserProfile, user=request.user)
+    clinic = profile.clinic
+
+    prescription = get_object_or_404(
+        Prescription,
+        id=id,
+        clinic=clinic
+    )
+
+    # 🔥 SAME med logic
+    med_lines = []
+
+    if prescription.medicines:
+        for med in prescription.medicines.split("\n"):
+            if "||" in med:
+                parts = med.split("||")
+                med_lines.append({
+                    "name": parts[0],
+                    "dose": parts[1] if len(parts) > 1 else "",
+                    "duration": parts[2] if len(parts) > 2 else "",
+                    "remark": parts[3] if len(parts) > 3 else "",
+                })
+            else:
+                med_lines.append({
+                    "name": med,
+                    "dose": "",
+                    "duration": "",
+                    "remark": "",
+                })
+
+    # 🔥 HTML render
+    html_string = render_to_string("print_prescription.html", {
+        "prescription": prescription,
+        "clinic": clinic,
+        "med_lines": med_lines,
+        "hide_watermark": True
+    })
+
+    # 🔥 PDF generate
+    pdf = HTML(
+        string=html_string,
+        base_url=request.build_absolute_uri("/")
+    ).write_pdf()
+
+    # 🔥 response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="prescription_{id}.pdf"'
+
+    return response
 
 @login_required
 def enable_advanced_mode(request):
