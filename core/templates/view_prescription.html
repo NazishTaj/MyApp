@@ -231,23 +231,29 @@ Signature
 
 <!-- Buttons -->
 
-<div class="mt-6 flex flex-col sm:flex-row gap-3 print:hidden">
+<div class="mt-6 print:hidden">
 
-<a href="/prescription/{{ prescription.id }}/revise/"
-class="w-full sm:w-auto text-center px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition shadow-sm">
-✏️ Revise
-</a>
+  <!-- 🔥 MAIN BUTTON (PRINT) -->
+  <button
+    onclick="printPrescription({{ prescription.id }})"
+    class="w-full py-2 btn-primary rounded-md text-sm font-medium shadow-sm transition">
+    🖨️ Print Prescription
+  </button>
 
-<button
-onclick="printPrescription({{ prescription.id }})"
-class="w-full sm:w-auto px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition shadow-sm">
-🖨 Print
-</button>
+  <!-- 👇 Secondary options -->
+  <div class="flex justify-center gap-4 mt-3 text-sm">
 
-<a href="/prescription/{{ prescription.id }}/pdf/"
-   class="w-full sm:w-auto px-4 py-2 text-sm text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-sm">
-   📄 Download PDF
-</a>
+    <a href="/prescription/{{ prescription.id }}/pdf/"
+       class="text-blue-600 hover:underline">
+       📄 Download PDF
+    </a>
+
+    <a href="/prescription/{{ prescription.id }}/revise/"
+       class="text-yellow-600 hover:underline">
+       ✏️ Revise Prescription
+    </a>
+
+  </div>
 
 </div>
 
