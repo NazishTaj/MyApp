@@ -170,12 +170,41 @@
 
       </div>
 
-      <div class="mt-5">
-        <label class="block text-xs font-medium text-surface-500 mb-1.5">Address</label>
-        <textarea name="clinic_address" rows="3"
-          placeholder="Full clinic address"
-          class="input-premium resize-none">{{ clinic.address }}</textarea>
-      </div>
+     <div class="mt-5">
+  
+    <label class="block text-xs font-medium text-surface-500 mb-2">
+      Clinic Address
+    </label>
+  
+    <div class="grid md:grid-cols-2 gap-4">
+  
+      <!-- Address Line 1 -->
+      <input type="text" name="address_line_1"
+        value="{{ clinic.address_line_1 }}"
+        placeholder="Shop No, Building"
+        class="input-premium">
+  
+      <!-- Address Line 2 -->
+      <input type="text" name="address_line_2"
+        value="{{ clinic.address_line_2 }}"
+        placeholder="Area / Landmark"
+        class="input-premium">
+  
+      <!-- City -->
+      <input type="text" name="city"
+        value="{{ clinic.city }}"
+        placeholder="City"
+        class="input-premium">
+  
+      <!-- State -->
+      <input type="text" name="state"
+        value="{{ clinic.state }}"
+        placeholder="State"
+        class="input-premium">
+  
+    </div>
+  
+  </div>
 
       <!-- CLINIC LOGO -->
       <div class="mt-6 pt-6 border-t border-surface-100">
