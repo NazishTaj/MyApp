@@ -27,8 +27,12 @@ Dr. {{ prescription.doctor.name }}
 </p>
 {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
 
-    {% if prescription.doctor.degree or prescription.doctor.reg_no %}
-    {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
+    {% if prescription.doctor.degree 
+       or prescription.doctor.info_line_1 
+       or prescription.doctor.info_line_2 
+       or prescription.doctor.info_line_3 
+       or prescription.doctor.reg_no %}
+    
 
 <div class="text-xs text-gray-500 leading-snug mt-1 space-y-0.5">
 
@@ -38,15 +42,21 @@ Dr. {{ prescription.doctor.name }}
     </p>
     {% endif %}
 
-    {% if clinic.extra_line_1 %}
+    {% if prescription.doctor.info_line_1 %}
     <p class="break-words">
-        {{ clinic.extra_line_1 }}
+        {{ prescription.doctor.info_line_1 }}
     </p>
     {% endif %}
-
-    {% if clinic.extra_line_2 %}
+    
+    {% if prescription.doctor.info_line_2 %}
     <p class="break-words">
-        {{ clinic.extra_line_2 }}
+        {{ prescription.doctor.info_line_2 }}
+    </p>
+    {% endif %}
+    
+    {% if prescription.doctor.info_line_3 %}
+    <p class="break-words">
+        {{ prescription.doctor.info_line_3 }}
     </p>
     {% endif %}
 
