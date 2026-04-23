@@ -100,11 +100,15 @@
             <span class="font-medium">Phone:</span> {{ clinic.phone }}
         </p>
 
-        {% if clinic.address %}
-        <p class="break-words leading-snug text-xs text-gray-500">
-            {{ clinic.address }}
+        <p class="text-xs text-gray-500 leading-snug text-right">
+            {{ clinic.address_line_1 }}<br>
+        
+            {% if clinic.address_line_2 %}
+                {{ clinic.address_line_2 }}<br>
+            {% endif %}
+        
+            {{ clinic.city }}{% if clinic.state %}, {{ clinic.state }}{% endif %}
         </p>
-        {% endif %}
 
     </div>
 
