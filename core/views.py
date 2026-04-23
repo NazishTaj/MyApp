@@ -1243,6 +1243,9 @@ def edit_profile(request):
         if profile.role in ["doctor", "owner"]:
             profile.degree = request.POST.get("degree") or ""
             profile.reg_no = request.POST.get("reg_no") or ""
+            profile.info_line_1 = request.POST.get("info_line_1") or ""
+            profile.info_line_2 = request.POST.get("info_line_2") or ""
+            profile.info_line_3 = request.POST.get("info_line_3") or ""
             profile.consultation_fee = float(request.POST.get("consultation_fee") or 0)
 
         if profile.is_owner:
