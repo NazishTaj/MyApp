@@ -9,9 +9,9 @@
 
 <!-- Clinic Header -->
 
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b mb-6 gap-3">
+<div class="flex flex-col sm:flex-row pb-4 border-b mb-6 gap-4">
 
-<div class="flex items-center gap-3">
+<div class="flex items-start gap-3 sm:w-[60%]">
 
 {% if clinic.logo %}
 <img src="{{ clinic.logo.url }}" class="h-12 w-12 object-contain">
@@ -28,13 +28,37 @@ Dr. {{ prescription.doctor.name }}
 {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
 
     {% if prescription.doctor.degree or prescription.doctor.reg_no %}
-    <p class="text-xs text-gray-500">
-        {{ prescription.doctor.degree }}
+    {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
 
-        {% if prescription.doctor.reg_no %}
-            • Reg No: {{ prescription.doctor.reg_no }}
-        {% endif %}
+<div class="text-xs text-gray-500 leading-snug mt-1 space-y-0.5">
+
+    {% if prescription.doctor.degree %}
+    <p class="break-words">
+        {{ prescription.doctor.degree }}
     </p>
+    {% endif %}
+
+    {% if clinic.extra_line_1 %}
+    <p class="break-words">
+        {{ clinic.extra_line_1 }}
+    </p>
+    {% endif %}
+
+    {% if clinic.extra_line_2 %}
+    <p class="break-words">
+        {{ clinic.extra_line_2 }}
+    </p>
+    {% endif %}
+
+    {% if prescription.doctor.reg_no %}
+    <p>
+        Reg No: {{ prescription.doctor.reg_no }}
+    </p>
+    {% endif %}
+
+</div>
+
+{% endif %}
     {% endif %}
 
 {% endif %}
@@ -42,12 +66,16 @@ Dr. {{ prescription.doctor.name }}
 
 </div>
 
-<div class="text-left sm:text-right text-xs sm:text-sm text-gray-600">
+<div class="text-left sm:text-right text-xs sm:text-sm text-gray-600 space-y-1 sm:w-[40%]">
 
-<p>Phone: {{ clinic.phone }}</p>
+<p>
+    <span class="font-medium">Phone:</span> {{ clinic.phone }}
+</p>
 
 {% if clinic.address %}
-<p class="break-words">{{ clinic.address }}</p>
+<p class="break-words leading-snug">
+    {{ clinic.address }}
+</p>
 {% endif %}
 
 </div>
