@@ -1248,7 +1248,10 @@ def edit_profile(request):
         if profile.is_owner:
             clinic.name = request.POST.get("clinic_name")
             clinic.phone = request.POST.get("clinic_phone")
-            clinic.address = request.POST.get("clinic_address")
+            clinic.address_line_1 = request.POST.get("address_line_1")
+            clinic.address_line_2 = request.POST.get("address_line_2")
+            clinic.city = request.POST.get("city")
+            clinic.state = request.POST.get("state")
 
             clinic.billing_enabled = bool(request.POST.get("billing_enabled"))
             clinic.is_advanced = bool(request.POST.get("is_advanced"))
