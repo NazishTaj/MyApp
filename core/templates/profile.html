@@ -260,7 +260,15 @@
                     </span>
                     <div class="flex-1 min-w-0">
                         <p class="text-[11px] font-semibold text-amber-800 uppercase tracking-wider mb-1.5">Clinic Address</p>
-                        <p class="text-sm text-gray-700 leading-relaxed">{{ clinic.address }}</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            {{ clinic.address_line_1 }}
+                            
+                            {% if clinic.address_line_2 %}
+                                {{ clinic.address_line_2 }}
+                            {% endif %}
+                            
+                            {{ clinic.city }}{% if clinic.state %}, {{ clinic.state }}{% endif %}
+                        </p>
                     </div>
                 </div>
             </div>
