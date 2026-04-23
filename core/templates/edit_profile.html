@@ -68,19 +68,6 @@
             class="input-premium">
         </div>
 
-        <!-- CONSULTATION FEE -->
-        <div>
-          <label class="block text-xs font-medium text-surface-500 mb-1.5">Consultation Fee</label>
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">₹</span>
-            <input type="number" name="consultation_fee"
-              value="{{ profile.consultation_fee }}"
-              step="0.01" min="0"
-              placeholder="500"
-              class="input-premium pl-10"
-              style="padding-left: 30px;">
-          </div>
-        </div>
         <!-- 🔥 ADDITIONAL DOCTOR INFO -->
 
         <div class="md:col-span-2">
@@ -111,6 +98,19 @@
             value="{{ profile.info_line_3 }}"
             placeholder="e.g. Visiting Consultant"
             class="input-premium">
+        </div>
+                <!-- CONSULTATION FEE -->
+        <div>
+          <label class="block text-xs font-medium text-surface-500 mb-1.5">Consultation Fee</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm">₹</span>
+            <input type="number" name="consultation_fee"
+              value="{{ profile.consultation_fee }}"
+              step="0.01" min="0"
+              placeholder="500"
+              class="input-premium pl-10"
+              style="padding-left: 30px;">
+          </div>
         </div>
 
         {% endif %}
