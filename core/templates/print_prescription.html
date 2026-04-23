@@ -94,14 +94,14 @@
     </div>
 
     <!-- RIGHT -->
-    <div class="text-right text-sm text-gray-600 space-y-1 w-[40%]">
+    <div class="text-sm text-gray-600 space-y-1 w-[40%] flex flex-col items-end">
 
         <p>
             <span class="font-medium">Phone:</span> {{ clinic.phone }}
         </p>
 
         {% if clinic.address %}
-        <p class="break-words leading-snug text-xs text-gray-500">
+        <p class="leading-snug text-xs text-gray-500 text-right inline-block">
             {{ clinic.address }}
         </p>
         {% endif %}
