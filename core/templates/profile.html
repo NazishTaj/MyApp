@@ -173,12 +173,14 @@
                     <!-- Degree (Doctor/Owner only) -->
                     {% if profile.role == "doctor" or profile.role == "owner" %}
                         {% if profile.degree %}
-                        <div class="flex items-center justify-between py-3.5 px-4 -mx-4 hover:bg-stone-50/80 rounded-xl transition-colors">
+                        <div class="flex items-start justify-between py-3.5 px-4 -mx-4 hover:bg-stone-50/80 rounded-xl transition-colors">
                             <span class="text-sm text-gray-500 flex items-center gap-2.5">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                                 Degree
                             </span>
-                            <span class="font-medium text-gray-900">{{ profile.degree }}</span>
+                            <span class="font-medium text-gray-900 text-right max-w-[60%] break-words leading-snug">
+                                {{ profile.degree }}
+                            </span>
                         </div>
                         {% endif %}
 
@@ -188,7 +190,7 @@
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
                                 Registration No
                             </span>
-                            <span class="font-medium text-gray-900 font-mono text-sm">{{ profile.reg_no }}</span>
+                            <span class="font-medium text-gray-900 font-mono">{{ profile.reg_no }}</span>
                         </div>
                         {% endif %}
                     {% endif %}
