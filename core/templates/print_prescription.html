@@ -44,38 +44,68 @@
 <div class="max-w-3xl mx-auto bg-white p-6">
 
 <!-- ================= HEADER ================= -->
-<div class="flex justify-between items-center border-b pb-4 mb-6 no-break">
+<div class="flex flex-row pb-4 border-b mb-6 no-break">
 
-    <div class="flex items-center gap-3">
+    <!-- LEFT -->
+    <div class="flex items-start gap-3 w-[60%]">
+
         {% if clinic.logo %}
         <img src="{{ clinic.logo.url }}" class="h-12 w-12 object-contain">
         {% endif %}
 
         <div>
-            <h2 class="text-lg font-bold">
+            <h2 class="text-lg font-bold text-gray-800">
                 {{ clinic.name }}
             </h2>
-            <p class="text-sm font-medium text-gray-700">
+
+            <p class="text-sm text-gray-600">
                 Dr. {{ prescription.doctor.name }}
             </p>
-            {% if prescription.doctor.role == "doctor" or prescription.doctor.role == "owner" %}
-                {% if prescription.doctor.degree or prescription.doctor.reg_no %}
-                 <p class="text-xs text-gray-500">
-                    {{ prescription.doctor.degree }}
 
-                    {% if prescription.doctor.reg_no %}
-                        • Reg No: {{ prescription.doctor.reg_no }}
-                    {% endif %}
+            <div class="text-xs text-gray-500 leading-snug mt-1 space-y-0.5">
+
+                {% if prescription.doctor.degree %}
+                <p class="break-words">
+                    {{ prescription.doctor.degree }}
                 </p>
                 {% endif %}
 
-            {% endif %}
+                {% if clinic.extra_line_1 %}
+                <p class="break-words">
+                    {{ clinic.extra_line_1 }}
+                </p>
+                {% endif %}
+
+                {% if clinic.extra_line_2 %}
+                <p class="break-words">
+                    {{ clinic.extra_line_2 }}
+                </p>
+                {% endif %}
+
+                {% if prescription.doctor.reg_no %}
+                <p>
+                    Reg No: {{ prescription.doctor.reg_no }}
+                </p>
+                {% endif %}
+
+            </div>
         </div>
+
     </div>
 
-    <div class="text-right text-sm text-gray-600">
-        <p>{{ clinic.phone }}</p>
-        <p>{{ clinic.address }}</p>
+    <!-- RIGHT -->
+    <div class="text-right text-sm text-gray-600 space-y-1 w-[40%]">
+
+        <p>
+            <span class="font-medium">Phone:</span> {{ clinic.phone }}
+        </p>
+
+        {% if clinic.address %}
+        <p class="break-words leading-snug">
+            {{ clinic.address }}
+        </p>
+        {% endif %}
+
     </div>
 
 </div>
