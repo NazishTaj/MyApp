@@ -7,7 +7,6 @@ class Clinic(models.Model):
     name = models.CharField(max_length=200)
    # doctor_name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20)
-    address = models.TextField()
     address_line_1 = models.CharField(max_length=255, blank=True)
     address_line_2 = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
