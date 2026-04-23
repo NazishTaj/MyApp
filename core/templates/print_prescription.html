@@ -107,7 +107,9 @@
                 {{ clinic.address_line_2 }}<br>
             {% endif %}
         
-            {{ clinic.city }}{% if clinic.state %}, {{ clinic.state }}{% endif %}
+            {% if clinic.address_line_2 %}
+                {{ clinic.address_line_2 }}<br>
+            {% endif %}
         </p>
 
     </div>
