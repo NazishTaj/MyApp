@@ -48,6 +48,9 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=20, blank=True)
     degree = models.CharField(max_length=100, blank=True, null=True)
     reg_no = models.CharField(max_length=50, blank=True, null=True)
+    info_line_1 = models.CharField(max_length=255, blank=True, null=True)
+    info_line_2 = models.CharField(max_length=255, blank=True, null=True)
+    info_line_3 = models.CharField(max_length=255, blank=True, null=True)
     photo = models.ImageField(upload_to="doctor_photos/", blank=True, null=True)
     assigned_doctor = models.ForeignKey(
         "self",
