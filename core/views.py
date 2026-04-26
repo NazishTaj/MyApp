@@ -291,6 +291,7 @@ def add_patient(request):
         try:
             patient.full_clean()
             patient.save()
+            messages.success(request, f"{name} added successfully ✅")
             return redirect("patient_list")
 
         except ValidationError as e:
