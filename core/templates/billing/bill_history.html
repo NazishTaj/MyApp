@@ -42,7 +42,7 @@
 
       <!-- Dropdown -->
       <div id="exportMenu"
-           class="absolute right-0 mt-2 hidden bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50 w-64 max-w-[calc(100vw-2rem)]">
+           class="fixed left-4 right-4 mt-2 hidden bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50 md:absolute md:left-auto md:right-0 md:w-64">
 
         <!-- Month Export -->
         <form method="get" action="{% url 'export_month_bills' %}" class="space-y-3">
