@@ -112,26 +112,20 @@
         <div>
           <label class="block text-xs font-medium text-gray-500 mb-1.5">From Date</label>
           <input 
-            type="text"
+            type="date"
             name="start_date"
             value="{{ request.GET.start_date }}"
-            placeholder="Select Date"
-            onfocus="this.type='date'"
-            onblur="if(!this.value) this.type='text'"
-            class="input-premium w-full text-sm">
+            class="input-datetime w-full text-sm">
         </div>
 
-        <!-- Date To -->
+       <!-- Date To -->
         <div>
           <label class="block text-xs font-medium text-gray-500 mb-1.5">To Date</label>
           <input 
-            type="text"
+            type="date"
             name="end_date"
             value="{{ request.GET.end_date }}"
-            placeholder="Select Date"
-            onfocus="this.type='date'"
-            onblur="if(!this.value) this.type='text'"
-            class="input-premium w-full text-sm">
+            class="input-datetime w-full text-sm">
         </div>
 
         <!-- Patient Filter -->
