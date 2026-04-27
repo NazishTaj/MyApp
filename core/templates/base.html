@@ -269,6 +269,17 @@
         padding: 0 0px;   /* 👈 perfect balance */
       }
     }
+    /* 🔥 FINAL CENTER FIX (iPhone) */
+    @supports (-webkit-touch-callout: none) {
+    
+      input[type="date"]::-webkit-datetime-edit,
+      input[type="time"]::-webkit-datetime-edit {
+        display: flex;
+        align-items: center;   /* ✅ vertical center */
+        height: 100%;
+      }
+    
+    }
 
         
     /* hover */
