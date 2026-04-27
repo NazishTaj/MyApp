@@ -262,6 +262,13 @@
     
       outline: none;
     }
+    /* 🔥 iPhone ONLY FIX */
+    @supports (-webkit-touch-callout: none) {
+      input[type="date"].input-clean,
+      input[type="time"].input-clean {
+        padding: 0 8px;   /* 👈 perfect balance */
+      }
+    }
     
     /* hover */
     .input-clean:hover {
