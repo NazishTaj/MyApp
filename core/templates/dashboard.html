@@ -243,7 +243,7 @@
                 </button>
 
                 
-                <button onclick="cancelAppointment({{ a.id }}); closeSheet();"
+                <button onclick="confirmCancel({{ a.id }}); closeSheet();"
                 class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
                 ❌ Cancel Appointment
                 </button>
@@ -685,6 +685,28 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+function confirmCancel(id) {
+
+    if (!confirm("Are you sure you want to cancel this appointment?")) {
+        return;
+    }
+
+    fetch(`/cancel-appointment/${id}/`, {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (!res.ok) {
+            alert("Error cancelling appointment");
+        }
+    })
+    .catch(err => console.error(err));
+}
 </script>
+
 
 {% endblock %}
