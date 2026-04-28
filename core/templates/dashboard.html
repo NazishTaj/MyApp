@@ -638,18 +638,21 @@ window.addEventListener("pageshow", function (event) {
 });
 </script>
 <script>
-    function cancelAppointment(id) {
+function cancelAppointment(id) {
+
+    const refund = confirm("Refund amount?\nOK = Yes\nCancel = No");
+
     fetch(`/cancel-appointment/${id}/`, {
-      method: "POST",
-      headers: {    
-          'X-CSRFToken': getCookie('csrftoken'),
-          'Content-Type': 'application/json' 
-      }
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `refund=${refund ? "yes" : "no"}`
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error cancelling appointment");
-        }
+    .then(res => res.json())
+    .then(data => {
+        location.reload();
     })
     .catch(err => console.error(err));
 }
