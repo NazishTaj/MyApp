@@ -645,12 +645,36 @@ def complete_appointment(request, appointment_id):
     appointment.queue_status = "done"
     appointment.save()
 
+    today = appointment.appointment_date
+    
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+    
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+    
+    next_tokens = []
+    seen_doctors = set()
+    
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
     send_ws_update_safe(clinic.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
         "queue_status": appointment.queue_status,
-        "next_tokens": []
+        "next_tokens": next_tokens
     })
     
     return JsonResponse({"status": "ok"})
@@ -733,12 +757,36 @@ def cancel_appointment(request, appointment_id):
     appointment.queue_status = "done"
     appointment.save()
 
+    today = appointment.appointment_date
+    
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+    
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+    
+    next_tokens = []
+    seen_doctors = set()
+    
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
     send_ws_update_safe(clinic.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
         "queue_status": appointment.queue_status,
-        "next_tokens": []
+        "next_tokens": next_tokens
     })
     return JsonResponse({"status": "ok"})
 # ---------------- PRESCRIPTIONS ---------------- #
@@ -1432,12 +1480,36 @@ def mark_pending(request, appointment_id):
     appointment.queue_status = "waiting"
     appointment.save()
 
+    today = appointment.appointment_date
+
+    busy_doctors = set(
+        Appointment.objects.filter(
+            clinic=clinic,
+            appointment_date=today,
+            queue_status="in_consultation"
+        ).values_list("doctor_id", flat=True)
+    )
+    
+    all_waiting = Appointment.objects.filter(
+        clinic=clinic,
+        appointment_date=today,
+        queue_status="waiting"
+    ).order_by("doctor", "token_number")
+    
+    next_tokens = []
+    seen_doctors = set()
+    
+    for appt in all_waiting:
+        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+            next_tokens.append(appt.id)
+            seen_doctors.add(appt.doctor_id)
+
     send_ws_update_safe(clinic.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
         "queue_status": appointment.queue_status,
-        "next_tokens": []
+        "next_tokens": next_tokens
     })
     
     return JsonResponse({"status": "ok"})
