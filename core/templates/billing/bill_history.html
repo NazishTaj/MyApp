@@ -279,11 +279,15 @@
 
         
           <td class="px-6 py-4">
-          {% if bill.doctor %}
-            <span class="badge badge-success text-xs">Consultation</span>
-          {% else %}
-            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">Service</span>
-          {% endif %}
+
+            {% if bill.total_amount < 0 %}
+              <span class="badge badge-danger text-xs">Refund</span>
+            {% elif bill.doctor %}
+              <span class="badge badge-success text-xs">Consultation</span>
+            {% else %}
+              <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">Service</span>
+            {% endif %}
+
         </td>
           <td class="px-6 py-4">
             <div class="flex items-center gap-2 text-gray-600 whitespace-nowrap">
@@ -298,7 +302,15 @@
 
 
           <td class="px-6 py-4">
-            <span class="text-lg font-bold text-gray-900">₹{{ bill.total_amount }}</span>
+            {% if bill.total_amount < 0 %}
+            <span class="text-lg font-bold text-red-500">
+              ₹{{ bill.total_amount }} (Refund)
+            </span>
+          {% else %}
+            <span class="text-lg font-bold text-green-600">
+              ₹{{ bill.total_amount }}
+            </span>
+          {% endif %}
           </td>
 
           <td class="px-6 py-4">
@@ -417,7 +429,14 @@
       </div>
       <div>
         <p class="font-medium text-gray-900">{{ bill.patient.name }}</p>
-        {% if bill.doctor %}
+        {% if bill.is_refunded %}
+          <p class="text-xs text-red-500">Refunded Appointment</p>
+        {% endif %}
+        {% if bill.total_amount < 0 %}
+          <p class="text-xs text-red-500 font-semibold">
+            Refund Entry
+          </p>
+        {% elif bill.doctor %}
           <p class="text-xs text-green-600 font-medium">
             {{ bill.doctor.name }} (Consultation)
           </p>
@@ -428,6 +447,8 @@
         {% else %}
           <p class="text-xs text-gray-400">No Doctor</p>
         {% endif %}
+        
+        
       </div>
     </div>
 
@@ -439,7 +460,15 @@
     </div>
 
     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-      <span class="text-xl font-bold text-gray-900">₹{{ bill.total_amount }}</span>
+      {% if bill.total_amount < 0 %}
+        <span class="text-xl font-bold text-red-500">
+          ₹{{ bill.total_amount }} (Refund)
+        </span>
+      {% else %}
+        <span class="text-xl font-bold text-green-600">
+          ₹{{ bill.total_amount }}
+        </span>
+      {% endif %}
       <a href="{% url 'view_bill' bill.id %}" class="btn-premium btn-ghost text-xs px-3 py-1.5 inline-flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
