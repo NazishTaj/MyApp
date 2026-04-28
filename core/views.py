@@ -663,20 +663,23 @@ def complete_appointment(request, appointment_id):
     channel_layer = get_channel_layer()
 
     group_name = f"dashboard_{clinic.id}"
-
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            "type": "send_update",
-            "data": {
-                "appointment_id": appointment.id,
-                "patient_id": appointment.patient.id,
-                "status": appointment.status,
-                "queue_status": appointment.queue_status,
-                "next_tokens": next_tokens,
+    try:
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_update",
+                "data": {
+                    "appointment_id": appointment.id,
+                    "patient_id": appointment.patient.id,
+                    "status": appointment.status,
+                    "queue_status": appointment.queue_status,
+                    "next_tokens": next_tokens,
+                }
             }
-        }
-    )
+        )
+    except Exception as e:
+        print("❌ WS ERROR (complete):", e)
+
 
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
@@ -734,20 +737,23 @@ def send_to_doctor(request, appointment_id):
     channel_layer = get_channel_layer()
     
     group_name = f"dashboard_{clinic.id}"
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-
-        {
-            "type": "send_update",
-            "data": {
-                "appointment_id": appointment.id,
-                "patient_id": appointment.patient.id,
-                "status": appointment.status,
-                "queue_status": appointment.queue_status,
-                "next_tokens": next_tokens,
+    try:
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_update",
+                "data": {
+                    "appointment_id": appointment.id,
+                    "patient_id": appointment.patient.id,
+                    "status": appointment.status,
+                    "queue_status": appointment.queue_status,
+                    "next_tokens": next_tokens,
+                }
             }
-        }
-    )
+        )
+    except Exception as e:
+        print("❌ WS ERROR (send_to_doctor):", e)
+
 
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
@@ -807,20 +813,24 @@ def cancel_appointment(request, appointment_id):
 
     group_name = f"dashboard_{clinic.id}"
 
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            "type": "send_update",
-            "data": {
-                "appointment_id": appointment.id,
-                "patient_id": appointment.patient.id,
-                "status": appointment.status,
-                "queue_status": appointment.queue_status,
-                "next_tokens": next_tokens,
+    try:
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_update",
+                "data": {
+                    "appointment_id": appointment.id,
+                    "patient_id": appointment.patient.id,
+                    "status": appointment.status,
+                    "queue_status": appointment.queue_status,
+                    "next_tokens": next_tokens,
+                }
             }
-        }
-    )
+        )
+    except Exception as e:
+        print("❌ WS ERROR (cancel):", e)
 
+    
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
 
@@ -1547,19 +1557,22 @@ def mark_pending(request, appointment_id):
 
     group_name = f"dashboard_{clinic.id}"
 
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            "type": "send_update",
-            "data": {
-                "appointment_id": appointment.id,
-                "patient_id": appointment.patient.id,
-                "status": appointment.status,
-                "queue_status": appointment.queue_status,
-                "next_tokens": next_tokens,
+    try:
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_update",
+                "data": {
+                    "appointment_id": appointment.id,
+                    "patient_id": appointment.patient.id,
+                    "status": appointment.status,
+                    "queue_status": appointment.queue_status,
+                    "next_tokens": next_tokens,
+                }
             }
-        }
-    )
+        )
+    except Exception as e:
+        print("❌ WS ERROR (mark_pending):", e)
 
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
