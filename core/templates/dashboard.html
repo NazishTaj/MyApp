@@ -697,6 +697,8 @@ function closeCancelModal() {
 }
 
 function showMessage(msg) {
+
+    closeSheet(); 
     document.getElementById("cancelModal").classList.add("hidden");
     document.getElementById("messageText").innerText = msg;
     document.getElementById("messageModal").classList.remove("hidden");
