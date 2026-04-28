@@ -748,12 +748,15 @@ def cancel_appointment(request, appointment_id):
 
      # 🔥 NEW REFUND LOGIC START
 
-    refund = request.POST.get("refund", "no")   # "yes" or "no"
+    refund = request.POST.get("refund")
+    
+    if refund not in ["yes", "no"]:
+        refund = "no"
     
     bill = Bill.objects.filter(appointment=appointment).first()
-
-    # ✅ Double refund block
-    if bill and bill.is_refunded:
+    
+    # ✅ FIXED: only block if user again asking refund
+    if bill and bill.is_refunded and refund == "yes":
         return JsonResponse({"error": "Already refunded"})
 
     appointment.status = "cancelled"
