@@ -751,14 +751,14 @@ def cancel_appointment(request, appointment_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
-    if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
-
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     # 🔒 ALREADY CANCELLED BLOCK (🔥 NEW ADD)
     if appointment.status == "cancelled":
         return JsonResponse({"error": "Appointment already cancelled"})
+
+    if not has_permission(request.user, "manage_appointments"):
+        return JsonResponse({"error": "Permission denied"}, status=403)
 
      # 🔥 NEW REFUND LOGIC START
 
