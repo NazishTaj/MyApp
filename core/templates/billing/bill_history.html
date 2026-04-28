@@ -285,9 +285,9 @@
               </span>
       
           {% elif bill.is_refunded %}
-              <span class="badge badge-warning text-xs">
-                  Refunded
-              </span>
+            <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs">
+                Cancelled
+            </span>
       
           {% elif bill.doctor %}
               <span class="badge badge-success text-xs">
@@ -317,7 +317,7 @@
           <td class="px-6 py-4">
             {% if bill.total_amount < 0 %}
             <span class="text-lg font-bold text-red-500">
-              ₹{{ bill.total_amount }} (Refund)
+              ₹{{ bill.total_amount }}
             </span>
           {% else %}
             <span class="text-lg font-bold text-green-600">
@@ -442,25 +442,30 @@
       </div>
       <div>
         <p class="font-medium text-gray-900">{{ bill.patient.name }}</p>
-        {% if bill.is_refunded %}
-          <p class="text-xs text-red-500">Refunded Appointment</p>
-        {% endif %}
         {% if bill.total_amount < 0 %}
           <p class="text-xs text-red-500 font-semibold">
-            Refund Entry
+            Refund
           </p>
+        
+        {% elif bill.is_refunded %}
+          <p class="text-xs text-gray-500 font-medium">
+            Cancelled
+          </p>
+        
         {% elif bill.doctor %}
           <p class="text-xs text-green-600 font-medium">
             {{ bill.doctor.name }} (Consultation)
           </p>
+        
         {% elif bill.referred_by %}
           <p class="text-xs text-blue-600">
             {{ bill.referred_by.name }} (Referred)
           </p>
+        
         {% else %}
           <p class="text-xs text-gray-400">No Doctor</p>
         {% endif %}
-        
+                
         
       </div>
     </div>
@@ -475,7 +480,7 @@
     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
       {% if bill.total_amount < 0 %}
         <span class="text-xl font-bold text-red-500">
-          ₹{{ bill.total_amount }} (Refund)
+          ₹{{ bill.total_amount }}
         </span>
       {% else %}
         <span class="text-xl font-bold text-green-600">
