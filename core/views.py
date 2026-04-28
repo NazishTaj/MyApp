@@ -609,11 +609,6 @@ def complete_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    # 🔒 REFUND LOCK CHECK
-    bill = Bill.objects.filter(appointment=appointment).first()
-    if bill and bill.is_refunded:
-        return JsonResponse({"error": "This appointment is refunded and locked"})
-
     appointment.status = "completed"
     appointment.queue_status = "done"
     appointment.save()
@@ -676,11 +671,6 @@ def send_to_doctor(request, appointment_id):
     clinic = profile.clinic
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
-
-    # 🔒 REFUND LOCK CHECK
-    bill = Bill.objects.filter(appointment=appointment).first()
-    if bill and bill.is_refunded:
-        return JsonResponse({"error": "This appointment is refunded and locked"})
 
     if profile.role != "receptionist" or not clinic.is_advanced:
         return redirect("dashboard")
@@ -756,10 +746,6 @@ def cancel_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    # 🔒 HARD LOCK (FINAL FIX)
-    if appointment.status == "cancelled":
-        return JsonResponse({"status": "ok"})
-
      # 🔥 NEW REFUND LOGIC START
 
     refund = request.POST.get("refund", "no")   # "yes" or "no"
@@ -768,7 +754,7 @@ def cancel_appointment(request, appointment_id):
 
     # ✅ Double refund block
     if bill and bill.is_refunded:
-        return JsonResponse({"status": "ok"})
+        return JsonResponse({"error": "Already refunded"})
 
     appointment.status = "cancelled"
     appointment.queue_status = "done"
@@ -813,31 +799,27 @@ def cancel_appointment(request, appointment_id):
             seen_doctors.add(appt.doctor_id)
 
     # 🔥 WEBSOCKET
-    # 🔥 SAFE WEBSOCKET (FINAL FIX)
-    try:
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-    
-        channel_layer = get_channel_layer()
-    
-        if channel_layer is not None:
-            group_name = f"dashboard_{clinic.id}"
-    
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    "type": "send_update",
-                    "data": {
-                        "appointment_id": appointment.id,
-                        "patient_id": appointment.patient.id,
-                        "status": appointment.status,
-                        "queue_status": appointment.queue_status,
-                        "next_tokens": next_tokens,
-                    }
-                }
-            )
-    except Exception as e:
-        print("WebSocket Error:", e)
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+
+    group_name = f"dashboard_{clinic.id}"
+
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            "type": "send_update",
+            "data": {
+                "appointment_id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status,
+                "next_tokens": next_tokens,
+            }
+        }
+    )
+
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
 
@@ -1520,11 +1502,6 @@ def mark_pending(request, appointment_id):
         return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
-
-    # 🔒 REFUND LOCK CHECK
-    bill = Bill.objects.filter(appointment=appointment).first()
-    if bill and bill.is_refunded:
-        return JsonResponse({"error": "This appointment is refunded and locked"})
 
     appointment.status = "pending"
     appointment.queue_status = "waiting"
