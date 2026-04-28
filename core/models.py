@@ -340,6 +340,17 @@ class Bill(models.Model):
 
     payment_mode = models.CharField(max_length=10, choices=PAYMENT_CHOICES)
 
+    is_refunded = models.BooleanField(default=False) 
+
+    refunded_at = models.DateTimeField(null=True, blank=True)
+
+    refunded_by = models.ForeignKey(
+    UserProfile,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
