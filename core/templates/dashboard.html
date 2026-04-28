@@ -350,11 +350,13 @@ function completeAppointment(id) {
             'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error completing appointment");
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
         }
     })
+  
     .catch(err => console.error(err));
 }
 
@@ -367,11 +369,13 @@ function sendToDoctor(id) {
             'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error sending to doctor");
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
         }
     })
+
     .catch(err => console.error(err));
 }
 </script>
@@ -652,8 +656,14 @@ function cancelAppointment(id) {
     })
     .then(res => res.json())
     .then(data => {
-        location.reload();
-    })
+
+    if (data.error) {
+        alert(data.error);   // 🔴 error show karega
+    } else {
+        location.reload();  // ✅ success pe reload
+    }
+
+})
     .catch(err => console.error(err));
 }
 
@@ -666,11 +676,15 @@ function markPending(id) {
             'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error marking pending");
+    .then(res => res.json())
+    .then(data => {
+    
+        if (data.error) {
+            alert(data.error);
         }
+    
     })
+
     .catch(err => console.error(err));
 }
 
