@@ -747,6 +747,15 @@ def cancel_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
+    import json
+
+    try:
+        data = json.loads(request.body or "{}")
+    except:
+        data = {}
+    
+    refund = data.get("refund", False)
+
     if appointment.status == "cancelled":
         return JsonResponse({
             "status": "blocked",
@@ -756,6 +765,27 @@ def cancel_appointment(request, appointment_id):
     appointment.status = "cancelled"
     appointment.queue_status = "done"
     appointment.save()
+
+    if refund:
+        bill = Bill.objects.filter(appointment=appointment).first()
+    
+        if bill and not bill.is_refunded:
+    
+            # mark original bill
+            bill.is_refunded = True
+            bill.refunded_at = timezone.now()
+            bill.refunded_by = profile
+            bill.save()
+    
+            # 🔥 negative entry (revenue minus)
+            Bill.objects.create(
+                clinic=clinic,
+                patient=appointment.patient,
+                doctor=bill.doctor,
+                appointment=appointment,
+                total_amount = -bill.total_amount,
+                payment_mode = bill.payment_mode
+            )
 
     today = appointment.appointment_date
     
