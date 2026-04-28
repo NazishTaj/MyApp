@@ -707,10 +707,18 @@ function showMessage(msg) {
 function closeMessageModal() {
     document.getElementById("messageModal").classList.add("hidden");
 }
-document.getElementById("messageModal").addEventListener("click", function(e) {
-    if (e.target.id === "messageModal") {
-        closeMessageModal();
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("messageModal");
+
+    if (modal) {
+        modal.addEventListener("click", function(e) {
+            if (e.target.id === "messageModal") {
+                closeMessageModal();
+            }
+        });
     }
+
 });
 
 function submitCancel() {
