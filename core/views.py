@@ -135,7 +135,8 @@ def dashboard(request):
 
     today_revenue = Bill.objects.filter(
         clinic=clinic,
-        created_at__date=today
+        created_at__date=today,
+        is_refunded=False
     ).aggregate(total=Sum("total_amount"))["total"] or 0
 
     today_appointments = appointments_today.count()
@@ -745,9 +746,32 @@ def cancel_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
+     # 🔥 NEW REFUND LOGIC START
+
+    refund = request.POST.get("refund", "no")   # "yes" or "no"
+    
+    bill = Bill.objects.filter(appointment=appointment).first()
+
+    # ✅ Double refund block
+    if bill and bill.is_refunded:
+        return JsonResponse({"error": "Already refunded"})
+
     appointment.status = "cancelled"
     appointment.queue_status = "done"
-    appointment.save()
+    appointment.save() 
+
+    # ✅ If user selected refund
+    if bill and refund == "yes":
+        bill.is_refunded = True
+        bill.refunded_at = timezone.now()
+        bill.refunded_by = profile
+        bill.save()
+    
+        # optional (recommended)
+        appointment.payment_status = "unpaid"
+        appointment.save()
+    
+    # 🔥 NEW REFUND LOGIC END
 
     # 🔥 NEXT TOKENS
     today = appointment.appointment_date
@@ -2360,13 +2384,14 @@ def revenue_report(request):
     # 🔥 DEFAULT = TODAY
     bills = Bill.objects.filter(
         clinic=clinic,
-        created_at__date=today
+        created_at__date=today,
+        is_refunded=False 
     )
 
     # 🔥 FILTER override
     if start_date or end_date or doctor_id:
 
-        bills = Bill.objects.filter(clinic=clinic)
+        bills = Bill.objects.filter(clinic=clinic,is_refunded=False)
 
         if start_date:
             bills = bills.filter(created_at__date__gte=start_date)
