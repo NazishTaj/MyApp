@@ -243,11 +243,13 @@
                 </button>
 
                 
+                {% if a.status != "cancelled" %}
                 <button onclick="closeSheet(); confirmCancel({{ a.id }});"
                 class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
                 ❌ Cancel Appointment
                 </button>
-                
+                {% endif %}
+                                
             </div>
 
         </div>
@@ -354,7 +356,7 @@ function completeAppointment(id) {
     .then(data => {
 
         if (data.status === "blocked") {
-            alert(data.message);
+            showMessage(data.message);
             return;
         }
 
@@ -375,7 +377,7 @@ function sendToDoctor(id) {
     })
     .then(res => {
         if (!res.ok) {
-            alert("Error sending to doctor");
+            showMessage("Error sending to doctor");
         }
     })
     .catch(err => console.error(err));
@@ -657,7 +659,7 @@ function markPending(id) {
     .then(data => {
 
         if (data.status === "blocked") {
-            alert(data.message);
+            showMessage(data.message);
             return;
         }
 
@@ -694,6 +696,21 @@ function closeCancelModal() {
     document.getElementById("cancelModal").classList.add("hidden");
 }
 
+function showMessage(msg) {
+    document.getElementById("cancelModal").classList.add("hidden");
+    document.getElementById("messageText").innerText = msg;
+    document.getElementById("messageModal").classList.remove("hidden");
+}
+
+function closeMessageModal() {
+    document.getElementById("messageModal").classList.add("hidden");
+}
+document.getElementById("messageModal").addEventListener("click", function(e) {
+    if (e.target.id === "messageModal") {
+        closeMessageModal();
+    }
+});
+
 function submitCancel() {
 
     const selected = document.querySelector('input[name="refundOption"]:checked').value;
@@ -711,7 +728,7 @@ function submitCancel() {
     .then(data => {
 
         if (data.status === "blocked") {
-            alert(data.message);
+            showMessage(data.message);
             return;
         }
 
@@ -747,6 +764,19 @@ function submitCancel() {
         Confirm
       </button>
     </div>
+
+  </div>
+</div>
+
+<div id="messageModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+  <div class="bg-white p-5 rounded-xl w-80 text-center">
+
+    <p id="messageText" class="text-gray-700 mb-4"></p>
+
+    <button onclick="closeMessageModal()" 
+    class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+      OK
+    </button>
 
   </div>
 </div>
