@@ -302,16 +302,20 @@ function getCookie(name) {
 }
 
 function cancelAppointment(id) {
+
+    const refund = confirm("Refund amount?\nOK = Yes\nCancel = No");
+
     fetch(`/cancel-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `refund=${refund ? "yes" : "no"}`
     })
     .then(res => res.json())
     .then(data => {
-        location.reload(); // ✅ simple & perfect
+        location.reload();
     })
     .catch(err => console.error(err));
 }
