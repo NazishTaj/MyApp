@@ -612,7 +612,7 @@ def complete_appointment(request, appointment_id):
         return JsonResponse({
             "status": "blocked",
             "message": "Cannot complete cancelled appointment"
-        })
+        }, status=200)
 
 
     appointment.status = "completed"
@@ -753,7 +753,10 @@ def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status == "cancelled":
-        return JsonResponse({"status": "already_cancelled"})
+        return JsonResponse({
+            "status": "blocked",
+            "message": "Already cancelled"
+        }, status=200)
 
     appointment.status = "cancelled"
     appointment.queue_status = "done"
@@ -1493,7 +1496,7 @@ def mark_pending(request, appointment_id):
         return JsonResponse({
             "status": "blocked",
             "message": "Cannot change cancelled appointment"
-        })
+        }, status=200)
 
     appointment.status = "pending"
     appointment.queue_status = "waiting"
