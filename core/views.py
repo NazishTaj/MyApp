@@ -624,64 +624,12 @@ def complete_appointment(request, appointment_id):
         return JsonResponse({
             "status": "blocked",
             "message": "Cannot complete cancelled appointment"
-        }, status=200)
-
+        })
 
     appointment.status = "completed"
     appointment.queue_status = "done"
     appointment.save()
 
-    # 🔥 NEXT TOKENS
-    today = appointment.appointment_date
-
-    busy_doctors = set(
-        Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=today,
-            queue_status="in_consultation"
-        ).values_list("doctor_id", flat=True)
-    )
-
-    all_waiting = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        queue_status="waiting"
-    ).order_by("doctor", "token_number")
-
-    next_tokens = []
-    seen_doctors = set()
-
-    for appt in all_waiting:
-        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
-            next_tokens.append(appt.id)
-            seen_doctors.add(appt.doctor_id)
-
-    # 🔥 WEBSOCKET
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
-
-    channel_layer = get_channel_layer()
-
-    group_name = f"dashboard_{clinic.id}"
-    try:
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "send_update",
-                "data": {
-                    "appointment_id": appointment.id,
-                    "patient_id": appointment.patient.id,
-                    "status": appointment.status,
-                    "queue_status": appointment.queue_status,
-                    "next_tokens": next_tokens,
-                }
-            }
-        )
-    except Exception as e:
-        print("❌ WS ERROR (complete):", e)
-
-
-    from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
 
 
@@ -774,66 +722,13 @@ def cancel_appointment(request, appointment_id):
         return JsonResponse({
             "status": "blocked",
             "message": "Already cancelled"
-        }, status=200)
+        })
 
     appointment.status = "cancelled"
     appointment.queue_status = "done"
     appointment.save()
 
-    # 🔥 NEXT TOKENS
-    today = appointment.appointment_date
-
-    busy_doctors = set(
-        Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=today,
-            queue_status="in_consultation"
-        ).values_list("doctor_id", flat=True)
-    )
-
-    all_waiting = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        queue_status="waiting"
-    ).order_by("doctor", "token_number")
-
-    next_tokens = []
-    seen_doctors = set()
-
-    for appt in all_waiting:
-        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
-            next_tokens.append(appt.id)
-            seen_doctors.add(appt.doctor_id)
-
-    # 🔥 WEBSOCKET
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
-
-    channel_layer = get_channel_layer()
-
-    group_name = f"dashboard_{clinic.id}"
-
-    try:
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "send_update",
-                "data": {
-                    "appointment_id": appointment.id,
-                    "patient_id": appointment.patient.id,
-                    "status": appointment.status,
-                    "queue_status": appointment.queue_status,
-                    "next_tokens": next_tokens,
-                }
-            }
-        )
-    except Exception as e:
-        print("❌ WS ERROR (cancel):", e)
-
-    
-    from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
-
 # ---------------- PRESCRIPTIONS ---------------- #
 
 @login_required(login_url="login")
@@ -1503,7 +1398,7 @@ def export_all_appointments(request):
 #------------------------------------------------------------
 
 
-@login_required
+@login_required(login_url="login")
 def mark_pending(request, appointment_id):
 
     profile = get_object_or_404(UserProfile, user=request.user)
@@ -1514,70 +1409,18 @@ def mark_pending(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    if appointment.status == "cancelled":
+    # 🔥 HARD BLOCK
+    if appointment.status in ["cancelled", "completed"]:
         return JsonResponse({
             "status": "blocked",
-            "message": "Cannot change cancelled appointment"
-        }, status=200)
+            "message": "Cannot change this appointment"
+        })
 
     appointment.status = "pending"
     appointment.queue_status = "waiting"
     appointment.save()
 
-    # 🔥 NEXT TOKENS
-    today = appointment.appointment_date
-
-    busy_doctors = set(
-        Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=today,
-            queue_status="in_consultation"
-        ).values_list("doctor_id", flat=True)
-    )
-
-    all_waiting = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        queue_status="waiting"
-    ).order_by("doctor", "token_number")
-
-    next_tokens = []
-    seen_doctors = set()
-
-    for appt in all_waiting:
-        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
-            next_tokens.append(appt.id)
-            seen_doctors.add(appt.doctor_id)
-
-    # 🔥 WEBSOCKET
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
-
-    channel_layer = get_channel_layer()
-
-    group_name = f"dashboard_{clinic.id}"
-
-    try:
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "send_update",
-                "data": {
-                    "appointment_id": appointment.id,
-                    "patient_id": appointment.patient.id,
-                    "status": appointment.status,
-                    "queue_status": appointment.queue_status,
-                    "next_tokens": next_tokens,
-                }
-            }
-        )
-    except Exception as e:
-        print("❌ WS ERROR (mark_pending):", e)
-
-    from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
-
-
 
 #Bill 
 @login_required
