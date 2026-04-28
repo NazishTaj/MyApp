@@ -27,6 +27,18 @@ def clinic_blocked(request):
 def user_blocked(request):
     return render(request, 'user_blocked.html')
 
+def permission_denied_response(request):
+
+    if (
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+        or "application/json" in request.headers.get("accept", "")
+    ):
+        return JsonResponse({
+            "status": "error",
+            "message": "Permission denied"
+        }, status=403)
+
+    return render(request, "403.html", status=403)
 
 def format_medicines(request):
     names = request.POST.getlist('medicine_name[]')
@@ -244,7 +256,7 @@ def add_patient(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     prefill_phone = request.GET.get("phone","")
 
@@ -316,7 +328,7 @@ def edit_patient(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
@@ -341,7 +353,7 @@ def delete_patient(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_patients"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic)
 
@@ -363,7 +375,7 @@ def book_appointment(request, patient_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
 
@@ -518,7 +530,7 @@ def appointments(request):
     clinic = profile.clinic
 
     if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     # 🔥 NEW LOGIC
     if profile.role == "doctor":
@@ -604,7 +616,7 @@ def complete_appointment(request, appointment_id):
     clinic = profile.clinic
 
     if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -748,7 +760,7 @@ def cancel_appointment(request, appointment_id):
     clinic = profile.clinic
 
     if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -818,7 +830,7 @@ def cancel_appointment(request, appointment_id):
 def add_prescription(request, patient_id):
 
     if not has_permission(request.user, "create_prescription"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
@@ -910,7 +922,7 @@ def add_prescription(request, patient_id):
 def revise_prescription(request, id):
 
     if not has_permission(request.user, "create_prescription"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
@@ -1037,7 +1049,7 @@ def patient_history(request, patient_id):
 @login_required
 def create_bill_for_patient(request, patient_id):
     if not has_permission(request.user, "manage_billing"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
 
@@ -1100,7 +1112,7 @@ def view_prescription(request, id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "view_prescription"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     prescription = get_object_or_404(
         Prescription.objects.select_related("patient", "doctor", "clinic"),
@@ -1360,7 +1372,7 @@ def export_month_appointments(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     month = request.GET.get("month")
     year = request.GET.get("year")
@@ -1429,7 +1441,7 @@ def export_all_appointments(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     appointments = Appointment.objects.filter(clinic=clinic)
 
@@ -1488,7 +1500,7 @@ def mark_pending(request, appointment_id):
     clinic = profile.clinic
 
     if not has_permission(request.user, "manage_appointments"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
@@ -1562,7 +1574,7 @@ def create_bill(request):
     clinic = profile.clinic
 
     if not has_permission(request.user, "manage_billing"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     if not clinic.billing_enabled:
         return redirect("dashboard")
@@ -1657,7 +1669,7 @@ def bill_history(request):
     clinic = profile.clinic
     
     if not has_permission(request.user, "manage_billing"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     if not clinic.billing_enabled:
         return redirect("dashboard")
@@ -1741,7 +1753,7 @@ def view_bill(request, bill_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_billing"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     bill = get_object_or_404(Bill, id=bill_id, clinic=clinic)
 
@@ -1762,7 +1774,7 @@ def print_bill(request, bill_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not has_permission(request.user, "manage_billing"):
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     bill = get_object_or_404(
         Bill,
@@ -1887,7 +1899,7 @@ def enable_advanced_mode(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     if not clinic.is_advanced:
         clinic.is_advanced = True
@@ -1905,7 +1917,7 @@ def add_staff(request):
     clinic = profile.clinic
 
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     # 🔥 doctors list (for dropdown)
     doctors = UserProfile.objects.filter(
@@ -2001,7 +2013,7 @@ def staff_list(request):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     staff = UserProfile.objects.filter(clinic=clinic, is_owner=False, is_active=True)
 
@@ -2016,7 +2028,7 @@ def edit_staff_permissions(request, staff_id):
     profile = get_object_or_404(UserProfile, user=request.user)
     clinic = profile.clinic
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     staff = get_object_or_404(UserProfile, id=staff_id, clinic=clinic)
 
@@ -2080,7 +2092,7 @@ def export_all_bills(request):
     clinic = profile.clinic
 
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     bills = Bill.objects.filter(clinic=clinic).select_related("patient", "doctor", "appointment")
 
@@ -2148,7 +2160,7 @@ def export_month_bills(request):
     clinic = profile.clinic
 
     if not profile.is_owner:
-        return render(request, "403.html", status=403)
+        return permission_denied_response(request)
 
     month = request.GET.get("month")
     year = request.GET.get("year")
