@@ -609,6 +609,11 @@ def complete_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
+    # 🔒 REFUND LOCK CHECK
+    bill = Bill.objects.filter(appointment=appointment).first()
+    if bill and bill.is_refunded:
+        return JsonResponse({"error": "This appointment is refunded and locked"})
+
     appointment.status = "completed"
     appointment.queue_status = "done"
     appointment.save()
@@ -671,6 +676,11 @@ def send_to_doctor(request, appointment_id):
     clinic = profile.clinic
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    # 🔒 REFUND LOCK CHECK
+    bill = Bill.objects.filter(appointment=appointment).first()
+    if bill and bill.is_refunded:
+        return JsonResponse({"error": "This appointment is refunded and locked"})
 
     if profile.role != "receptionist" or not clinic.is_advanced:
         return redirect("dashboard")
@@ -1502,6 +1512,11 @@ def mark_pending(request, appointment_id):
         return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    # 🔒 REFUND LOCK CHECK
+    bill = Bill.objects.filter(appointment=appointment).first()
+    if bill and bill.is_refunded:
+        return JsonResponse({"error": "This appointment is refunded and locked"})
 
     appointment.status = "pending"
     appointment.queue_status = "waiting"
