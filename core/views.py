@@ -39,6 +39,21 @@ def permission_denied_response(request):
         }, status=403)
 
     return render(request, "403.html", status=403)
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def send_ws_update_safe(clinic_id, data):
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"dashboard_{clinic_id}",
+            {
+                "type": "send_update",
+                "data": data
+            }
+        )
+    except Exception as e:
+        print("❌ WS ERROR:", e)
 
 def format_medicines(request):
     names = request.POST.getlist('medicine_name[]')
@@ -630,7 +645,16 @@ def complete_appointment(request, appointment_id):
     appointment.queue_status = "done"
     appointment.save()
 
+    send_ws_update_safe(clinic.id, {
+        "appointment_id": appointment.id,
+        "patient_id": appointment.patient.id,
+        "status": appointment.status,
+        "queue_status": appointment.queue_status,
+        "next_tokens": []
+    })
+    
     return JsonResponse({"status": "ok"})
+
 
 
 @login_required(login_url="login")
@@ -677,33 +701,14 @@ def send_to_doctor(request, appointment_id):
         if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
             next_tokens.append(appt.id)
             seen_doctors.add(appt.doctor_id)
-
-    # 🔥 WEBSOCKET
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
-
-    channel_layer = get_channel_layer()
-    
-    group_name = f"dashboard_{clinic.id}"
-    try:
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "send_update",
-                "data": {
-                    "appointment_id": appointment.id,
-                    "patient_id": appointment.patient.id,
-                    "status": appointment.status,
-                    "queue_status": appointment.queue_status,
-                    "next_tokens": next_tokens,
-                }
-            }
-        )
-    except Exception as e:
-        print("❌ WS ERROR (send_to_doctor):", e)
-
-
-    from django.http import JsonResponse
+            
+    send_ws_update_safe(clinic.id, {
+        "appointment_id": appointment.id,
+        "patient_id": appointment.patient.id,
+        "status": appointment.status,
+        "queue_status": appointment.queue_status,
+        "next_tokens": next_tokens,
+    })
     return JsonResponse({"status": "ok"})
 
 
@@ -728,6 +733,13 @@ def cancel_appointment(request, appointment_id):
     appointment.queue_status = "done"
     appointment.save()
 
+    send_ws_update_safe(clinic.id, {
+        "appointment_id": appointment.id,
+        "patient_id": appointment.patient.id,
+        "status": appointment.status,
+        "queue_status": appointment.queue_status,
+        "next_tokens": []
+    })
     return JsonResponse({"status": "ok"})
 # ---------------- PRESCRIPTIONS ---------------- #
 
@@ -1420,6 +1432,14 @@ def mark_pending(request, appointment_id):
     appointment.queue_status = "waiting"
     appointment.save()
 
+    send_ws_update_safe(clinic.id, {
+        "appointment_id": appointment.id,
+        "patient_id": appointment.patient.id,
+        "status": appointment.status,
+        "queue_status": appointment.queue_status,
+        "next_tokens": []
+    })
+    
     return JsonResponse({"status": "ok"})
 
 #Bill 
