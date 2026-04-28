@@ -163,7 +163,7 @@
                 class="btn-premium btn-success btn-sm">
                 Complete
               </button>
-              <button onclick="cancelAppointment({{ a.id }})"
+              <button onclick="confirmCancel({{ a.id }})"
                 class="btn-premium btn-danger btn-sm">
                 Cancel
               </button>
@@ -220,7 +220,7 @@
       {% if a.status == "pending" %}
       <div class="flex gap-2">
         <button onclick="completeAppointment({{ a.id }})" class="btn-premium btn-success btn-sm flex-1 text-center">✓ Complete</button>
-        <button onclick="cancelAppointment({{ a.id }})" class="btn-premium btn-danger btn-sm flex-1 text-center">✕ Cancel</button>
+        <button onclick="confirmCancel({{ a.id }})" class="btn-premium btn-danger btn-sm flex-1 text-center">✕ Cancel</button>
       </div>
       {% endif %}
     </div>
@@ -331,6 +331,27 @@ function completeAppointment(id) {
     .then(res => res.json())
     .then(data => {
         location.reload(); // ✅
+    })
+    .catch(err => console.error(err));
+}
+
+function confirmCancel(id) {
+
+    if (!confirm("Are you sure you want to cancel this appointment?")) {
+        return;
+    }
+
+    fetch(`/cancel-appointment/${id}/`, {
+        method: "POST",
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (!res.ok) {
+            alert("Error cancelling appointment");
+        }
     })
     .catch(err => console.error(err));
 }
