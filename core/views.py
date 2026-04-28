@@ -1470,10 +1470,10 @@ def mark_pending(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     # 🔥 HARD BLOCK
-    if appointment.status in ["cancelled", "completed"]:
+    if appointment.status == "cancelled":
         return JsonResponse({
             "status": "blocked",
-            "message": "Cannot change this appointment"
+            "message": "Cannot change cancelled appointment"
         })
 
     appointment.status = "pending"
