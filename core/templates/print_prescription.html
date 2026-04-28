@@ -284,15 +284,20 @@ Signature
   }
 
   window.onload = function () {
-    window.print();
 
-    // Sirf desktop pe auto close
-    if (!isMobile()) {
-      window.onafterprint = function () {
-        window.close();
-      };
-    }
+    setTimeout(() => {
+        window.print();
+    }, 500); // Safari ke liye delay
+
+    // Sirf desktop pe close
+    if (!/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        window.onafterprint = function () {
+            window.close();
+        };
+      }
   };
+
+
 </script>
 
 </body>
