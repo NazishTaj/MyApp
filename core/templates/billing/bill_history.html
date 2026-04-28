@@ -277,18 +277,39 @@
           {% endif %}
         </td>
 
-        
-          <td class="px-6 py-4">
+        <td class="px-6 py-4">
 
             {% if bill.total_amount < 0 %}
-              <span class="badge badge-danger text-xs">Refund</span>
+                <span class="badge badge-danger text-xs">
+                    Refund Entry
+                </span>
+        
+            {% elif bill.is_refunded %}
+                <div class="flex flex-col">
+                    <span class="badge badge-danger text-xs w-fit">
+                        Refunded Appointment
+                    </span>
+        
+                    {% if bill.doctor %}
+                    <span class="text-green-600 text-xs mt-1">
+                        {{ bill.doctor.name }} (Consultation)
+                    </span>
+                    {% endif %}
+                </div>
+        
             {% elif bill.doctor %}
-              <span class="badge badge-success text-xs">Consultation</span>
+                <span class="badge badge-success text-xs">
+                    Consultation
+                </span>
+        
             {% else %}
-              <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">Service</span>
+                <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                    Service
+                </span>
             {% endif %}
-
+        
         </td>
+
           <td class="px-6 py-4">
             <div class="flex items-center gap-2 text-gray-600 whitespace-nowrap">
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
