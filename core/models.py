@@ -315,7 +315,8 @@ class Bill(models.Model):
     doctor = models.ForeignKey(
         UserProfile,
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        related_name="doctor_bills"
     )
     referred_by = models.ForeignKey(
         UserProfile,
@@ -348,7 +349,8 @@ class Bill(models.Model):
     UserProfile,
     on_delete=models.SET_NULL,
     null=True,
-    blank=True
+    blank=True,
+    related_name="refunded_bills"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
