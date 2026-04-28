@@ -36,7 +36,6 @@
     .no-break {
         page-break-inside: avoid;
         break-inside: avoid;
-        -webkit-column-break-inside: avoid;
     }
 
     table, tr, td {
@@ -139,7 +138,7 @@
 </div>
 
 <!-- ================= PATIENT INFO ================= -->
-<div class="text-sm mb-6 no-break">
+<div class="text-sm mb-6">
 
 <div class="grid-3">
 
@@ -173,7 +172,7 @@
 
 <!-- ================= DIAGNOSIS ================= -->
 {% if prescription.diagnosis %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Diagnosis</h4>
     <p>{{ prescription.diagnosis|linebreaksbr }}</p>
 </div>
@@ -181,7 +180,7 @@
 
 <!-- ================= SYMPTOMS ================= -->
 {% if prescription.symptoms %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Symptoms</h4>
     <p>{{ prescription.symptoms|linebreaksbr }}</p>
 </div>
@@ -245,7 +244,7 @@ Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
 
 <!-- ================= TESTS ================= -->
 {% if prescription.tests %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Tests</h4>
     <p>{{ prescription.tests|linebreaksbr }}</p>
 </div>
@@ -253,7 +252,7 @@ Example: <b>1-0-1</b> → Morning 1, Afternoon 0, Night 1
 
 <!-- ================= ADVICE ================= -->
 {% if prescription.notes %}
-<div class="mb-6 no-break">
+<div class="mb-6">
     <h4 class="font-semibold mb-1">Advice</h4>
     <p>{{ prescription.notes|linebreaksbr }}</p>
 </div>
