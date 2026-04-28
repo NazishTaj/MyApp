@@ -300,58 +300,46 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-function cancelAppointment(id) {
-
-    const refund = confirm("Refund amount?\nOK = Yes\nCancel = No");
-
-    fetch(`/cancel-appointment/${id}/`, {
-        method: "POST",
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `refund=${refund ? "yes" : "no"}`
-    })
-    .then(res => res.json())
-    .then(data => {
-        location.reload();
-    })
-    .catch(err => console.error(err));
-}
-
 function completeAppointment(id) {
+
     fetch(`/complete-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
         }
     })
     .then(res => res.json())
     .then(data => {
-        location.reload(); // ✅
+
+        if (data.status === "blocked") {
+            alert(data.message);
+            return;
+        }
+
+        location.reload();
     })
     .catch(err => console.error(err));
 }
 
 function confirmCancel(id) {
 
-    if (!confirm("Are you sure you want to cancel this appointment?")) {
-        return;
-    }
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
 
     fetch(`/cancel-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error cancelling appointment");
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "blocked") {
+            alert(data.message);
+            return;
         }
+
+        location.reload(); // yahan reload theek hai (no websocket here)
     })
     .catch(err => console.error(err));
 }
