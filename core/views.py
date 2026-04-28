@@ -748,92 +748,106 @@ def send_to_doctor(request, appointment_id):
 @login_required(login_url="login")
 def cancel_appointment(request, appointment_id):
 
-    profile = get_object_or_404(UserProfile, user=request.user)
-    clinic = profile.clinic
+    try:
+        print("STEP 1 HIT")
 
-    appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+        profile = get_object_or_404(UserProfile, user=request.user)
+        clinic = profile.clinic
 
-    # 🔒 ALREADY CANCELLED BLOCK (🔥 NEW ADD)
-    if appointment.status == "cancelled":
-        return JsonResponse({"error": "Appointment already cancelled"})
+        print("STEP 2 - profile loaded")
 
-    if not has_permission(request.user, "manage_appointments"):
-        return JsonResponse({"error": "Permission denied"}, status=403)
+        if not has_permission(request.user, "manage_appointments"):
+            return render(request, "403.html", status=403)
 
-     # 🔥 NEW REFUND LOGIC START
+        appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
-    refund = request.POST.get("refund", "no")   # "yes" or "no"
-    
-    bill = Bill.objects.filter(appointment=appointment).first()
+        print("STEP 3 - appointment fetched")
 
-    # ✅ Double refund block
-    if bill and bill.is_refunded:
-        return JsonResponse({"error": "Already refunded"})
+        refund = request.POST.get("refund", "no")
 
-    appointment.status = "cancelled"
-    appointment.queue_status = "done"
-    appointment.save() 
+        print("STEP 4 - refund read:", refund)
 
-    # ✅ If user selected refund
-    if bill and refund == "yes":
-        bill.is_refunded = True
-        bill.refunded_at = timezone.now()
-        bill.refunded_by = profile
-        bill.save()
-    
-        # optional (recommended)
-        appointment.payment_status = "unpaid"
+        bill = Bill.objects.filter(appointment=appointment).first()
+
+        print("STEP 5 - bill fetched:", bill)
+
+        if bill and bill.is_refunded:
+            print("STEP 6 - already refunded hit")
+            return JsonResponse({"error": "Already refunded"})
+
+        appointment.status = "cancelled"
+        appointment.queue_status = "done"
         appointment.save()
-    
-    # 🔥 NEW REFUND LOGIC END
 
-    # 🔥 NEXT TOKENS
-    today = appointment.appointment_date
+        print("STEP 7 - appointment cancelled")
 
-    busy_doctors = set(
-        Appointment.objects.filter(
+        if bill and refund == "yes":
+            bill.is_refunded = True
+            bill.refunded_at = timezone.now()
+            bill.refunded_by = profile
+            bill.save()
+
+            appointment.payment_status = "unpaid"
+            appointment.save()
+
+            print("STEP 8 - refund processed")
+
+        today = appointment.appointment_date
+
+        busy_doctors = set(
+            Appointment.objects.filter(
+                clinic=clinic,
+                appointment_date=today,
+                queue_status="in_consultation"
+            ).values_list("doctor_id", flat=True)
+        )
+
+        print("STEP 9 - busy doctors")
+
+        all_waiting = Appointment.objects.filter(
             clinic=clinic,
             appointment_date=today,
-            queue_status="in_consultation"
-        ).values_list("doctor_id", flat=True)
-    )
+            queue_status="waiting"
+        ).order_by("doctor", "token_number")
 
-    all_waiting = Appointment.objects.filter(
-        clinic=clinic,
-        appointment_date=today,
-        queue_status="waiting"
-    ).order_by("doctor", "token_number")
+        next_tokens = []
+        seen_doctors = set()
 
-    next_tokens = []
-    seen_doctors = set()
+        for appt in all_waiting:
+            if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
+                next_tokens.append(appt.id)
+                seen_doctors.add(appt.doctor_id)
 
-    for appt in all_waiting:
-        if appt.doctor_id not in seen_doctors and appt.doctor_id not in busy_doctors:
-            next_tokens.append(appt.id)
-            seen_doctors.add(appt.doctor_id)
+        print("STEP 10 - next tokens ready")
 
-    # 🔥 WEBSOCKET
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
 
-    channel_layer = get_channel_layer()
+        channel_layer = get_channel_layer()
 
-    group_name = f"dashboard_{clinic.id}"
+        group_name = f"dashboard_{clinic.id}"
 
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            "type": "send_update",
-            "data": {
-                "appointment_id": appointment.id,
-                "patient_id": appointment.patient.id,
-                "status": appointment.status,
-                "queue_status": appointment.queue_status,
-                "next_tokens": next_tokens,
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_update",
+                "data": {
+                    "appointment_id": appointment.id,
+                    "patient_id": appointment.patient.id,
+                    "status": appointment.status,
+                    "queue_status": appointment.queue_status,
+                    "next_tokens": next_tokens,
+                }
             }
-        }
-    )
+        )
 
+        print("STEP 11 - websocket sent")
+
+        return JsonResponse({"status": "ok"})
+
+    except Exception as e:
+        print("💥 ERROR:", e)
+        return JsonResponse({"error": str(e)})
     from django.http import JsonResponse
     return JsonResponse({"status": "ok"})
 
