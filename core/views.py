@@ -608,6 +608,13 @@ def complete_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
+    if appointment.status == "cancelled":
+        return JsonResponse({
+            "status": "blocked",
+            "message": "Cannot complete cancelled appointment"
+        })
+
+
     appointment.status = "completed"
     appointment.queue_status = "done"
     appointment.save()
@@ -744,6 +751,9 @@ def cancel_appointment(request, appointment_id):
         return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    if appointment.status == "cancelled":
+        return JsonResponse({"status": "already_cancelled"})
 
     appointment.status = "cancelled"
     appointment.queue_status = "done"
@@ -1478,6 +1488,12 @@ def mark_pending(request, appointment_id):
         return render(request, "403.html", status=403)
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
+
+    if appointment.status == "cancelled":
+        return JsonResponse({
+            "status": "blocked",
+            "message": "Cannot change cancelled appointment"
+        })
 
     appointment.status = "pending"
     appointment.queue_status = "waiting"
