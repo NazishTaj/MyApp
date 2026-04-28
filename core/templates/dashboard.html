@@ -243,7 +243,7 @@
                 </button>
 
                 
-                <button onclick="confirmCancel({{ a.id }}); closeSheet();"
+                <button onclick="closeSheet(); confirmCancel({{ a.id }});"
                 class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
                 ❌ Cancel Appointment
                 </button>
@@ -682,15 +682,30 @@ function getCookie(name) {
     return cookieValue;
 }
 
+let cancelId = null;
+
 function confirmCancel(id) {
+    cancelId = id;
+    document.querySelector('input[value="none"]').checked = true;
+    document.getElementById("cancelModal").classList.remove("hidden");
+}
 
-    if (!confirm("Are you sure you want to cancel this appointment?")) return;
+function closeCancelModal() {
+    document.getElementById("cancelModal").classList.add("hidden");
+}
 
-    fetch(`/cancel-appointment/${id}/`, {
+function submitCancel() {
+
+    const selected = document.querySelector('input[name="refundOption"]:checked').value;
+    const refund = (selected === "full");
+
+    fetch(`/cancel-appointment/${cancelId}/`, {
         method: "POST",
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-        }
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie('csrftoken')
+        },
+        body: JSON.stringify({ refund: refund })
     })
     .then(res => res.json())
     .then(data => {
@@ -700,11 +715,41 @@ function confirmCancel(id) {
             return;
         }
 
-         refreshFromServer();
-    })
-    .catch(err => console.error(err));
+        closeCancelModal();
+        refreshFromServer();
+    });
 }
 </script>
+<div id="cancelModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+  <div class="bg-white p-6 rounded-xl w-80">
+
+    <h2 class="text-lg font-semibold mb-4">
+      Cancel this appointment?
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-3">Refund:</p>
+
+    <label class="flex items-center gap-2 mb-2">
+      <input type="radio" name="refundOption" value="none" checked>
+      Keep amount
+    </label>
+
+    <label class="flex items-center gap-2 mb-4">
+      <input type="radio" name="refundOption" value="full">
+      Refund full amount
+    </label>
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closeCancelModal()" class="px-3 py-1 border rounded">
+        Close
+      </button>
+      <button onclick="submitCancel()" class="px-3 py-1 bg-red-500 text-white rounded">
+        Confirm
+      </button>
+    </div>
+
+  </div>
+</div>
 
 
 {% endblock %}
