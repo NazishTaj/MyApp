@@ -758,7 +758,7 @@ def cancel_appointment(request, appointment_id):
 
     # 🔒 HARD LOCK (FINAL FIX)
     if appointment.status == "cancelled":
-        return JsonResponse({"error": "Appointment already cancelled"})
+        return JsonResponse({"status": "ok"})
 
      # 🔥 NEW REFUND LOGIC START
 
@@ -768,7 +768,7 @@ def cancel_appointment(request, appointment_id):
 
     # ✅ Double refund block
     if bill and bill.is_refunded:
-        return JsonResponse({"error": "Already refunded"})
+        return JsonResponse({"status": "ok"})
 
     appointment.status = "cancelled"
     appointment.queue_status = "done"
