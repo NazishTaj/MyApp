@@ -756,6 +756,10 @@ def cancel_appointment(request, appointment_id):
 
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
+    # 🔒 ALREADY CANCELLED BLOCK (🔥 NEW ADD)
+    if appointment.status == "cancelled":
+        return JsonResponse({"error": "Appointment already cancelled"})
+
      # 🔥 NEW REFUND LOGIC START
 
     refund = request.POST.get("refund", "no")   # "yes" or "no"
