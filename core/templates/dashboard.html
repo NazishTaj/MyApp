@@ -343,17 +343,23 @@ document.addEventListener("click", function(e) {
 
 
 function completeAppointment(id) {
+
     fetch(`/complete-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error completing appointment");
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "blocked") {
+            alert(data.message);
+            return;
         }
+
+        refreshFromServer();
+
     })
     .catch(err => console.error(err));
 }
@@ -638,35 +644,25 @@ window.addEventListener("pageshow", function (event) {
 });
 </script>
 <script>
-    function cancelAppointment(id) {
-    fetch(`/cancel-appointment/${id}/`, {
-      method: "POST",
-      headers: {    
-          'X-CSRFToken': getCookie('csrftoken'),
-          'Content-Type': 'application/json' 
-      }
-    })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error cancelling appointment");
-        }
-    })
-    .catch(err => console.error(err));
-}
-
 
 function markPending(id) {
+
     fetch(`/mark-pending/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error marking pending");
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "blocked") {
+            alert(data.message);
+            return;
         }
+
+        refreshFromServer();
+
     })
     .catch(err => console.error(err));
 }
@@ -688,21 +684,23 @@ function getCookie(name) {
 
 function confirmCancel(id) {
 
-    if (!confirm("Are you sure you want to cancel this appointment?")) {
-        return;
-    }
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
 
     fetch(`/cancel-appointment/${id}/`, {
         method: "POST",
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
         }
     })
-    .then(res => {
-        if (!res.ok) {
-            alert("Error cancelling appointment");
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "blocked") {
+            alert(data.message);
+            return;
         }
+
+         refreshFromServer();
     })
     .catch(err => console.error(err));
 }
