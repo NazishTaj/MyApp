@@ -757,5 +757,39 @@ setTimeout(() => {
 }, 3000);
 </script>
 
+<!-- GLOBAL CANCEL MODAL -->
+<div id="cancelModal"
+     class="hidden fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-[99999]">
+
+  <div class="bg-white p-6 rounded-xl w-80 shadow-xl max-h-[90vh] overflow-auto">
+
+    <h2 class="text-lg font-semibold mb-4">
+      Cancel this appointment?
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-3">Refund:</p>
+
+    <label class="flex items-center gap-2 mb-2">
+      <input type="radio" name="refundOption" value="none" checked>
+      Keep amount
+    </label>
+
+    <label class="flex items-center gap-2 mb-4">
+      <input type="radio" name="refundOption" value="full">
+      Refund full amount
+    </label>
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closeCancelModal()" class="px-3 py-1 border rounded">
+        Close
+      </button>
+      <button onclick="submitCancel()" class="px-3 py-1 bg-red-500 text-white rounded">
+        Confirm
+      </button>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
