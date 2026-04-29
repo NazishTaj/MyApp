@@ -183,7 +183,7 @@
         <!-- RIGHT: Dropdown -->
 
         
-                <button onclick="event.stopPropagation(); openSheet({{ a.id }})"
+                <button onclick="event.stopPropagation(); openSheet({{ a.id }}, {{ a.patient.id }})"
                     class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100 ml-2 shrink-0">
                     ⋮
                 </button>
@@ -206,94 +206,80 @@
             </tbody>
 
         </table>
+          <div id="globalSheet" 
+            class="fixed z-[9999] hidden inset-0 flex items-end justify-center bg-black/30 md:items-center">
+            
+                <div class="bg-white w-full rounded-t-2xl shadow-2xl p-4 max-h-[85vh] overflow-y-auto
+                            md:rounded-2xl md:w-96 md:max-h-[80vh]">
+            
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-base font-semibold text-gray-700">Actions</span>
+                        <button onclick="closeSheet()" 
+                        class="text-gray-400 hover:text-red-700 text-lg">✕</button>
+                    </div>
+            
+                    <div class="border-t border-gray-100 mb-3"></div>
+            
+                    <div id="sheetContent" class="flex flex-col items-center gap-1.5 text-center">
+                        <!-- dynamic content aayega -->
+                    </div>
+                </div>
+        </div>
       </div>
         
     </div>
 
-        {% for a in appointments %}
-        <div id="sheet-{{ a.id }}" 
-        class="fixed z-[9999] hidden
-               inset-0 flex items-end justify-center bg-black/30
-               md:items-center">
         
-            <!-- Actual sheet box -->
-            <div class="bg-white w-full rounded-t-2xl shadow-2xl p-4 max-h-[85vh] overflow-y-auto
-                        md:rounded-2xl md:w-96 md:max-h-[80vh] md:mb-0">
-                
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-base font-semibold text-gray-700">Actions</span>
-                    <button onclick="closeSheet()" 
-                    class="text-gray-400 hover:text-red-700 text-lg">✕</button>
-                </div>
-        
-                <div class="border-t border-gray-100 mb-3"></div>
-        
-                <div class="flex flex-col items-center gap-1.5 text-center">
-                    <a href="{% url 'patient_history' a.patient.id %}"
-                    class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                    📜 Patient History
-                    </a>
-                    <button onclick="markPending({{ a.id }}); closeSheet();"
-                    class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                    ↩️ Mark as Pending
-                    </button>
-                    {% if a.status != "cancelled" %}
-                    <button onclick="closeSheet(); confirmCancel({{ a.id }});"
-                    class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
-                    ❌ Cancel Appointment
-                    </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-
-
 </div>
 
 </div>
 
 <script>
-function openSheet(id) {
-    // Close all sheets
-    document.querySelectorAll('[id^="sheet-"]').forEach(s => {
-        s.classList.add("hidden");
-    });
+function openSheet(id, patientId) { 
 
-    const row = document.getElementById("appointment-" + id);
-    const sheet = document.getElementById("sheet-" + id);
+    const sheet = document.getElementById("globalSheet");
+    const content = document.getElementById("sheetContent");
 
-    // Blur all rows
+    // 🔥 BLUR ALL ROWS
     document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
         tr.classList.add("blur-sm", "opacity-50");
     });
 
-    // Highlight active row
-    if (row) {
-        row.classList.remove("blur-sm", "opacity-50");
-        row.classList.add("relative", "z-[100]");
+    // 🔥 ACTIVE ROW CLEAR + HIGHLIGHT
+    const activeRow = document.getElementById("appointment-" + id);
+    if (activeRow) {
+        activeRow.classList.remove("blur-sm", "opacity-50");
+        activeRow.classList.add("relative", "z-[100]");
     }
 
-    // Show sheet
+    // dynamic content
+    content.innerHTML = `
+        <a href="/patient-history/${patientId}/"
+        class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+        📜 Patient History
+        </a>
+
+        <button onclick="markPending(${id}); closeSheet();"
+        class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+        ↩️ Mark as Pending
+        </button>
+
+        <button onclick="closeSheet(); confirmCancel(${id});"
+        class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
+        ❌ Cancel Appointment
+        </button>
+    `;
+
     sheet.classList.remove("hidden");
 }
 
-
-// ✅ GLOBAL BACKDROP CLICK
-document.addEventListener("click", function(e) {
-    const isBackdrop = e.target.matches('[id^="sheet-"]');
-    if (isBackdrop) closeSheet();
-});
-
-
 function closeSheet() {
-    document.querySelectorAll('[id^="sheet-"]').forEach(s => {
-        s.classList.add("hidden");
-    });
 
+    document.getElementById("globalSheet").classList.add("hidden");
+
+    // 🔥 REMOVE BLUR FROM ALL ROWS
     document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-        tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[100]", "scale-[1.01]", "shadow-lg");
+        tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[100]");
     });
 }
 
@@ -335,6 +321,9 @@ function sendToDoctor(id) {
     })
     .catch(err => console.error(err));
 }
+document.getElementById("globalSheet").addEventListener("click", function(e) {
+    if (e.target === this) closeSheet();
+});
 </script>
 
 <script>
