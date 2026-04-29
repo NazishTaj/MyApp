@@ -292,14 +292,9 @@ function openSheet(id) {
       row.classList.remove("blur-sm", "opacity-50");
       row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
     }
-
-    const scrollY = window.scrollY;
-
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
-
+    document.body.classList.add("overflow-hidden");
+    document.getElementById("tableWrapper").classList.add("overflow-hidden");
+      
   }, 200); // 🔥 important delay
 }
 
@@ -318,15 +313,10 @@ function closeSheet() {
    tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
   });
 
+  document.body.classList.remove("overflow-hidden");
+  document.getElementById("tableWrapper").classList.remove("overflow-hidden");
 
-  const scrollY = document.body.style.top;
 
-  document.body.style.position = "";
-  document.body.style.top = "";
-  document.body.style.left = "";
-  document.body.style.right = "";
-
-  window.scrollTo(0, parseInt(scrollY || "0") * -1);
 }
 
 
