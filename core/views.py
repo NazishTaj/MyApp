@@ -778,14 +778,16 @@ def cancel_appointment(request, appointment_id):
             bill.save()
     
             # 🔥 negative entry (revenue minus)
-            Bill.objects.create(
-                clinic=clinic,
-                patient=appointment.patient,
-                doctor=bill.doctor,
-                appointment=appointment,
-                total_amount = -bill.total_amount,
-                payment_mode = bill.payment_mode
-            )
+            # ✅ ONLY if amount > 0
+            if bill.total_amount > 0:
+                Bill.objects.create(
+                    clinic=clinic,
+                    patient=appointment.patient,
+                    doctor=bill.doctor,
+                    appointment=appointment,
+                    total_amount = -bill.total_amount,
+                    payment_mode = bill.payment_mode
+                )
 
     today = appointment.appointment_date
     
