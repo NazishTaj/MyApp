@@ -209,49 +209,43 @@
         </table>
         
     </div>
-    <div id="sheetOverlay" class="fixed inset-0 bg-black/20 backdrop-blur-md hidden z-[9998]"></div>
 
         {% for a in appointments %}
         <div id="sheet-{{ a.id }}" 
-        class="fixed bottom-0 left-0 right-0 mx-auto
-        w-full max-w-sm 
-        bg-white rounded-t-2xl shadow-2xl 
-        hidden p-4 z-[9999]  max-h-[85vh] overflow-y-auto
-        md:top-1/2 md:bottom-auto md:-translate-y-1/2 md:rounded-2xl">
-
-
-            <!-- Header -->
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-base font-semibold text-gray-700">Actions</span>
-                <button onclick="closeSheet()" 
-                class="text-gray-400 hover:text-red-700 text-lg">✕</button>
-            </div>
-
-            <!-- Divider -->
-            <div class="border-t border-gray-100 mb-3"></div>
-
-            <!-- Actions -->
-            <div class="flex flex-col items-center gap-1.5 text-center">
-
-                <a href="{% url 'patient_history' a.patient.id %}"
-                class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                📜 Patient History
-                </a>
-                <button onclick="markPending({{ a.id }}); closeSheet();"
-                class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
-                ↩️ Mark as Pending
-                </button>
-
+        class="fixed z-[9999] hidden
+               inset-0 flex items-end justify-center bg-black/30
+               md:items-center">
+        
+            <!-- Actual sheet box -->
+            <div class="bg-white w-full rounded-t-2xl shadow-2xl p-4 max-h-[85vh] overflow-y-auto
+                        md:rounded-2xl md:w-96 md:max-h-[80vh] md:mb-0">
                 
-                {% if a.status != "cancelled" %}
-                <button onclick="closeSheet(); confirmCancel({{ a.id }});"
-                class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
-                ❌ Cancel Appointment
-                </button>
-                {% endif %}
-                                
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-base font-semibold text-gray-700">Actions</span>
+                    <button onclick="closeSheet()" 
+                    class="text-gray-400 hover:text-red-700 text-lg">✕</button>
+                </div>
+        
+                <div class="border-t border-gray-100 mb-3"></div>
+        
+                <div class="flex flex-col items-center gap-1.5 text-center">
+                    <a href="{% url 'patient_history' a.patient.id %}"
+                    class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+                    📜 Patient History
+                    </a>
+                    <button onclick="markPending({{ a.id }}); closeSheet();"
+                    class="w-full py-2 rounded-lg hover:bg-gray-100 transition">
+                    ↩️ Mark as Pending
+                    </button>
+                    {% if a.status != "cancelled" %}
+                    <button onclick="closeSheet(); confirmCancel({{ a.id }});"
+                    class="w-full py-2 rounded-lg text-red-500 hover:bg-red-100 transition">
+                    ❌ Cancel Appointment
+                    </button>
+                    {% endif %}
+                </div>
             </div>
-
         </div>
         {% endfor %}
 
@@ -262,87 +256,46 @@
 
 <script>
 function openSheet(id) {
-
-  // close all sheets
-  document.querySelectorAll('[id^="sheet-"]').forEach(s => {
-    s.classList.add("hidden");
-  });
-
-  const row = document.getElementById("appointment-" + id);
-
-  // 🔥 STEP 1: scroll row into view FIRST
-  if (row) {
-    // row.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  // 🔥 STEP 2: slight delay (important for mobile)
-  setTimeout(() => {
-
-    // blur all rows
-    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-      tr.classList.add("blur-sm", "opacity-50");
+    // Close all sheets
+    document.querySelectorAll('[id^="sheet-"]').forEach(s => {
+        s.classList.add("hidden");
     });
 
-    // open sheet
-    document.getElementById("sheet-" + id).classList.remove("hidden");
-    document.getElementById("sheetOverlay").classList.remove("hidden");
+    const row = document.getElementById("appointment-" + id);
+    const sheet = document.getElementById("sheet-" + id);
 
-    // focus active row
+    // Blur all rows
+    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+        tr.classList.add("blur-sm", "opacity-50");
+    });
+
+    // Highlight active row
     if (row) {
-      row.classList.remove("blur-sm", "opacity-50");
-      row.classList.add("relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
+        row.classList.remove("blur-sm", "opacity-50");
+        row.classList.add("relative", "z-[100]");
     }
 
-    const scrollY = window.scrollY;
-
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
-
-  }, 200); // 🔥 important delay
+    // Show sheet
+    sheet.classList.remove("hidden");
 }
+
+
+// ✅ GLOBAL BACKDROP CLICK
+document.addEventListener("click", function(e) {
+    const isBackdrop = e.target.matches('[id^="sheet-"]');
+    if (isBackdrop) closeSheet();
+});
 
 
 function closeSheet() {
+    document.querySelectorAll('[id^="sheet-"]').forEach(s => {
+        s.classList.add("hidden");
+    });
 
-  document.querySelectorAll('[id^="sheet-"]').forEach(s => {
-    s.classList.add("hidden");
-  });
-
-  document.getElementById("sheetOverlay").classList.add("hidden");
-
-  // remove blur
-  // remove blur from all rows
-  document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
-   tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[9999]", "scale-[1.01]", "shadow-lg");
-  });
-
-
-  const scrollY = document.body.style.top;
-
-  document.body.style.position = "";
-  document.body.style.top = "";
-  document.body.style.left = "";
-  document.body.style.right = "";
-
-  window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
+        tr.classList.remove("blur-sm", "opacity-50", "relative", "z-[100]", "scale-[1.01]", "shadow-lg");
+    });
 }
-
-
-// overlay click → close
-document.getElementById("sheetOverlay").addEventListener("click", closeSheet);
-document.addEventListener("click", function(e) {
-
-  const isSheet = e.target.closest('[id^="sheet-"]');
-  const isButton = e.target.closest('[onclick*="openSheet"]');
-
-  if (!isSheet && !isButton) {
-    closeSheet();
-  }
-
-});
-
 
 function completeAppointment(id) {
 
