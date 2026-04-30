@@ -22,7 +22,7 @@
 
     <!-- Action Bar -->
     <div class="flex items-center justify-between mb-6 no-print">
-         <a href="{% url 'bill_history' %}"
+         <a href="javascript:history.length > 1 ? history.back() : '{% url 'bill_history' %}'"
        class="btn-premium btn-ghost text-sm flex items-center gap-2">
 
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
