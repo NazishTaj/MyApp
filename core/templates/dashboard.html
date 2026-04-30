@@ -213,7 +213,28 @@
 
         
 </div>
+
+    <div id="globalSheet" 
+            class="fixed z-[9999] hidden inset-0 flex items-end justify-center bg-black/30 md:items-center">
+            
+                <div class="bg-white w-full rounded-t-2xl shadow-2xl p-4 max-h-[85vh] overflow-y-auto
+                            md:rounded-2xl md:w-96 md:max-h-[80vh]">
+            
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-base font-semibold text-gray-700">Actions</span>
+                        <button onclick="closeSheet()" 
+                        class="text-gray-400 hover:text-red-700 text-lg">✕</button>
+                    </div>
+            
+                    <div class="border-t border-gray-100 mb-3"></div>
+            
+                    <div id="sheetContent" class="flex flex-col items-center gap-1.5 text-center">
+                        <!-- dynamic content aayega -->
+                    </div>
+                </div>
+        </div>
     
+
 </div>
 
 <script>
