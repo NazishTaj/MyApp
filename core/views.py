@@ -2390,18 +2390,16 @@ def revenue_report(request):
 
     total = bills.aggregate(total=Sum("total_amount"))["total"] or 0
     
-
-    doctor_revenue = BillItem.objects.filter(
-        bill__in=bills,
-        bill__clinic=clinic,
-        bill__doctor__isnull=False,   # ❗ NA hata diya
-        item_name__icontains="consultation"
+    doctor_revenue = Bill.objects.filter(
+        id__in=bills.values_list("id", flat=True),
+        doctor__isnull=False
     ).values(
-        "bill__doctor__id",
-        "bill__doctor__name"
+        "doctor__id",
+        "doctor__name"
     ).annotate(
-        total=Sum("amount")
+        total=Sum("total_amount")   # 🔥 includes refund
     ).order_by("-total")
+    
     doctor_revenue = list(doctor_revenue)
 
     total_doctor_revenue = sum(d["total"] for d in doctor_revenue)
