@@ -8,7 +8,7 @@ from .utils import has_permission
 from datetime import date , datetime
 from django.core.paginator import Paginator
 from .forms import ClinicScheduleForm
-import openpyxl
+from openpyxl import Workbook
 from django.http import HttpResponse
 from .models import Patient, Appointment, Prescription, UserProfile , ClinicSchedule , Clinic
 from django.core.exceptions import ValidationError
@@ -1384,10 +1384,10 @@ def export_month_appointments(request):
         clinic=clinic,
         appointment_date__month=int(month),
         appointment_date__year=int(year)
-    ).select_related("patient")
+    ).select_related("patient").iterator(chunk_size=1000)
 
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet()
     sheet.title = "Appointments"
 
     headers = [
@@ -1441,10 +1441,14 @@ def export_all_appointments(request):
     if not profile.is_owner:
         return permission_denied_response(request)
 
-    appointments = Appointment.objects.filter(clinic=clinic)
+    appointments = (
+        Appointment.objects.filter(clinic=clinic)
+        .select_related("patient")
+        .iterator(chunk_size=1000)
+    )
 
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet()
     sheet.title = "Appointments"
 
     headers = [
@@ -2075,10 +2079,12 @@ def export_all_bills(request):
     if not profile.is_owner:
         return permission_denied_response(request)
 
-    bills = Bill.objects.filter(clinic=clinic).select_related("patient", "doctor", "appointment")
+    bills = Bill.objects.filter(clinic=clinic)\
+    .select_related("patient", "doctor", "appointment")\
+    .iterator(chunk_size=1000)
 
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet()
     sheet.title = "Bills"
 
     headers = [
@@ -2155,10 +2161,11 @@ def export_month_bills(request):
         clinic=clinic,
         created_at__month=int(month),
         created_at__year=int(year)
-    ).select_related("patient", "doctor", "appointment")
+    ).select_related("patient", "doctor", "appointment")\
+     .iterator(chunk_size=1000)
 
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet()
     sheet.title = "Bills"
 
     headers = [
