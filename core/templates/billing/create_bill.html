@@ -75,25 +75,8 @@
       <input type="hidden" name="patient" id="selectedPatient">
     
 
-    <div id="patientList" class="absolute top-full left-0 z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto hidden">
-      {% for p in patients %}
-      <div class="px-4 py-3 hover:bg-brand-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0 transition-colors"
-           data-id="{{ p.id }}"
-           data-text="{{ p.name }} {{ p.phone }}"
-           onclick="selectPatient(this)">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-100 to-indigo-100 flex items-center justify-center text-brand-600 font-semibold text-sm">
-          {{ p.name|slice:":1"|upper }}
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-900">{{ p.name }}</p>
-          <p class="text-xs text-gray-500">{{ p.phone }}</p>
-        </div>
-      </div>
-      {% empty %}
-      <div class="px-4 py-6 text-center text-gray-500 text-sm">No patients found</div>
-      {% endfor %}
-    </div>
-    </div> 
+    <div id="patientList" class="absolute top-full left-0 z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto hidden"> </div>
+  </div> 
     
     {% endif %}
   </div>
@@ -351,34 +334,67 @@ if(searchInput){
     }
   })
 }
+let timer;
+let lastQuery = "";
 
-function filterPatients(){
-  let value = searchInput.value.toLowerCase()
-  patientList.classList.remove("hidden")
+searchInput.addEventListener("keyup", function () {
 
-  document.querySelectorAll("#patientList > div").forEach(item => {
-    if(item.dataset.text){
-      let text = item.dataset.text.toLowerCase()
-      item.style.display = text.includes(value) ? "flex" : "none"
-    }
-  })
-}
+  let query = this.value.trim();
+  if (query === lastQuery) return;
+     lastQuery = query;
 
-if(searchInput){
-  searchInput.addEventListener("keyup", filterPatients)
-}
+  if (query.length < 2) {
+    patientList.innerHTML = "";
+    patientList.classList.add("hidden");
+    return;
+  }
 
-function selectPatient(el){
-  document.getElementById("selectedPatient").value = el.dataset.id
-  searchInput.value = el.querySelector("p.font-medium").innerText
-  patientList.classList.add("hidden")
-  
-  // Add visual feedback
-  searchInput.classList.add("!border-emerald-500", "!ring-2", "!ring-emerald-100")
+  clearTimeout(timer);
+
+  timer = setTimeout(() => {
+
+    fetch(`/search-patients/?q=${query}`)
+      .then(res => res.json())
+      .then(data => {
+    
+        patientList.innerHTML = "";
+    
+        if (data.length === 0) {
+          patientList.innerHTML = `<div class="px-4 py-2 text-gray-500">No patients found</div>`;
+        }
+    
+        data.forEach(p => {
+          patientList.innerHTML += `
+            <div class="px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                 onclick="selectPatientAjax(${p.id}, '${p.name}')">
+              <p class="font-medium">${p.name}</p>
+              <p class="text-sm text-gray-500">${p.phone}</p>
+            </div>
+          `;
+        });
+    
+        patientList.classList.remove("hidden");
+      })
+      .catch(() => {
+        patientList.innerHTML = `<div class="px-4 py-2 text-red-500">Error loading patients</div>`;
+        patientList.classList.remove("hidden");
+      });
+
+  }, 300);
+});
+
+
+function selectPatientAjax(id, name) {
+  document.getElementById("selectedPatient").value = id;
+  searchInput.value = name;
+  patientList.classList.add("hidden");
+
+  searchInput.classList.add("!border-emerald-500", "!ring-2", "!ring-emerald-100");
+
   setTimeout(() => {
-  const nextInput = document.querySelector("input[name='item_name[]']")
-  if (nextInput) nextInput.focus()
-}, 100)
+    const nextInput = document.querySelector("input[name='item_name[]']");
+    if (nextInput) nextInput.focus();
+  }, 100);
 }
 
 // Validation
