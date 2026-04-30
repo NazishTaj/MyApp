@@ -159,9 +159,9 @@
                         <td class="py-3 px-2">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-cyan-100 text-cyan-700 rounded-full flex items-center justify-center text-xs font-bold">
-                                    {{ d.bill__doctor__name|default:"NA"|slice:":2"|upper }}
+                                    {{ d.doctor__name|default:"NA"|slice:":2"|upper }}
                                 </div>
-                                <span class="font-medium text-gray-800">{{ d.bill__doctor__name|default:"N/A" }}</span>
+                                <span class="font-medium text-gray-800">{{ d.doctor__name|default:"N/A" }}</span>
                             </div>
                         </td>
                         <td class="py-3 px-2 text-right font-semibold text-gray-700">₹ {{ d.total|floatformat:0 }}</td>
