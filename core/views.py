@@ -2465,3 +2465,25 @@ def save_medicine(name, clinic):
 
     med.usage_count += 1
     med.save(update_fields=["usage_count"])
+
+
+# Search Medicine
+
+@login_required
+def search_patients(request):
+    query = request.GET.get("q", "").strip()
+
+    clinic = request.user.userprofile.clinic
+
+    if not query:
+        return JsonResponse([], safe=False)
+
+    patients = Patient.objects.filter(
+        clinic=clinic,
+        is_active=True,
+        name__icontains=query
+    )[:10]
+
+    data = list(patients.values("id", "name", "phone"))
+
+    return JsonResponse(data, safe=False)
