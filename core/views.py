@@ -1004,7 +1004,8 @@ def patient_history(request, patient_id):
 
     bills = Bill.objects.filter(
         clinic=clinic,
-        patient=patient
+        patient=patient,
+        total_amount__gte=0
     ).order_by("-created_at")
 
     prescriptions = Prescription.objects.filter(
