@@ -53,6 +53,7 @@ path('user-blocked/', views.user_blocked, name='user_blocked'),
 path('revenue-report/', views.revenue_report, name='revenue_report'),
 path('search-medicine/', views.search_medicine, name='search_medicine'),
 path('prescription/<int:id>/pdf/', views.download_prescription_pdf, name='download_prescription_pdf'),
+path("search-patients/", views.search_patients, name="search_patients"),
 
 
 
