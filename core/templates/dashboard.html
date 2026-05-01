@@ -352,45 +352,72 @@ function connectSocket() {
                 newRow.id = "appointment-" + appt.id;
                 newRow.setAttribute("data-patient-id", appt.patient_id);
                 newRow.className = "border-b border-gray-100 hover:bg-gray-50 transition";
-            
+
                 newRow.innerHTML = `
-                    <td class="px-6 py-4">
-                        <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 font-semibold text-sm border border-indigo-200">
-                            ${appt.token_number}
-                        </span>
-                    </td>
+                <td class="px-6 py-4">
+                    <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 font-semibold text-sm border border-indigo-200">
+                        ${appt.token_number}
+                    </span>
+                </td>
                 
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border">
-                                👤
-                            </div>
-                            <span class="font-semibold text-gray-900">
-                                ${appt.patient_name}
-                            </span>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3 leading-none">
+                        <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
                         </div>
-                    </td>
                 
-                    {% if show_doctor_column %}
-                    <td class="px-6 py-4 text-gray-700">N/A</td>
-                    {% endif %}
+                        <a href="/patient-history/${appt.patient_id}/" 
+                        class="font-semibold text-gray-900 hover:text-cyan-600 transition-colors duration-200 cursor-pointer leading-none mt-[1px]">
+                            ${appt.patient_name}
+                        </a>
+                    </div>
+                </td>
                 
-                    <td class="px-6 py-4 text-gray-500">-</td>
+                {% if show_doctor_column %}
+                <td class="px-6 py-4 text-gray-700">
+                    N/A
+                </td>
+                {% endif %}
                 
-                    <td class="px-6 py-4 status">
-                        <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
-                            Pending
-                        </span>
-                    </td>
+                <td class="px-6 py-4 text-gray-500">
+                    -
+                </td>
                 
-                    <td class="px-6 py-4 actions">
-                        <div class="actions-container flex gap-2">
+                <td class="px-6 py-4 status">
+                    <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
+                        Pending
+                    </span>
+                </td>
+                
+                <td class="px-6 py-4 actions">
+                    <div class="flex items-center justify-between gap-3">
+                
+                        <!-- LEFT -->
+                        <div class="actions-container flex items-center gap-3 flex-wrap">
+                
+                            <a href="/add-prescription/${appt.patient_id}/" 
+                            class="btn-premium btn-primary btn-sm">
+                                Prescription
+                            </a>
+                
                             <button onclick="completeAppointment(${appt.id})"
                             class="btn-premium btn-success btn-sm">
                                 Complete
                             </button>
+                
                         </div>
-                    </td>
+                
+                        <!-- RIGHT (IMPORTANT - TRIPLE DOT) -->
+                        <button onclick="event.stopPropagation(); openSheet(${appt.id}, ${appt.patient_id})"
+                            class="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:bg-gray-100 ml-2 shrink-0">
+                            ⋮
+                        </button>
+                
+                    </div>
+                </td>
                 `;
             
                 tbody.appendChild(newRow);
