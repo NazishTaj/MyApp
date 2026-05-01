@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db import transaction
 
 
 # Clinic Model
@@ -97,15 +98,19 @@ class Patient(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.patient_id:
-            last_patient = Patient.objects.filter(
-                clinic=self.clinic
-            ).order_by('-patient_id').first()
-
-            if last_patient:
-                self.patient_id = last_patient.patient_id + 1
-            else:
-                self.patient_id = 1
-
+            with transaction.atomic():
+                last_patient = Patient.objects.select_for_update().filter(
+                    clinic=self.clinic
+                ).order_by('-patient_id').first()
+    
+                if last_patient:
+                    self.patient_id = last_patient.patient_id + 1
+                else:
+                    self.patient_id = 1
+    
+                super().save(*args, **kwargs)
+                return
+    
         super().save(*args, **kwargs)
         
     class Meta:
@@ -145,6 +150,7 @@ class Appointment(models.Model):
         ('cash', 'Cash'),
         ('upi', 'UPI'),
         ('card', 'Card'),
+        ('free', 'Free'),
     ]
 
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
@@ -198,16 +204,6 @@ class Appointment(models.Model):
         ordering = ['-appointment_date', '-token_number']
 
     def save(self, *args, **kwargs):
-
-        # ✅ Auto token generation
-        if not self.token_number:
-            last = Appointment.objects.filter(
-                clinic=self.clinic,
-                appointment_date=self.appointment_date
-            ).order_by('-token_number').first()
-
-            self.token_number = (last.token_number + 1) if last else 1
-
         # ✅ Free visit handling
         if self.visit_type == 'free':
             self.consultation_fee = 0
@@ -296,9 +292,10 @@ class ClinicSchedule(models.Model):
 class Bill(models.Model):
 
     PAYMENT_CHOICES = [
-        ('Cash', 'Cash'),
-        ('UPI', 'UPI'),
-        ('Card', 'Card'),
+        ('cash', 'Cash'),
+        ('upi', 'UPI'),
+        ('card', 'Card'),
+        ('free', 'Free'),
     ]
 
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
@@ -357,18 +354,26 @@ class Bill(models.Model):
 
     def __str__(self):
         return f"{self.bill_number} - {self.patient.name}"
+
+    class Meta:
+        unique_together = ['clinic', 'bill_number']
+    
     def save(self, *args, **kwargs):
 
         if not self.bill_number:
-            last_bill = Bill.objects.filter(clinic=self.clinic).order_by('-id').first()
+            with transaction.atomic():
 
-            if last_bill and last_bill.bill_number:
-                last_num = int(last_bill.bill_number.split('-')[-1])
-                new_num = last_num + 1
-            else:
-                new_num = 1001
+                last_bill = Bill.objects.select_for_update().filter(
+                    clinic=self.clinic
+                ).order_by('-id').first()
 
-            self.bill_number = f"FD-{new_num}"
+                if last_bill and last_bill.bill_number:
+                    last_num = int(last_bill.bill_number.split('-')[-1])
+                    new_num = last_num + 1
+                else:
+                    new_num = 1001
+    
+                self.bill_number = f"FD-{new_num}"
 
         super().save(*args, **kwargs)
     
