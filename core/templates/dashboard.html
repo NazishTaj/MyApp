@@ -333,12 +333,14 @@ function connectSocket() {
 
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
+        console.log("🔥 FULL WS DATA:", data);
+        console.log("🔥 INNER DATA:", data.data);
 
         if (data.type === "send_update") {
             const payload = data.data;
 
             // 🔥 NEW: refresh trigger
-            if (payload.type === "refresh_queue") {
+            if (payload && payload.type === "refresh_queue") {
                 refreshFromServer();
                 updateStats();
                 return;
