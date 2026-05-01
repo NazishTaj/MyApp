@@ -81,7 +81,7 @@
       <tbody>
         {% for patient in patients %}
         <tr>
-          <td>{{ forloop.counter }}</td>
+          <td>{{ patients.start_index|add:forloop.counter0 }}</td>
 
           <td>
              <span class="px-2 py-1 text-xs bg-gray-100 rounded-lg font-semibold">
@@ -169,7 +169,9 @@
       <div class="flex justify-between items-start mb-3">
         <div>
           <p class="text-xs text-gray-500">S No.</p>
-          <p class="font-semibold text-gray-900">{{ forloop.counter }}</p>
+          <p class="font-semibold text-gray-900">
+            {{ patients.start_index|add:forloop.counter0 }}
+          </p>
         </div>
         <span class="px-2 py-1 text-xs bg-gray-100 rounded-lg font-semibold">
           PT-{{ patient.patient_id|stringformat:"04d" }}
