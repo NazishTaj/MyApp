@@ -378,12 +378,12 @@ function connectSocket() {
                 
                 {% if show_doctor_column %}
                 <td class="px-6 py-4 text-gray-700">
-                    N/A
+                    ${appt.doctor_name ? appt.doctor_name : "N/A"}
                 </td>
                 {% endif %}
                 
                 <td class="px-6 py-4 text-gray-500">
-                    -
+                     ${appt.problem || ""}
                 </td>
                 
                 <td class="px-6 py-4 status">
