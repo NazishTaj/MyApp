@@ -321,6 +321,8 @@ document.addEventListener("click", function(e) {
 <script>
 function connectSocket() {
 
+    const USER_ROLE = "{{ request.user.userprofile.role }}";
+
     const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
 
     const socket = new WebSocket(
@@ -397,18 +399,38 @@ function connectSocket() {
                 
                         <!-- LEFT -->
                         <div class="actions-container flex items-center gap-3 flex-wrap">
-                
-                            <a href="/add-prescription/${appt.patient_id}/" 
-                            class="btn-premium btn-primary btn-sm">
-                                Prescription
-                            </a>
-                
-                            <button onclick="completeAppointment(${appt.id})"
-                            class="btn-premium btn-success btn-sm">
-                                Complete
-                            </button>
-                
+
+                            ${
+                                USER_ROLE === "receptionist"
+                                ? `
+                                    ${
+                                        appt.status === "pending"
+                                        ? `<button onclick="sendToDoctor(${appt.id})"
+                                            class="btn-premium btn-primary btn-sm">
+                                            ▶ Send
+                                           </button>`
+                                        : ""
+                                    }
+                                `
+                                : `
+                                    <a href="/add-prescription/${appt.patient_id}/" 
+                                    class="btn-premium btn-primary btn-sm">
+                                        Prescription
+                                    </a>
+                        
+                                    ${
+                                        appt.status === "pending"
+                                        ? `<button onclick="completeAppointment(${appt.id})"
+                                            class="btn-premium btn-success btn-sm">
+                                            Complete
+                                           </button>`
+                                        : ""
+                                    }
+                                `
+                            }
+                        
                         </div>
+
                 
                         <!-- RIGHT (IMPORTANT - TRIPLE DOT) -->
                         <button onclick="event.stopPropagation(); openSheet(${appt.id}, ${appt.patient_id})"
