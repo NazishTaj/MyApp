@@ -524,9 +524,11 @@ def book_appointment(request, patient_id):
                     item_name="Consultation",
                     amount=appointment.consultation_fee
                 )
+        print("🔥 BOOK APPOINTMENT HIT")
         send_ws_update_safe(clinic.id, {
             "type": "refresh_queue"
         })
+        print("🔥 WS FUNCTION CALLED")
         messages.success(
             request,
             f"{patient.name} checked-in successfully (Token #{token}) ✅"
