@@ -319,9 +319,9 @@ document.addEventListener("click", function(e) {
 </script>
 
 <script>
+const USER_ROLE = "{{ request.user.userprofile.role }}";
 function connectSocket() {
 
-    const USER_ROLE = "{{ request.user.userprofile.role }}";
 
     const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
 
@@ -335,8 +335,6 @@ function connectSocket() {
 
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("🔥 FULL WS DATA:", data);
-        console.log("🔥 INNER DATA:", data.data);
 
         if (data.type === "send_update") {
             const payload = data.data;
@@ -486,7 +484,7 @@ function connectSocket() {
             row.querySelector(".status").innerHTML = statusHTML;
 
             // 🔥 SAME LOGIC (unchanged)
-            const USER_ROLE = "{{ request.user.userprofile.role }}";
+            
             const nextTokens = appt.next_tokens || [];
 
             document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
@@ -592,9 +590,6 @@ function updateStats() {
 // auto refresh
 setInterval(updateStats, 10000);
     
-</script>
-
-<script>
 function refreshFromServer() {
     fetch("/get-queue-data/")
     .then(res => {
@@ -604,7 +599,7 @@ function refreshFromServer() {
     .then(data => {
 
         const nextTokens = data.next_tokens || [];
-        const USER_ROLE = "{{ request.user.userprofile.role }}";
+        
 
         document.querySelectorAll("tr[id^='appointment-']").forEach(tr => {
 
