@@ -334,6 +334,14 @@ function connectSocket() {
         const data = JSON.parse(e.data);
 
         if (data.type === "send_update") {
+            const payload = data.data;
+
+            // 🔥 NEW: refresh trigger
+            if (payload.type === "refresh_queue") {
+                refreshFromServer();
+                updateStats();
+                return;
+            }
             updateStats();
 
             const appt = data.data;
