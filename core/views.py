@@ -533,7 +533,10 @@ def book_appointment(request, patient_id):
                 "patient_name": appointment.patient.name,
                 "token_number": appointment.token_number,
                 "status": appointment.status,
-                "queue_status": appointment.queue_status
+                "queue_status": appointment.queue_status,
+                "doctor_name": appointment.doctor.name if appointment.doctor else None,
+                "problem": appointment.problem or ""
+            
             }
         })
         print("🔥 WS FUNCTION CALLED")
