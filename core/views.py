@@ -526,7 +526,15 @@ def book_appointment(request, patient_id):
                 )
         print("🔥 BOOK APPOINTMENT HIT")
         send_ws_update_safe(clinic.id, {
-            "type": "refresh_queue"
+            "type": "new_appointment",
+            "appointment": {
+                "id": appointment.id,
+                "patient_id": appointment.patient.id,
+                "patient_name": appointment.patient.name,
+                "token_number": appointment.token_number,
+                "status": appointment.status,
+                "queue_status": appointment.queue_status
+            }
         })
         print("🔥 WS FUNCTION CALLED")
         messages.success(
