@@ -46,6 +46,7 @@ from asgiref.sync import async_to_sync
 def send_ws_update_safe(clinic_id, data):
     try:
         channel_layer = get_channel_layer()
+        print("🔥 WS SENT TO CLINIC:", clinic_id)
         async_to_sync(channel_layer.group_send)(
             f"dashboard_{clinic_id}",
             {
