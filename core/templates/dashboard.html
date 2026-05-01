@@ -338,6 +338,72 @@ function connectSocket() {
 
         if (data.type === "send_update") {
             const payload = data.data;
+            // 🔥 NEW APPOINTMENT HANDLE
+            if (payload && payload.type === "new_appointment") {
+            
+                const appt = payload.appointment;
+            
+                // agar already row hai to skip
+                if (document.getElementById("appointment-" + appt.id)) return;
+            
+                const tbody = document.querySelector("tbody");
+            
+                const newRow = document.createElement("tr");
+                newRow.id = "appointment-" + appt.id;
+                newRow.setAttribute("data-patient-id", appt.patient_id);
+                newRow.className = "border-b border-gray-100 hover:bg-gray-50 transition";
+            
+                newRow.innerHTML = `
+                    <td class="px-6 py-4">
+                        <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 font-semibold text-sm border border-indigo-200">
+                            ${appt.token_number}
+                        </span>
+                    </td>
+                
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border">
+                                👤
+                            </div>
+                            <span class="font-semibold text-gray-900">
+                                ${appt.patient_name}
+                            </span>
+                        </div>
+                    </td>
+                
+                    {% if show_doctor_column %}
+                    <td class="px-6 py-4 text-gray-700">N/A</td>
+                    {% endif %}
+                
+                    <td class="px-6 py-4 text-gray-500">-</td>
+                
+                    <td class="px-6 py-4 status">
+                        <span class="px-3 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
+                            Pending
+                        </span>
+                    </td>
+                
+                    <td class="px-6 py-4 actions">
+                        <div class="actions-container flex gap-2">
+                            <button onclick="completeAppointment(${appt.id})"
+                            class="btn-premium btn-success btn-sm">
+                                Complete
+                            </button>
+                        </div>
+                    </td>
+                `;
+            
+                tbody.appendChild(newRow);
+                newRow.classList.add("bg-yellow-100");
+
+                setTimeout(() => {
+                    newRow.classList.remove("bg-yellow-100");
+                }, 2000);
+                            
+                updateStats();
+            
+                return;
+            }
 
             // 🔥 NEW: refresh trigger
             if (payload && payload.type === "refresh_queue") {
