@@ -14,6 +14,7 @@ from .models import Patient, Appointment, Prescription, UserProfile , ClinicSche
 from django.core.exceptions import ValidationError
 from .models import Bill, BillItem, UserProfile
 from django.db.models import Sum
+from django.db import transaction
 from django.utils import timezone
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -457,7 +458,7 @@ def book_appointment(request, patient_id):
         if visit_type == "free":
             fee = 0
             payment_status = "waived"
-            payment_mode = "free"   # ✅ FIX
+            payment_mode = None   
 
         else:
             if clinic.billing_enabled:
@@ -465,62 +466,68 @@ def book_appointment(request, patient_id):
             else:
                 payment_status = "unpaid"
 
-            # ✅ IMPORTANT FIX
-            if fee == 0:
-                payment_mode = "free"
-            else:
+            
+            if fee > 0:
                 payment_mode = request.POST.get("payment_mode") or "cash"
-
-  
+            else:
+                payment_mode= None
+                
 
         # 🔹 Token logic
-        last_token = Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=date_val,
-            doctor=doctor
-        ).order_by('-token_number').first()
+        with transaction.atomic():
 
-        if last_token and last_token.token_number:
-            token = last_token.token_number + 1
-        else:
-            token = 1
+            last_token = Appointment.objects.select_for_update().filter(
+                clinic=clinic,
+                appointment_date=date_val,
+                doctor=doctor
+            ).order_by('-token_number').first()
+        
+            if last_token and last_token.token_number:
+                token = last_token.token_number + 1
+            else:
+                token = 1
 
-        appointment = Appointment.objects.create(
-            clinic=clinic,
-            patient=patient,
-            appointment_date=date_val,
-            appointment_time=time,
-            problem=problem,
-            token_number=token,
-            doctor=doctor,
-            visit_type=visit_type,
-            consultation_fee=fee, 
-            payment_status=payment_status,
-            payment_mode=payment_mode,
-            status="pending",
-            queue_status="waiting"
-        )
-        if clinic.billing_enabled:
-
-            bill = Bill.objects.create(
+            appointment = Appointment.objects.create(
                 clinic=clinic,
                 patient=patient,
+                appointment_date=date_val,
+                appointment_time=time,
+                problem=problem,
+                token_number=token,
                 doctor=doctor,
-                appointment=appointment,
-                total_amount=appointment.consultation_fee, 
-                payment_mode=payment_mode
+                visit_type=visit_type,
+                consultation_fee=fee, 
+                payment_status=payment_status,
+                payment_mode=payment_mode,
+                status="pending",
+                queue_status="waiting"
             )
+            if clinic.billing_enabled:
 
-            BillItem.objects.create(
-                bill=bill,
-                item_name="Consultation",
-                amount=appointment.consultation_fee
-            )
+                
+                if appointment.consultation_fee == 0:
+                    final_payment_mode = "free"
+                else:
+                    final_payment_mode = payment_mode or "cash"
+                bill = Bill.objects.create(
+                    clinic=clinic,
+                    patient=patient,
+                    doctor=doctor,
+                    appointment=appointment,
+                    total_amount=appointment.consultation_fee, 
+                    payment_mode=final_payment_mode
+                )
+    
+                BillItem.objects.create(
+                    bill=bill,
+                    item_name="Consultation",
+                    amount=appointment.consultation_fee
+                )
         messages.success(
-        request,
-        f"{patient.name} checked-in successfully (Token #{token}) ✅"
-        )
-
+            request,
+            f"{patient.name} checked-in successfully (Token #{token}) ✅"
+            )
+    
         return redirect("patient_list")   # 🔥 IMPORTANT
 
     doctors = UserProfile.objects.filter(
@@ -1192,40 +1199,41 @@ def online_booking(request):
             role__in=["owner", "doctor"]
         ).first()
 
-        # ✅ PREVENT DUPLICATE BOOKING SAME DAY
-        if Appointment.objects.filter(
-            clinic=clinic,
-            patient=patient,
-            appointment_date=date_val
-        ).exists():
-            return render(request, "booking_success.html", {
-                "message": "You already booked for this date"
-            })
-
         # ✅ TOKEN LOGIC (per day reset)
-        last_token = Appointment.objects.filter(
-            clinic=clinic,
-            appointment_date=date_val,
-            doctor=doctor
-        ).order_by('-token_number').first()
+        with transaction.atomic():
 
-        token = last_token.token_number + 1 if last_token else 1
-
-        # ✅ CREATE APPOINTMENT
-        Appointment.objects.create(
-            clinic=clinic,
-            patient=patient,
-            appointment_date=date_val,
-            appointment_time=time,
-            problem=problem,
-            token_number=token,
-            doctor=doctor,
-            queue_status="waiting"
-        )
-
+            if Appointment.objects.select_for_update().filter(
+                clinic=clinic,
+                patient=patient,
+                appointment_date=date_val
+            ).exists():
+                return render(request, "booking_success.html", {
+                    "message": "You already booked for this date"
+                })
+        
+            last_token = Appointment.objects.select_for_update().filter(
+                clinic=clinic,
+                appointment_date=date_val,
+                doctor=doctor
+            ).order_by('-token_number').first()
+        
+            token = last_token.token_number + 1 if last_token else 1
+        
+            Appointment.objects.create(
+                clinic=clinic,
+                patient=patient,
+                appointment_date=date_val,
+                appointment_time=time,
+                problem=problem,
+                token_number=token,
+                doctor=doctor,
+                queue_status="waiting"
+            )
+        
         return render(request, "booking_success.html", {
             "message": "Booking successful"
         })
+
 
     return render(request, "online_booking.html")
 
@@ -1574,22 +1582,15 @@ def create_bill(request):
 
         patient_id = request.POST.get("patient")
         referred_by_id = request.POST.get("referred_by")
-        payment_mode = request.POST.get("payment_mode", "").strip().lower()
+        payment_mode = request.POST.get("payment_mode", "").strip()
         discount_percent = float(request.POST.get("discount") or 0)
 
         patient = get_object_or_404(Patient, id=patient_id, clinic=clinic,is_active=True)
    
 
         # 🔥 Bill number generate
-        last_bill = Bill.objects.filter(clinic=clinic).order_by("-id").first()
+        
 
-        if last_bill:
-            last_number = int(last_bill.bill_number.split("-")[1])
-            new_number = last_number + 1
-        else:
-            new_number = 1001
-
-        bill_number = f"FD-{new_number}"
 
         # 🔥 STEP 1: items lo
         item_names = request.POST.getlist("item_name[]")
@@ -1610,7 +1611,6 @@ def create_bill(request):
             patient=patient,
               doctor=None,
             referred_by=referred_by,
-            bill_number=bill_number,
             payment_mode=payment_mode,
         )
 
