@@ -328,6 +328,7 @@ function connectSocket() {
     );
     socket.onopen = function() {
     console.log("WebSocket connected ✅");
+    console.log("FRONTEND CLINIC ID:", "{{ request.user.userprofile.clinic.id }}");
     };
 
     socket.onmessage = function(e) {
