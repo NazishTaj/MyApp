@@ -418,9 +418,11 @@ class Medicine(models.Model):
     )
 
     usage_count = models.IntegerField(default=0)
+    class Meta:                                       
+        unique_together = [('name', 'clinic')]
 
     def save(self, *args, **kwargs):
-        self.name = self.name.strip()
+        self.name = self.name.strip().title() 
         super().save(*args, **kwargs)
 
     def __str__(self):
