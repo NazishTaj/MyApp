@@ -1,18 +1,20 @@
 import os
 import django
 import time
+import random
 
-# 🔥 PROJECT NAME = flowdesk
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flowdesk.settings")
 django.setup()
 
-from core.views import send_ws_update_safe   # app = core
+from core.views import send_ws_update_safe
 
-CLINIC_ID = 1   # change if needed
+CLINIC_ID = 1
 
-for i in range(100):
+for i in range(30):  # total actions
     send_ws_update_safe(CLINIC_ID, {
-        "type": "test",
+        "type": "real_action",
         "i": i
     })
-    time.sleep(0.2)   # 5 events/sec
+
+    sleep_time = random.uniform(0.5, 2)  # random delay
+    time.sleep(sleep_time)
