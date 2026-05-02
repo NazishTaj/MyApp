@@ -10,6 +10,6 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(),
 
     "websocket": URLRouter([
-        path("ws/dashboard/<int:clinic_id>/", DashboardConsumer.as_asgi()),
+        path("ws/dashboard/", DashboardConsumer.as_asgi()),
     ]),
 })
