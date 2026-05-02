@@ -326,7 +326,7 @@ function connectSocket() {
     const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
 
     const socket = new WebSocket(
-        protocol + window.location.host + "/ws/dashboard/{{ request.user.userprofile.clinic.id }}/"
+        protocol + window.location.host + "/ws/dashboard/"
     );
     socket.onopen = function() {
     console.log("WebSocket connected ✅");
@@ -345,7 +345,11 @@ function connectSocket() {
             
                 // agar already row hai to skip
                 if (document.getElementById("appointment-" + appt.id)) return;
-            
+                // 🔥 OPTIONAL SAFETY FILTER (IMPORTANT)
+                if (USER_ROLE !== "receptionist" && appt.doctor_id !== {{ request.user.userprofile.id }}) {
+                    return;
+                }
+                            
                 const tbody = document.querySelector("tbody");
             
                 const newRow = document.createElement("tr");
