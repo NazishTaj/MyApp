@@ -43,17 +43,28 @@ def permission_denied_response(request):
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-def send_ws_update_safe(clinic_id, data):
+def send_ws_update_safe(clinic_id, doctor_id, data):
     try:
         channel_layer = get_channel_layer()
-        print("🔥 WS SENT TO CLINIC:", clinic_id)
+
+        # 👨‍⚕️ doctor group
         async_to_sync(channel_layer.group_send)(
-            f"dashboard_{clinic_id}",
+            f"dashboard_{clinic_id}_doctor_{doctor_id}",
             {
                 "type": "send_update",
                 "data": data
             }
         )
+
+        # 🧑‍💼 receptionist group
+        async_to_sync(channel_layer.group_send)(
+            f"dashboard_{clinic_id}_receptionist",
+            {
+                "type": "send_update",
+                "data": data
+            }
+        )
+
     except Exception as e:
         print("❌ WS ERROR:", e)
 
@@ -525,7 +536,7 @@ def book_appointment(request, patient_id):
                     amount=appointment.consultation_fee
                 )
         print("🔥 BOOK APPOINTMENT HIT")
-        send_ws_update_safe(clinic.id, {
+        send_ws_update_safe(clinic.id, appointment.doctor.id, {
             "type": "new_appointment",
             "appointment": {
                 "id": appointment.id,
@@ -535,6 +546,7 @@ def book_appointment(request, patient_id):
                 "status": appointment.status,
                 "queue_status": appointment.queue_status,
                 "doctor_name": appointment.doctor.name if appointment.doctor else None,
+                "doctor_id": appointment.doctor.id,
                 "problem": appointment.problem or ""
             
             }
@@ -693,7 +705,7 @@ def complete_appointment(request, appointment_id):
             next_tokens.append(appt.id)
             seen_doctors.add(appt.doctor_id)
 
-    send_ws_update_safe(clinic.id, {
+    send_ws_update_safe(clinic.id, appointment.doctor.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
@@ -750,7 +762,7 @@ def send_to_doctor(request, appointment_id):
             next_tokens.append(appt.id)
             seen_doctors.add(appt.doctor_id)
             
-    send_ws_update_safe(clinic.id, {
+    send_ws_update_safe(clinic.id, appointment.doctor.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
@@ -837,7 +849,7 @@ def cancel_appointment(request, appointment_id):
             next_tokens.append(appt.id)
             seen_doctors.add(appt.doctor_id)
 
-    send_ws_update_safe(clinic.id, {
+    send_ws_update_safe(clinic.id, appointment.doctor.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
@@ -1566,7 +1578,7 @@ def mark_pending(request, appointment_id):
             next_tokens.append(appt.id)
             seen_doctors.add(appt.doctor_id)
 
-    send_ws_update_safe(clinic.id, {
+    send_ws_update_safe(clinic.id, appointment.doctor.id, {
         "appointment_id": appointment.id,
         "patient_id": appointment.patient.id,
         "status": appointment.status,
