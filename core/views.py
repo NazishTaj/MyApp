@@ -2475,23 +2475,27 @@ def search_medicine(request):
 
     return JsonResponse([m.name for m in medicines], safe=False)
 
+from django.db import IntegrityError
+from django.db.models import F
+
 def save_medicine(name, clinic):
-    name = name.strip()
+    name = name.strip().title()
 
     if not name:
         return
+    try:
+        med, created = Medicine.objects.get_or_create(
+            name=name,
+            clinic=clinic,
+        )
+    except IntegrityError:
+        med = Medicine.objects.get(name=name, clinic=clinic)
 
-    med, created = Medicine.objects.get_or_create(
-        name__iexact=name,
-        clinic=clinic,
-        defaults={"name": name}
-    )
-
-    med.usage_count += 1
+    med.usage_count = F('usage_count') + 1
     med.save(update_fields=["usage_count"])
 
 
-# Search Medicine
+
 
 @login_required
 def search_patients(request):
