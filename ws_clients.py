@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 
-URL = "ws://your-domain/ws/dashboard/1/"   # change karo
+URL = "ws://qurodesk.in/ws/dashboard/1/"
 
 async def connect_user(i):
     try:
