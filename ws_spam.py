@@ -15,6 +15,4 @@ for i in range(30):  # total actions
         "type": "real_action",
         "i": i
     })
-
-    sleep_time = random.uniform(0.5, 2)  # random delay
-    time.sleep(sleep_time)
+    time.sleep(1)
