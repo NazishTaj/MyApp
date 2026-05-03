@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from .models import Patient, Appointment, Prescription, Clinic, UserProfile, ClinicSchedule
+from django.db.models import Count, Q
 
 
 # ===== COMMON FILTER (safe) =====
@@ -97,8 +98,32 @@ class PrescriptionAdmin(admin.ModelAdmin):
 
 # ================== CLINIC ==================
 class ClinicAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'is_active', 'view_data')
+    list_display = ('id', 'name', 'is_active', 'active_users_link', 'view_data')
     list_editable = ('is_active',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        return qs.annotate(
+            active_users_count=Count(
+                'userprofile',
+                filter=Q(userprofile__is_active=True)
+            )
+        )
+
+    # 🔥 clickable users count
+    def active_users_link(self, obj):
+        count = getattr(obj, 'active_users_count', 0)
+    
+        url = (
+            reverse('admin:core_userprofile_changelist')
+            + f'?clinic__id__exact={obj.id}&is_active__exact=1'
+        )
+    
+        return format_html('<a href="{}">{} Users</a>', url, count)
+    
+
+    active_users_link.short_description = "Active Accounts"
 
     # 🔥 smart navigation (clinic → its data)
     def view_data(self, obj):
