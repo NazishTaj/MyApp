@@ -1152,6 +1152,12 @@ def view_prescription(request, id):
         Prescription.objects.select_related("patient", "doctor", "clinic"),
         id=id,
         clinic=clinic
+    
+    
+    
+    
+    
+    
     )
 
     # 👇 NEW CODE
@@ -1849,6 +1855,7 @@ def print_prescription(request, id):
 
 from django.core.files.base import ContentFile
 from datetime import timedelta
+import re
 
 @login_required(login_url="login")
 def download_prescription_pdf(request, id):
@@ -1864,16 +1871,26 @@ def download_prescription_pdf(request, id):
             clinic=clinic
         )
 
+        
+        # ✅ Patient name based filename
+        patient_name = prescription.patient.name
+        patient_name = re.sub(r'[^a-zA-Z0-9 ]', '', patient_name)
+        patient_name = patient_name.strip().replace(" ", "_")
+        download_filename = f"{patient_name}_prescription.pdf"
+        
+
         # ✅ STEP 1: CHECK CACHE (7 days)
         if (
             prescription.pdf_file and
             prescription.pdf_created_at and
             timezone.now() - prescription.pdf_created_at < timedelta(days=7)
         ):
-            return HttpResponse(
+            response = HttpResponse(
                 prescription.pdf_file.open(),
                 content_type='application/pdf'
             )
+            response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
+            return response
 
         # ✅ STEP 2: NORMAL PDF GENERATE
         med_lines = []
@@ -1920,9 +1937,9 @@ def download_prescription_pdf(request, id):
         prescription.pdf_created_at = timezone.now()
         prescription.save()
 
-        # ✅ STEP 4: RETURN RESPONSE
+        # ✅ STEP 4: RETURN RESPONSE (name-based download)
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
 
         return response
 
