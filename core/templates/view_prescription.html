@@ -283,9 +283,7 @@ Signature
     </a>
 
   </div>
-       <div id="pdf-loader" style="display:none;" class="text-sm text-gray-600 mt-2 text-center">
-    ⏳ Generating PDF... please wait
-    </div>
+
 
 </div>
 
@@ -303,7 +301,7 @@ function downloadPDF(id, el){
     el.innerText = "⏳ Generating...";
 
     // 🔥 loader show
-    document.getElementById("pdf-loader").style.display = "block";
+    
 
     // 🔥 actual request
     window.location.href = `/prescription/${id}/pdf/`;
@@ -313,7 +311,7 @@ function downloadPDF(id, el){
         el.style.pointerEvents = "auto";
         el.style.opacity = "1";
         el.innerText = "📄 Download PDF";
-        document.getElementById("pdf-loader").style.display = "none";
+        
     }, 10000); // 10 sec fallback
 }
 </script>
@@ -327,10 +325,7 @@ window.addEventListener("focus", () => {
         el.innerText = "📄 Download PDF";
     }
 
-    const loader = document.getElementById("pdf-loader");
-    if(loader){
-        loader.style.display = "none";
-    }
+
 });
 </script>
 
