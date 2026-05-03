@@ -32,7 +32,9 @@
 </div>
 <a href="{% url 'revenue_report' %}">
 <div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-    <p class="text-sm opacity-80">{{ revenue_label }}</p>
+    <p class="text-sm opacity-80">
+        {{ revenue_label }} <span class="text-xs">(View details)</span>
+    </p>
     <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
 </a>
