@@ -398,14 +398,7 @@ function connectSocket() {
                             ${
                                 USER_ROLE === "receptionist"
                                 ? `
-                                    ${
-                                        appt.status === "pending"
-                                        ? `<button onclick="sendToDoctor(${appt.id})"
-                                            class="btn-premium btn-primary btn-sm">
-                                            ▶ Send
-                                           </button>`
-                                        : ""
-                                    }
+
                                 `
                                 : `
                                     <a href="/add-prescription/${appt.patient_id}/" 
@@ -438,6 +431,9 @@ function connectSocket() {
                 `;
             
                 tbody.appendChild(newRow);
+                setTimeout(() => {
+                   refreshFromServer();
+               }, 200);
                 newRow.classList.add("bg-yellow-100");
 
                 setTimeout(() => {
