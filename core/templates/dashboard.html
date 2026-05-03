@@ -347,7 +347,7 @@ function connectSocket() {
             }
             updateStats();
 
-            const appt = payload;
+            const appt = payload.appointment;
             const row = document.getElementById("appointment-" + appt.appointment_id);
 
             if (!row) return;
