@@ -173,10 +173,22 @@ def dashboard(request):
     )
 
 
-    today_revenue = Bill.objects.filter(
-        clinic=clinic,
-        created_at__date=today
-    ).aggregate(total=Sum("total_amount"))["total"] or 0
+    if profile.role in ["doctor", "owner"]:
+        today_revenue = Bill.objects.filter(
+            clinic=clinic,
+            doctor=profile,
+            created_at__date=today
+        ).aggregate(total=Sum("total_amount"))["total"] or 0
+    
+        revenue_label = "My Consultation Revenue"
+    
+    else:  # receptionist
+        today_revenue = Bill.objects.filter(
+            clinic=clinic,
+            created_at__date=today
+        ).aggregate(total=Sum("total_amount"))["total"] or 0
+    
+        revenue_label = "Today's Revenue"
 
     today_appointments = appointments_today.count()
     pending_appointments = appointments_today.filter(status="pending").count()
@@ -219,6 +231,7 @@ def dashboard(request):
         "completed_appointments": completed_appointments,
         "today_appointments": today_appointments,
         "today_revenue": today_revenue,
+        "revenue_label": revenue_label,  
         "next_tokens": next_tokens
     }
 
