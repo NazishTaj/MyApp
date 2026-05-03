@@ -1847,10 +1847,13 @@ def print_prescription(request, id):
         "hide_watermark": True   # 🔥 IMPORTANT
     })
 
+from django.core.files.base import ContentFile
+from datetime import timedelta
+
 @login_required(login_url="login")
 def download_prescription_pdf(request, id):
 
-    with PDF_SEMAPHORE:   # 🔥 YAHI MAGIC LINE HAI
+    with PDF_SEMAPHORE:
 
         profile = get_object_or_404(UserProfile, user=request.user)
         clinic = profile.clinic
@@ -1861,7 +1864,18 @@ def download_prescription_pdf(request, id):
             clinic=clinic
         )
 
-        # med logic (same)
+        # ✅ STEP 1: CHECK CACHE (7 days)
+        if (
+            prescription.pdf_file and
+            prescription.pdf_created_at and
+            timezone.now() - prescription.pdf_created_at < timedelta(days=7)
+        ):
+            return HttpResponse(
+                prescription.pdf_file.open(),
+                content_type='application/pdf'
+            )
+
+        # ✅ STEP 2: NORMAL PDF GENERATE
         med_lines = []
 
         if prescription.medicines:
@@ -1889,21 +1903,26 @@ def download_prescription_pdf(request, id):
             "hide_watermark": True
         })
 
-        pdf = HTML(
+        pdf_bytes = HTML(
             string=html_string,
             base_url=request.build_absolute_uri("/")
         ).write_pdf()
 
-        response = HttpResponse(pdf, content_type='application/pdf')
+        # ✅ STEP 3: SAVE PDF (cache)
+        file_name = f"prescription_{prescription.id}.pdf"
 
-        import re
-        patient_name = prescription.patient.name
-        patient_name = re.sub(r'[^a-zA-Z0-9 ]', '', patient_name)
-        patient_name = patient_name.strip().replace(" ", "_")
+        prescription.pdf_file.save(
+            file_name,
+            ContentFile(pdf_bytes),
+            save=False
+        )
 
-        filename = f"{patient_name}_prescription.pdf"
+        prescription.pdf_created_at = timezone.now()
+        prescription.save()
 
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        # ✅ STEP 4: RETURN RESPONSE
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
 
         return response
 
