@@ -1885,10 +1885,14 @@ def download_prescription_pdf(request, id):
             prescription.pdf_created_at and
             timezone.now() - prescription.pdf_created_at < timedelta(days=7)
         ):
+            file = prescription.pdf_file
+            file.open()
+            
             response = HttpResponse(
-                prescription.pdf_file.open(),
+                file.read(),
                 content_type='application/pdf'
             )
+            file.close()
             response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
             return response
 
