@@ -270,7 +270,9 @@ Signature
   <!-- 👇 Secondary options -->
   <div class="flex justify-center gap-4 mt-3 text-sm">
 
-    <a href="/prescription/{{ prescription.id }}/pdf/"
+   <a href="#"
+       id="download-btn"
+       onclick="downloadPDF({{ prescription.id }}, this)"
        class="text-blue-600 hover:underline">
        📄 Download PDF
     </a>
@@ -281,6 +283,9 @@ Signature
     </a>
 
   </div>
+       <div id="pdf-loader" style="display:none;" class="text-sm text-gray-600 mt-2 text-center">
+    ⏳ Generating PDF... please wait
+    </div>
 
 </div>
 
@@ -288,6 +293,45 @@ Signature
 function printPrescription(id){
     window.open(`/prescription/${id}/print/`, '_blank');
 }
+</script>
+<script>
+function downloadPDF(id, el){
+
+    // 🔒 multiple click rok do
+    el.style.pointerEvents = "none";
+    el.style.opacity = "0.6";
+    el.innerText = "⏳ Generating...";
+
+    // 🔥 loader show
+    document.getElementById("pdf-loader").style.display = "block";
+
+    // 🔥 actual request
+    window.location.href = `/prescription/${id}/pdf/`;
+
+    // ⚠️ fallback (agar download fail ho)
+    setTimeout(() => {
+        el.style.pointerEvents = "auto";
+        el.style.opacity = "1";
+        el.innerText = "📄 Download PDF";
+        document.getElementById("pdf-loader").style.display = "none";
+    }, 10000); // 10 sec fallback
+}
+</script>
+<script>
+window.addEventListener("focus", () => {
+    const el = document.getElementById("download-btn");
+
+    if(el){
+        el.style.pointerEvents = "auto";
+        el.style.opacity = "1";
+        el.innerText = "📄 Download PDF";
+    }
+
+    const loader = document.getElementById("pdf-loader");
+    if(loader){
+        loader.style.display = "none";
+    }
+});
 </script>
 
 </div>
