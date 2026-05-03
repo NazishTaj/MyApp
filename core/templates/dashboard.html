@@ -3,7 +3,7 @@
 
 <div class="space-y-8">
 
-<!-- Header 
+< Header 
 <div class="flex items-center justify-between gap-3">
     <div>
 
@@ -11,7 +11,7 @@
             Today's clinic overview
         </h2>
     </div>
-</div>  -->
+</div>  
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -32,7 +32,7 @@
 </div>
 <a href="{% url 'revenue_report' %}">
 <div class="rounded-2xl p-6 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-    <p class="text-sm opacity-80">Today's Revenue</p>
+    <p class="text-sm opacity-80">{{ revenue_label }}</p>
     <h2 class="text-3xl font-bold mt-2">₹ {{ today_revenue }}</h2>
 </div>
 </a>
