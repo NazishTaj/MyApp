@@ -1885,6 +1885,7 @@ def download_prescription_pdf(request, id):
             prescription.pdf_created_at and
             timezone.now() - prescription.pdf_created_at < timedelta(days=7)
         ):
+            print("🔥 CACHE HIT - FILE SERVED")
             file = prescription.pdf_file
             file.open()
             
@@ -1895,6 +1896,7 @@ def download_prescription_pdf(request, id):
             file.close()
             response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
             return response
+        print("🚀 GENERATING NEW PDF")
 
         # ✅ STEP 2: NORMAL PDF GENERATE
         med_lines = []
