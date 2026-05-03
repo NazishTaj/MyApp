@@ -259,6 +259,9 @@ class Prescription(models.Model):
         on_delete=models.SET_NULL,
         related_name="revisions"
     )
+
+    pdf_file = models.FileField(upload_to="prescriptions/pdfs/", null=True, blank=True)
+    pdf_created_at = models.DateTimeField(null=True, blank=True)
     def __str__(self):
         return f"{self.patient.name} - {self.created_at}"
     
