@@ -327,6 +327,7 @@ function connectSocket() {
     };
 
     socket.onmessage = function(e) {
+        console.log("WS HIT:", e.data); 
         const data = JSON.parse(e.data);
 
         if (data.type === "send_update") {
